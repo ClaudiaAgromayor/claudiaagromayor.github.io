@@ -1,22 +1,25 @@
 // ─────────────────────────────────────────────────────────────
 //  SITE CONTENT — edit here.
 //  One object per chapter, in chronological order.
-//  · area: 'sport' | 'edu' | 'industry' | 'research'  (see AREAS)
+//  · area: 'sport' | 'adventure' | 'edu' | 'research' | 'industry'  (see AREAS)
 //  · facts: what you did (short lines, with numbers)
 //  · took: what you took from it — DRAFT, rewrite it in your own voice
 //  · img: path inside /public (optional)
 // ─────────────────────────────────────────────────────────────
 
-// shade: the three colours of the animated background while you read that chapter
-// (deep, mid, highlight). A chapter can override it with its own `shade: [...]`.
+// The categories, in the order they are listed on the site.
+// shade: the three tones of the animated background while you read that chapter
+// (deep, mid, highlight) — all whites and beiges, each with a faint tint of its own.
+// A chapter can override it with its own `shade: [...]`.
 export const AREAS = {
-  sport: { name: 'Sport', color: '#2F8C7E', shade: ['#123A38', '#4F9C8A', '#E6D7B2'] },
-  edu: { name: 'Education', color: '#6B5BD6', shade: ['#1E1B44', '#6E62B8', '#EFC8B4'] },
-  industry: { name: 'Industry', color: '#C07F2A', shade: ['#2E1D12', '#B8742F', '#F1D9AC'] },
-  research: { name: 'Research', color: '#C8553F', shade: ['#2C1520', '#A94B63', '#F0C29C'] },
+  sport: { name: 'Sport', shade: ['#D2D1C0', '#E7E5D6', '#FAF9F1'] },
+  adventure: { name: 'Adventure', shade: ['#CDD3CF', '#E4E8E3', '#F8FAF6'] },
+  edu: { name: 'Study', shade: ['#D5D0CA', '#E9E4DE', '#FAF8F5'] },
+  research: { name: 'Research', shade: ['#DACCC3', '#EDE1D9', '#FBF6F2'] },
+  industry: { name: 'Work', shade: ['#DCCEBA', '#EEE3D1', '#FCF7EE'] },
 }
 // intro and outro
-export const HOME_SHADE = ['#1F2A24', '#5E7466', '#D8CDAF']
+export const HOME_SHADE = ['#D9D1C2', '#ECE6DA', '#FBF9F4']
 
 export const CHAPTERS = [
   {
@@ -139,7 +142,8 @@ export const CHAPTERS = [
 
 export const PROFILE = {
   name: 'Claudia Agromayor',
-  role: 'AI / ML Engineer',
+  role: '2nd-year double master’s student — Industrial Engineering & Computer Science',
+  places: 'Madrid · Paris · Montréal',
   intro: 'Curious by nature.',
   introEm: 'Persistent by choice.',
   sub: 'A life in chapters — from the gymnastics mat to machine-learning research.',

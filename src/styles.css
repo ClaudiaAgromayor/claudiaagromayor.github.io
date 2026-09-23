@@ -1,9 +1,9 @@
-/* Single dark world on purpose: moss-green dusk, warm light, a stone figure. */
+/* Single light world on purpose: warm whites and beiges, a stone figure, a graphite ribbon. */
 :root {
   --c: var(--ink);
-  color-scheme: dark;
-  --bg: #1F2A24; --ink: #F1ECE0; --mute: #B9BDB2; --line: rgba(241, 236, 224, .18);
-  --glass: rgba(24, 28, 26, .72);
+  color-scheme: light;
+  --bg: #ECE6DA; --ink: #1D1B17; --mute: #6E675B; --line: rgba(29, 27, 23, .14);
+  --glass: rgba(250, 247, 241, .86);
   --sans: "Geist", "Helvetica Neue", Arial, sans-serif;
   --mono: "Geist Mono", ui-monospace, Consolas, monospace;
   --serif: "Instrument Serif", Georgia, serif;
@@ -51,7 +51,6 @@ button:focus-visible, a:focus-visible { outline: 1px solid var(--ink); outline-o
 .statement .eyebrow { color: var(--mute); margin: 0 0 18px }
 .statement h1 { font-weight: 500; font-size: clamp(48px, 8.6vw, 148px); line-height: .9; letter-spacing: -.055em; margin: 0 0 24px; max-width: 12ch }
 .statement h1 em { font-family: var(--serif); font-weight: 400; letter-spacing: -.02em; color: var(--mute) }
-.statement, .caption { text-shadow: 0 1px 30px rgba(30, 40, 34, .5) }
 .statement h1.name { font-size: clamp(64px, 13vw, 230px); line-height: .82; letter-spacing: -.065em; margin: 0 0 22px; max-width: none }
 .statement .phrase { font-family: var(--serif); font-size: clamp(26px, 3vw, 46px); line-height: 1.05; margin: 0 0 14px }
 .statement .phrase em { color: var(--mute) }
@@ -72,7 +71,7 @@ button:focus-visible, a:focus-visible { outline: 1px solid var(--ink); outline-o
 .meta { color: var(--mute); display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 14px }
 .meta i { width: 7px; height: 7px; border-radius: 50%; background: var(--c) }
 .caption h2 { font-weight: 500; font-size: clamp(32px, 3.2vw, 50px); line-height: .98; letter-spacing: -.04em; margin: 0 0 14px; text-wrap: balance }
-.caption p { color: #D6D2C6; margin: 0 0 20px }
+.caption p { color: #3A362F; margin: 0 0 20px }
 .open { color: var(--ink); border-bottom: 1px solid var(--c); padding-bottom: 3px }
 
 .bottom { left: var(--gut); right: var(--gut); bottom: calc(22px + env(safe-area-inset-bottom, 0px)); display: grid; grid-template-columns: auto 1fr auto; gap: 28px; align-items: end }
@@ -93,7 +92,7 @@ button:focus-visible, a:focus-visible { outline: 1px solid var(--ink); outline-o
 .head { display: flex; justify-content: space-between; gap: 12px; color: var(--mute); margin-bottom: 8vh }
 .head button:hover { color: var(--ink) }
 .panel h1 { font-weight: 500; font-size: clamp(40px, 4.6vw, 60px); line-height: .95; letter-spacing: -.045em; margin: 0 0 16px; text-wrap: balance }
-.lede { font-size: 18px; color: #D6D2C6; margin: 0 0 30px; max-width: 42ch }
+.lede { font-size: 18px; color: #3A362F; margin: 0 0 30px; max-width: 42ch }
 .photo { display: block; width: 100%; max-width: 100%; border-radius: 10px; margin-bottom: 30px }
 .beat { padding-block: 20px; border-top: 1px solid var(--line); display: grid; grid-template-columns: 120px 1fr; gap: 18px }
 .beat h3 { margin: 3px 0 0; color: var(--c); font-weight: 500 }
@@ -155,3 +154,25 @@ button:focus-visible, a:focus-visible { outline: 1px solid var(--ink); outline-o
 @keyframes settle { to { transform: scale(1) } }
 @media (max-width: 760px) { .snap { width: 44%; margin-bottom: 12px } }
 @media (prefers-reduced-motion: reduce) { .snap, .snap img { animation: none; transform: none } }
+
+/* smaller name, cities underneath */
+.statement h1.name { font-size: clamp(52px, 8.5vw, 150px); line-height: .85; margin: 0 0 14px }
+.statement .places { color: var(--ink); margin: 0 0 22px; letter-spacing: .14em }
+.statement .eyebrow { max-width: 60ch; line-height: 1.6 }
+.brand span { display: block; max-width: 46ch; text-transform: none; letter-spacing: .02em }
+
+/* categories, always readable */
+.meta .area { color: var(--ink); border: 1px solid var(--ink); padding: 3px 9px 2px; letter-spacing: .12em }
+.legend { display: flex !important; gap: 18px; color: var(--mute) }
+.legend span { transition: color .3s }
+.legend span.on { color: var(--ink); text-decoration: underline; text-underline-offset: 5px }
+.bottom { grid-template-columns: auto 1fr auto !important }
+.index .tag { font-style: normal; font-size: 9.5px; color: var(--mute); margin-left: 6px; display: none }
+.index button.on .tag { display: inline }
+.row .area { color: var(--ink) }
+.snap { box-shadow: 0 20px 50px rgba(60, 50, 35, .18) }
+@media (max-width: 760px) {
+  .legend { display: none !important }
+  .bottom { grid-template-columns: 1fr auto !important }
+  .brand span { display: none }
+}

@@ -6,7 +6,9 @@ import { AREAS, CHAPTERS, PROFILE } from './data/chapters'
 const N = CHAPTERS.length
 const pad = (n) => String(n).padStart(2, '0')
 const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
-const areaStyle = (a) => ({ '--c': AREAS[a].color })
+const areaStyle = () => ({})
+// categories in use, in the order of AREAS
+const USED = Object.keys(AREAS).filter((k) => CHAPTERS.some((c) => c.area === k))
 
 export default function App() {
   const [active, setActive] = useState(-1)
@@ -51,7 +53,7 @@ export default function App() {
 
       <header className="hud top">
         <button type="button" className="brand" onClick={() => { setList(false); setStory(null); goTo(-1) }}>
-          <b>{PROFILE.name}</b><span className="mono">{PROFILE.role}</span>
+          <b>{PROFILE.name}</b><span className="mono">{PROFILE.places}</span>
         </button>
         <nav className="mono" aria-label="Main">
           <button type="button" aria-current={!list} onClick={() => { setList(false); setStory(null) }}>Journey</button>
@@ -63,14 +65,15 @@ export default function App() {
       <nav className={`hud index${ch ? '' : ' hide'}`} aria-label="Chapters">
         {CHAPTERS.map((c, i) => (
           <button key={i} type="button" style={areaStyle(c.area)} className={i === active ? 'on' : ''} onClick={() => goTo(i)}>
-            <span className="n mono">{c.year}</span><span>{c.title}</span>
+            <span className="n mono">{c.year}</span><span>{c.title} <em className="mono tag">{AREAS[c.area].name}</em></span>
           </button>
         ))}
       </nav>
 
       <section className={`statement${active === -1 ? '' : ' hide'}`}>
-        <p className="mono eyebrow">{PROFILE.role} · Paris · Madrid · Montréal</p>
+        <p className="mono eyebrow">{PROFILE.role}</p>
         <h1 className="name">Claudia<br />Agromayor</h1>
+        <p className="mono places">{PROFILE.places}</p>
         <p className="phrase">{PROFILE.intro} <em>{PROFILE.introEm}</em></p>
         <p className="sub">{PROFILE.sub}</p>
         <div className="scrollhint mono"><i />Scroll to begin</div>
@@ -92,7 +95,7 @@ export default function App() {
         {ch && (
           <div key={active} className="fade" style={areaStyle(ch.area)}>
             {ch.img && <figure className="snap"><img src={ch.img} alt={ch.title} /></figure>}
-            <div className="meta mono"><i />{AREAS[ch.area].name}<span>{ch.date}</span></div>
+            <div className="meta mono"><span className="area">{AREAS[ch.area].name}</span><span>{ch.date}</span><span>{ch.place}</span></div>
             <h2>{ch.title}</h2>
             <p>{ch.line}</p>
             <button type="button" className="open mono" onClick={() => openStory(active)}>Read the story</button>
@@ -101,8 +104,8 @@ export default function App() {
       </div>
 
       <div className="hud bottom mono">
-        <div className="legend">
-          {Object.entries(AREAS).map(([k, a]) => <span key={k} style={areaStyle(k)}><i />{a.name}</span>)}
+        <div className="legend" aria-label="Categories">
+          {USED.map((k) => <span key={k} className={ch && ch.area === k ? 'on' : ''}>{AREAS[k].name}</span>)}
         </div>
         <div className="ruler" aria-hidden="true">
           {CHAPTERS.map((c, i) => <span key={i} style={areaStyle(c.area)} className={i === active ? 'on' : i < active ? 'past' : ''} onClick={() => goTo(i)} />)}
@@ -122,7 +125,7 @@ export default function App() {
             {CHAPTERS.map((c, i) => (
               <button key={i} type="button" className="row" style={areaStyle(c.area)} onClick={() => openStory(i)}>
                 <span className="mono">{c.year}</span><span className="t">{c.title}</span>
-                <span className="mono"><i />{AREAS[c.area].name}</span><span className="mono">{c.place}</span>
+                <span className="mono area">{AREAS[c.area].name}</span><span className="mono">{c.place}</span>
               </button>
             ))}
           </div>

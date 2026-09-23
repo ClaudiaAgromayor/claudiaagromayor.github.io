@@ -1,6 +1,6 @@
 # Claudia Agromayor — web personal
 
-A stone figure grows while a ribbon of light spirals around it, over an animated shader gradient whose colours change at every chapter. Site in English.
+A stone figure grows while a graphite ribbon spirals around it, over an animated beige shader gradient that shifts tint at every chapter. Site in English.
 React + Vite + React Three Fiber + drei. Se publica sola en https://claudiaagromayor.github.io con cada `git push` a `main`.
 
 ## Editar el contenido

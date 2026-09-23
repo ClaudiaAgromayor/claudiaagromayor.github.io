@@ -10,7 +10,7 @@ const TURNS = 3.2
 const FLOOR = -1.25
 export const BG = '#1F2A24'
 const WHITE = new THREE.Color('#FFFFFF')
-const LIGHT = '#F1E8D2'         // the life line: warm paper light
+const INK = '#3B342B'           // the life line: warm graphite
 
 // Scroll position → "chapter coordinate" c: -1 = intro, 0..N-1 = chapters, N = outro
 export const offsetToC = (o) => o * (N + 1) - 1
@@ -49,7 +49,7 @@ const soft = canvasTex(128, (x, s) => {
   x.fillStyle = g; x.fillRect(0, 0, s, s)
 })
 
-const stone = new THREE.MeshStandardMaterial({ color: '#CFC9BC', roughness: 0.96, metalness: 0, bumpMap: grain, bumpScale: 1.6 })
+const stone = new THREE.MeshStandardMaterial({ color: '#C9BFAE', roughness: 0.96, metalness: 0, bumpMap: grain, bumpScale: 1.6 })
 
 /* Abstract, faceless figure made of metaballs: a gymnast's salute, one arm raised.
    Bones are in world units (feet at y = 0, ~1.9 tall); each bone is a chain of balls. */
@@ -162,10 +162,10 @@ const backdrop = new THREE.ShaderMaterial({
       float f2 = snoise(w * 1.7 - vec2(t, t * .6) + 9.) * .5 + .5;
       vec3 col = mix(uA, uB, smoothstep(.15, .85, f1));
       col = mix(col, uC, smoothstep(.62, .98, f2) * .5);
-      col *= 1. - .35 * smoothstep(.35, 1.1, length(p * vec2(.8, 1.)));   // vignette
+      col *= 1. - .1 * smoothstep(.35, 1.1, length(p * vec2(.8, 1.)));    // vignette
       col = mix(col, uA, smoothstep(.3, .95, abs(p.x / uAspect * 2.)) * .45); // calmer behind the text, both sides
       float grain = fract(sin(dot(vUv * 1000. + uTime, vec2(12.9898, 78.233))) * 43758.5453);
-      col += (grain - .5) * .045;
+      col += (grain - .5) * .03;
       gl_FragColor = vec4(col, 1.);
       #include <colorspace_fragment>
     }`,
@@ -173,8 +173,8 @@ const backdrop = new THREE.ShaderMaterial({
 
 /* The life line as a ribbon of light: a bright core, a soft twisting band and a slow shimmer */
 const ribbonMat = new THREE.ShaderMaterial({
-  transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
-  uniforms: { uProgress: { value: 0 }, uTime: { value: 0 }, uColor: { value: new THREE.Color('#F4E6CC') } },
+  transparent: true, depthWrite: false, side: THREE.DoubleSide,
+  uniforms: { uProgress: { value: 0 }, uTime: { value: 0 }, uColor: { value: new THREE.Color(INK) } },
   vertexShader: `attribute float aT; attribute float aSide; varying float vT; varying float vSide;
     void main(){ vT = aT; vSide = aSide; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
   fragmentShader: `uniform float uProgress, uTime; uniform vec3 uColor; varying float vT; varying float vSide;
@@ -187,7 +187,7 @@ const ribbonMat = new THREE.ShaderMaterial({
       float shimmer = .75 + .25 * sin(vT * 180. - uTime * 2.2);
       float tip = smoothstep(uProgress - .004, uProgress, vT);                 // soft end
       float a = (core * (.55 + .45 * age) + band * (.4 + .6 * age) * shimmer) * (1. - tip * .6);
-      gl_FragColor = vec4(uColor * a, a);
+      gl_FragColor = vec4(uColor, min(a * 1.2, 1.));
     }`,
 })
 function useRibbonGeometry() {
@@ -222,7 +222,7 @@ function useRibbonGeometry() {
 
 /* Specks of light drifting along the part of the line already lived */
 const dustMat = new THREE.ShaderMaterial({
-  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  transparent: true, depthWrite: false,
   uniforms: { uProgress: { value: 0 }, uTime: { value: 0 }, uPx: { value: 1 } },
   vertexShader: `attribute float aT; attribute vec3 aOff; attribute float aSeed; uniform float uTime, uPx; varying float vA; varying float vT;
     void main(){
@@ -239,7 +239,7 @@ const dustMat = new THREE.ShaderMaterial({
       if (vT > uProgress) discard;
       float d = length(gl_PointCoord - .5); if (d > .5) discard;
       float a = smoothstep(.5, 0., d) * vA * .8;
-      gl_FragColor = vec4(vec3(1., .95, .86) * a, a);
+      gl_FragColor = vec4(vec3(.55, .45, .32), a * .8);
     }`,
 })
 function useDustGeometry() {
@@ -366,12 +366,12 @@ export default function Experience({ onActive, reduced }) {
         <Rock />
       </group>
 
-      <Line points={ghost} color={LIGHT} transparent opacity={0.12} lineWidth={1} dashed dashSize={0.015} gapSize={0.08} />
+      <Line points={ghost} color={INK} transparent opacity={0.14} lineWidth={1} dashed dashSize={0.015} gapSize={0.08} />
       <mesh geometry={ribbonGeo} material={ribbonMat} frustumCulled={false} />
       <points geometry={dustGeo} material={dustMat} frustumCulled={false} />
       {/* the present: a soft glow at the tip of the line */}
       <sprite ref={head} scale={0.5}>
-        <spriteMaterial map={soft} color="#FFEBCB" transparent depthWrite={false} blending={THREE.AdditiveBlending} />
+        <spriteMaterial map={soft} color="#B8925E" transparent depthWrite={false} />
       </sprite>
     </>
   )
