@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Line, useGLTF, Billboard } from '@react-three/drei'
+import { Line, useGLTF, Sparkles } from '@react-three/drei'
 import { MarchingCubes } from 'three/examples/jsm/objects/MarchingCubes.js'
 import * as THREE from 'three'
-import { CHAPTERS, AREAS, AVATAR_URL } from './data/chapters'
+import { CHAPTERS, AVATAR_URL } from './data/chapters'
 
 const N = CHAPTERS.length
 const TURNS = 3.2
 const FLOOR = -1.25
 const SEG = 1400
-const RAD = 6
-export const BG = '#F1F1EF'
-const INK = '#141414'
+export const BG = '#34423A'     // fog / horizon: deep moss
+const SKY_TOP = '#5E6E63'
+const LIGHT = '#F1E8D2'         // the life line: warm paper light
 
 // Scroll position → "chapter coordinate" c: -1 = intro, 0..N-1 = chapters, N = outro
 export const offsetToC = (o) => o * (N + 1) - 1
@@ -24,14 +24,36 @@ function helix(t, v = new THREE.Vector3()) {
   const r = 1.15 + 1.35 * t
   return v.set(Math.cos(a) * r, -1.05 + 2.6 * t, Math.sin(a) * r)
 }
-const chapterT = (i) => (i + 0.5) / N
 const cToT = (c) => THREE.MathUtils.clamp((c + 0.5) / N, 0, 1)
 
 class HelixCurve extends THREE.Curve {
   getPoint(t, target = new THREE.Vector3()) { return helix(t, target) }
 }
 
-const pearl = new THREE.MeshStandardMaterial({ color: '#ECECE8', roughness: 0.9, metalness: 0 })
+function canvasTex(size, draw) {
+  const c = document.createElement('canvas'); c.width = c.height = size
+  draw(c.getContext('2d'), size)
+  const t = new THREE.CanvasTexture(c)
+  t.wrapS = t.wrapT = THREE.RepeatWrapping
+  return t
+}
+// grain for a carved-stone surface
+const grain = canvasTex(256, (x, s) => {
+  const img = x.createImageData(s, s)
+  for (let i = 0; i < img.data.length; i += 4) {
+    const v = 150 + Math.random() * 105
+    img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255
+  }
+  x.putImageData(img, 0, 0)
+})
+grain.repeat.set(6, 6)
+const soft = canvasTex(128, (x, s) => {
+  const g = x.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2)
+  g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(0.4, 'rgba(255,255,255,.35)'); g.addColorStop(1, 'rgba(255,255,255,0)')
+  x.fillStyle = g; x.fillRect(0, 0, s, s)
+})
+
+const stone = new THREE.MeshStandardMaterial({ color: '#CFC9BC', roughness: 0.96, metalness: 0, bumpMap: grain, bumpScale: 1.6 })
 
 /* Abstract, faceless figure made of metaballs: a gymnast's salute, one arm raised.
    Bones are in world units (feet at y = 0, ~1.9 tall); each bone is a chain of balls. */
@@ -54,14 +76,14 @@ const ISO = 80, SUB = 12
 
 function Figure({ reduced }) {
   const mc = useMemo(() => {
-    const m = new MarchingCubes(56, pearl, false, false, 20000)
+    const m = new MarchingCubes(56, stone, false, false, 20000)
     m.isolation = ISO
     return m
   }, [])
   const build = (time) => {
     mc.reset()
     BALLS.forEach(({ p, r }, i) => {
-      const w = reduced ? 0 : Math.sin(time * 1.6 + i * 0.7) * 0.004
+      const w = reduced ? 0 : Math.sin(time * 0.8 + i * 0.7) * 0.002
       const rc = r / 2 // world → cube units (the cube spans 2 world units)
       mc.addBall(0.5 + p.x / 2 + w, 0.02 + p.y / 2, 0.5 + p.z / 2 - w, rc * rc * (ISO + SUB) * 0.42, SUB)
     })
@@ -82,40 +104,96 @@ function Avatar({ url }) {
     s.scale.setScalar(1.8 / size.y)
     box.setFromObject(s)
     s.position.set(-(box.min.x + box.max.x) / 2, -box.min.y, -(box.min.z + box.max.z) / 2)
-    s.traverse((o) => { if (o.isMesh) o.material = pearl })
+    s.traverse((o) => { if (o.isMesh) o.material = stone })
     return s
   }, [scene])
   return <primitive object={obj} />
 }
 
-// soft blob shadow under the figure
-const shadowTex = (() => {
-  const c = document.createElement('canvas'); c.width = c.height = 128
-  const x = c.getContext('2d'), g = x.createRadialGradient(64, 64, 0, 64, 64, 64)
-  g.addColorStop(0, 'rgba(40,48,58,.9)'); g.addColorStop(0.35, 'rgba(40,48,58,.35)'); g.addColorStop(1, 'rgba(40,48,58,0)')
-  x.fillStyle = g; x.fillRect(0, 0, 128, 128)
-  return new THREE.CanvasTexture(c)
-})()
+/* The rock she stands on */
+function Rock() {
+  const geo = useMemo(() => {
+    const g = new THREE.IcosahedronGeometry(0.42, 6)
+    const p = g.attributes.position, v = new THREE.Vector3()
+    for (let i = 0; i < p.count; i++) {
+      v.fromBufferAttribute(p, i)
+      const n = 1 + 0.07 * Math.sin(v.x * 9 + v.z * 6) * Math.cos(v.y * 7 - v.x * 4)
+      p.setXYZ(i, v.x * n, Math.min(v.y * n * 0.35, 0.015), v.z * n)
+    }
+    g.computeVertexNormals()
+    return g
+  }, [])
+  return <mesh geometry={geo} material={stone} position={[0, -0.02, 0]} />
+}
 
+/* Rolling hills that rise away from a still pool in the middle */
+function Land() {
+  const geo = useMemo(() => {
+    const g = new THREE.PlaneGeometry(60, 60, 220, 220)
+    g.rotateX(-Math.PI / 2)
+    const p = g.attributes.position
+    for (let i = 0; i < p.count; i++) {
+      const x = p.getX(i), z = p.getZ(i), r = Math.hypot(x, z)
+      const hills = Math.sin(x * 0.35) * Math.cos(z * 0.28) * 1.1 + Math.sin((x + z) * 0.17 + 1.3) * 1.6 + Math.sin(x * 0.9 - z * 0.7) * 0.25
+      const rise = THREE.MathUtils.smoothstep(r, 5, 18)
+      p.setY(i, -0.02 + (hills + 1.2) * rise * 0.7)
+    }
+    g.computeVertexNormals()
+    return g
+  }, [])
+  return (
+    <mesh geometry={geo} position={[0, FLOOR, 0]}>
+      <meshStandardMaterial color="#4B5E50" roughness={1} />
+    </mesh>
+  )
+}
 
-export default function Experience({ onActive, onSelect, reduced }) {
+const sky = new THREE.ShaderMaterial({
+  side: THREE.BackSide, depthWrite: false, fog: false,
+  uniforms: { top: { value: new THREE.Color(SKY_TOP) }, bottom: { value: new THREE.Color(BG) } },
+  vertexShader: 'varying vec3 vP; void main(){ vP = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }',
+  fragmentShader: `uniform vec3 top, bottom; varying vec3 vP;
+    void main(){
+      float h = smoothstep(-.05, .6, normalize(vP).y);
+      gl_FragColor = vec4(mix(bottom, top, h), 1.);
+      #include <colorspace_fragment>
+    }`,
+})
+
+/* Slow drifting wisps of mist */
+function Mist({ reduced }) {
+  const wisps = useMemo(() => Array.from({ length: 16 }, (_, i) => ({
+    a: (i / 16) * Math.PI * 2 + Math.random(), r: 3 + Math.random() * 6, y: FLOOR + 0.2 + Math.random() * 1.2,
+    s: 4 + Math.random() * 6, o: 0.06 + Math.random() * 0.08, v: 0.01 + Math.random() * 0.02,
+  })), [])
+  const refs = useRef([])
+  useFrame(({ clock }) => {
+    if (reduced) return
+    const t = clock.elapsedTime
+    wisps.forEach((w, i) => { const m = refs.current[i]; if (m) m.position.set(Math.cos(w.a + t * w.v) * w.r, w.y, Math.sin(w.a + t * w.v) * w.r) })
+  })
+  return wisps.map((w, i) => (
+    <sprite key={i} ref={(m) => (refs.current[i] = m)} position={[Math.cos(w.a) * w.r, w.y, Math.sin(w.a) * w.r]} scale={[w.s, w.s * 0.45, 1]}>
+      <spriteMaterial map={soft} color="#C9D2C6" transparent opacity={w.o} depthWrite={false} />
+    </sprite>
+  ))
+}
+
+export default function Experience({ onActive, reduced }) {
   const offset = useRef(0)
   const figure = useRef()
   const head = useRef()
-  const nodes = useRef([])
-  const rings = useRef([])
   const look = useRef(new THREE.Vector3(0, 0, 0))
   const shift = useRef(1)
   const lastActive = useRef(null)
   const tmp = useMemo(() => new THREE.Vector3(), [])
 
   const tubeGeo = useMemo(() => {
-    const g = new THREE.TubeGeometry(new HelixCurve(), SEG, 0.0045, RAD, false)
+    const g = new THREE.TubeGeometry(new HelixCurve(), SEG, 0.006, 6, false)
     g.setDrawRange(0, 0)
     return g
   }, [])
   const ghost = useMemo(() => Array.from({ length: 500 }, (_, k) => helix(k / 499, new THREE.Vector3())), [])
-  const nodePos = useMemo(() => CHAPTERS.map((_, i) => helix(chapterT(i), new THREE.Vector3())), [])
 
   // Settle on a chapter once scrolling stops — always in the direction the
   // visitor was moving, so a small scroll never bounces back.
@@ -155,29 +233,20 @@ export default function Experience({ onActive, onSelect, reduced }) {
     // the figure grows with the story
     const s = 0.38 + 1.07 * (1 - Math.pow(1 - g, 2))
     figure.current.scale.setScalar(s)
-    figure.current.rotation.y = -g * Math.PI * 1.5 + (reduced ? 0 : Math.sin(time * 0.4) * 0.08)
+    figure.current.rotation.y = -g * Math.PI * 1.5 + (reduced ? 0 : Math.sin(time * 0.3) * 0.05)
 
-    // the line draws itself up to "now"
-    tubeGeo.setDrawRange(0, Math.floor(t * SEG) * RAD * 6)
+    // the line of light draws itself up to "now"
+    tubeGeo.setDrawRange(0, Math.floor(t * SEG) * 6 * 6)
     helix(t, tmp)
     head.current.position.copy(tmp)
     head.current.visible = c > -0.6
-
-    nodes.current.forEach((m, i) => {
-      if (!m) return
-      const reached = i <= c + 0.02
-      const isA = i === act
-      m.scale.setScalar(THREE.MathUtils.damp(m.scale.x, isA ? 1.5 : 1, 6, dt))
-      m.material.color.set(reached ? INK : '#BDBDB8')
-      const r = rings.current[i]
-      r.material.opacity = THREE.MathUtils.damp(r.material.opacity, isA ? 1 : 0, 6, dt)
-    })
+    head.current.material.opacity = reduced ? 0.9 : 0.75 + Math.sin(time * 2) * 0.15
 
     // camera orbits so the current point of the line faces us
     const ang = Math.atan2(tmp.z, tmp.x) + 0.45
     const dist = 4.6 + 2.8 * g
-    const want = new THREE.Vector3(Math.cos(ang) * dist, tmp.y * 0.55 + 0.55 + 0.35 * g, Math.sin(ang) * dist)
-    const k = reduced ? 1 : 1 - Math.exp(-3 * dt)
+    const want = new THREE.Vector3(Math.cos(ang) * dist, tmp.y * 0.5 + 0.35 + 0.35 * g, Math.sin(ang) * dist)
+    const k = reduced ? 1 : 1 - Math.exp(-2.5 * dt)
     state.camera.position.lerp(want, k)
     look.current.lerp(new THREE.Vector3(tmp.x * 0.3, FLOOR + 0.72 * s + tmp.y * 0.25, tmp.z * 0.3), k)
     state.camera.lookAt(look.current)
@@ -192,47 +261,31 @@ export default function Experience({ onActive, onSelect, reduced }) {
   return (
     <>
       <color attach="background" args={[BG]} />
-      <fog attach="fog" args={[BG, 7, 16]} />
-      <hemisphereLight args={['#FFFFFF', '#DADAD5', 2.2]} />
-      <directionalLight position={[3, 5, 2]} intensity={2} />
+      <fog attach="fog" args={[BG, 5, 24]} />
+      <mesh material={sky}><sphereGeometry args={[30, 32, 16]} /></mesh>
+
+      <hemisphereLight args={['#B4C4B7', '#3A4A3F', 1.3]} />
+      <directionalLight position={[-4, 2.6, 2.5]} intensity={2.6} color="#FFD7A3" />
+      <directionalLight position={[3, 3, -4]} intensity={0.6} color="#BFD3C8" />
+
+      <Land />
 
       <group ref={figure} position={[0, FLOOR, 0]}>
         {AVATAR_URL ? <Avatar url={AVATAR_URL} /> : <Figure reduced={reduced} />}
-        <mesh rotation-x={-Math.PI / 2} position={[0, 0.004, 0]} renderOrder={-1}>
-          <planeGeometry args={[1.3, 1.3]} />
-          <meshBasicMaterial map={shadowTex} transparent depthWrite={false} opacity={0.3} />
-        </mesh>
+        <Rock />
       </group>
 
-      <Line points={ghost} color={INK} transparent opacity={0.12} lineWidth={1} dashed dashSize={0.02} gapSize={0.06} />
+      <Line points={ghost} color={LIGHT} transparent opacity={0.14} lineWidth={1} dashed dashSize={0.02} gapSize={0.07} />
       <mesh geometry={tubeGeo}>
-        <meshBasicMaterial color={INK} />
+        <meshBasicMaterial color={LIGHT} toneMapped={false} />
       </mesh>
+      {/* the present: a soft glow at the tip of the line */}
+      <sprite ref={head} scale={0.32}>
+        <spriteMaterial map={soft} color="#FFE9C4" transparent depthWrite={false} blending={THREE.AdditiveBlending} />
+      </sprite>
 
-      {nodePos.map((p, i) => (
-        <group key={i} position={p}>
-          <mesh
-            ref={(m) => (nodes.current[i] = m)}
-            onClick={(e) => { e.stopPropagation(); onSelect(i) }}
-            onPointerOver={() => (document.body.style.cursor = 'pointer')}
-            onPointerOut={() => (document.body.style.cursor = '')}
-          >
-            <sphereGeometry args={[0.022, 16, 16]} />
-            <meshBasicMaterial />
-          </mesh>
-          <Billboard>
-            <mesh ref={(r) => (rings.current[i] = r)}>
-              <ringGeometry args={[0.07, 0.075, 64]} />
-              <meshBasicMaterial color={INK} transparent opacity={0} depthWrite={false} />
-            </mesh>
-          </Billboard>
-        </group>
-      ))}
-
-      <mesh ref={head}>
-        <sphereGeometry args={[0.014, 16, 16]} />
-        <meshBasicMaterial color={INK} />
-      </mesh>
+      <Mist reduced={reduced} />
+      <Sparkles count={70} scale={[10, 4, 10]} position={[0, 0, 0]} size={1.3} speed={reduced ? 0 : 0.12} opacity={0.45} color="#EDE4CC" />
     </>
   )
 }

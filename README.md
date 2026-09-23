@@ -1,6 +1,6 @@
 # Claudia Agromayor — web personal
 
-An abstract liquid figure grows while the line of her life spirals around it. Site in English.
+A stone figure grows in a moss-green landscape while a line of light spirals around it. Site in English.
 React + Vite + React Three Fiber + drei. Se publica sola en https://claudiaagromayor.github.io con cada `git push` a `main`.
 
 ## Editar el contenido
