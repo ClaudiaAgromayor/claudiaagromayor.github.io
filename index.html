@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Claudia Agromayor: curiosa, perseverante, siempre buscando la siguiente oportunidad.">
+<title>Claudia Agromayor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+  /* Single dark world on purpose: a gallery at night. */
+  :root{
+    color-scheme:dark;
+    --bg:#0A0B0D; --fg:#ECEAE4; --mute:#7B7F87; --line:rgba(236,234,228,.12);
+    --dep:#5FB3A5; --est:#9D90E0; --tra:#D9A35A; --vid:#D6786A;
+    --sans:"Geist", "Helvetica Neue", Arial, sans-serif;
+    --mono:"Geist Mono", ui-monospace, Consolas, monospace;
+    --serif:"Instrument Serif", Georgia, serif;
+  }
+  html,body{height:100%;background:var(--bg);color:var(--fg);overflow:hidden}
+  body{font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+  #gl{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+  .mono{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+  button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+  button:focus-visible{outline:1px solid var(--fg);outline-offset:4px}
+
+  /* HUD */
+  .hud{position:fixed;z-index:3;pointer-events:none}
+  .hud *{pointer-events:auto}
+  .tl{top:calc(24px + env(safe-area-inset-top,0px));left:clamp(16px,3vw,40px)}
+  .tl b{display:block;font-weight:500;font-size:14px;letter-spacing:-.005em}
+  .tl span{color:var(--mute)}
+  .tr{top:calc(24px + env(safe-area-inset-top,0px));right:clamp(16px,3vw,40px);display:flex;gap:22px}
+  .tr button{color:var(--mute);transition:color .2s}
+  .tr button:hover,.tr button[aria-current="true"]{color:var(--fg)}
+
+  .index{left:clamp(16px,3vw,40px);top:50%;transform:translateY(-50%);display:grid;gap:3px;width:230px}
+  .index button{display:grid;grid-template-columns:26px 1fr;gap:8px;text-align:left;color:var(--mute);font-size:12.5px;line-height:1.35;padding:2px 0;transition:color .25s,opacity .25s,transform .35s}
+  .index button .n{font-family:var(--mono);font-size:10.5px;padding-top:1px;font-variant-numeric:tabular-nums}
+  .index button:hover{color:var(--fg)}
+  .index button.on{color:var(--fg);transform:translateX(8px)}
+  .index button.on .n{color:var(--c)}
+  .index button.off{opacity:.25}
+
+  .caption{left:50%;bottom:calc(128px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);text-align:center;width:min(620px,calc(100% - 32px));transition:opacity .4s}
+  .caption .meta{color:var(--mute);display:flex;gap:14px;justify-content:center;align-items:center;margin-bottom:10px}
+  .caption .meta i{width:6px;height:6px;border-radius:50%;background:var(--c);display:inline-block}
+  .caption h2{font-family:var(--serif);font-weight:400;font-size:clamp(34px,4.6vw,58px);line-height:1;letter-spacing:-.01em;margin:0 0 14px;text-wrap:balance}
+  .caption h2 em{font-style:italic}
+  .caption .open{color:var(--fg);border-bottom:1px solid var(--line);padding-bottom:3px}
+  .caption .open:hover{border-color:var(--fg)}
+  .caption.swap{opacity:0}
+
+  .bottom{left:clamp(16px,3vw,40px);right:clamp(16px,3vw,40px);bottom:calc(28px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:auto 1fr auto;gap:28px;align-items:end}
+  .filters{display:flex;gap:16px;flex-wrap:wrap}
+  .filters button{color:var(--mute);display:flex;align-items:center;gap:7px}
+  .filters button i{width:6px;height:6px;border-radius:50%;background:var(--c,var(--fg));display:inline-block;opacity:.8}
+  .filters button[aria-pressed="true"]{color:var(--fg)}
+  .ruler{position:relative;height:26px;display:flex;align-items:flex-end;gap:0;justify-content:space-between}
+  .ruler span{flex:1;height:26px;display:flex;justify-content:center;align-items:flex-end;cursor:pointer}
+  .ruler span::after{content:"";width:1px;height:9px;background:var(--mute);opacity:.6;transition:height .3s,background .3s,opacity .3s}
+  .ruler span.on::after{height:26px;background:var(--c);opacity:1}
+  .ruler span.off::after{opacity:.15}
+  .count{font-variant-numeric:tabular-nums;color:var(--mute)}
+  .count b{color:var(--fg);font-weight:500}
+
+  /* intro + outro statements */
+  .statement{position:fixed;z-index:2;left:clamp(16px,6vw,96px);top:50%;transform:translateY(-50%);max-width:min(760px,calc(100% - 32px));pointer-events:none;transition:opacity .5s}
+  .statement h1{font-family:var(--serif);font-weight:400;font-size:clamp(46px,7vw,104px);line-height:.95;letter-spacing:-.015em;margin:0 0 22px;text-wrap:balance}
+  .statement h1 em{font-style:italic;color:var(--mute)}
+  .statement p{color:var(--mute);margin:0;max-width:44ch}
+  .statement .mail{pointer-events:auto;display:inline-flex;gap:14px;align-items:center;margin-top:22px;color:var(--fg)}
+  .statement .mail span{font-family:var(--mono);font-size:14px;user-select:all;border-bottom:1px solid var(--line);padding-bottom:3px;text-transform:none;letter-spacing:0}
+  .statement .mail button{color:var(--mute)}
+
+  /* loader */
+  #loader{position:fixed;inset:0;z-index:20;background:var(--bg);display:grid;place-items:center;transition:opacity .8s}
+  #loader.done{opacity:0;pointer-events:none}
+  #loader .mono{color:var(--mute)}
+  #loader b{display:block;font-family:var(--serif);font-weight:400;font-size:64px;color:var(--fg);text-align:center;letter-spacing:0;font-variant-numeric:tabular-nums}
+
+  /* story panel */
+  #panel{position:fixed;z-index:6;top:0;right:0;bottom:0;width:min(560px,100%);background:rgba(12,13,16,.92);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+    border-left:1px solid var(--line);transform:translateX(102%);transition:transform .7s cubic-bezier(.7,0,.2,1);overflow-y:auto;padding-inline:clamp(20px,4vw,48px)}
+  #panel.open{transform:none}
+  #panel .inner{padding-block:calc(24px + env(safe-area-inset-top,0px)) 64px}
+  #panel .head{display:flex;justify-content:space-between;align-items:center;color:var(--mute);margin-bottom:12vh}
+  #panel .head button:hover{color:var(--fg)}
+  #panel .meta{color:var(--mute);display:flex;gap:12px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+  #panel .meta i{width:6px;height:6px;border-radius:50%;background:var(--c)}
+  .tag{border:1px solid var(--c);color:var(--c);border-radius:99px;padding:1px 8px}
+  #panel h1{font-family:var(--serif);font-weight:400;font-size:clamp(44px,5vw,64px);line-height:1;margin:0 0 18px;text-wrap:balance}
+  #panel .lede{font-size:18px;color:#cfccc5;margin:0 0 48px;max-width:40ch}
+  .beat{padding-block:20px;border-top:1px solid var(--line);display:grid;grid-template-columns:120px 1fr;gap:18px}
+  .beat h3{margin:3px 0 0;color:var(--mute);font-weight:400}
+  .beat p{margin:0}
+  .beat .took{font-family:var(--serif);font-size:28px;line-height:1.15;font-style:italic}
+  .pnav{display:flex;justify-content:space-between;gap:16px;margin-top:48px;padding-top:20px;border-top:1px solid var(--line);color:var(--mute)}
+  .pnav button:hover{color:var(--fg)}
+
+  /* list view */
+  #list{position:fixed;inset:0;z-index:7;background:var(--bg);overflow-y:auto;padding-inline:clamp(16px,6vw,96px);opacity:0;transition:opacity .4s}
+  #list.open{opacity:1}
+  #list .inner{max-width:980px;padding-block:calc(24px + env(safe-area-inset-top,0px)) 80px}
+  #list .head{display:flex;justify-content:space-between;color:var(--mute);margin-bottom:10vh}
+  #list h1{font-family:var(--serif);font-weight:400;font-size:clamp(44px,6vw,80px);line-height:1;margin:0 0 40px}
+  .row{display:grid;grid-template-columns:60px 1fr 140px 60px;gap:18px;align-items:baseline;width:100%;text-align:left;padding:16px 0;border-top:1px solid var(--line);transition:padding .3s}
+  .row:hover{padding-left:10px}
+  .row .t{font-size:19px;letter-spacing:-.01em}
+  .row .mono{color:var(--mute)}
+  .row .mono i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--c);margin-right:8px}
+
+  @media (max-width:980px){ .index{display:none} }
+  @media (max-width:640px){
+    .tr{gap:14px}
+    .bottom{grid-template-columns:1fr auto;gap:14px}
+    .filters{grid-column:1/-1;order:-1;gap:12px}
+    .caption{bottom:calc(150px + env(safe-area-inset-bottom,0px))}
+    .beat{grid-template-columns:1fr;gap:6px}
+    .row{grid-template-columns:44px 1fr}
+    .row .mono{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){ #panel,#list,.caption,.statement{transition:none} }
+</style>
+</head>
+<body>
+
+<canvas id="gl" aria-label="Trayectoria de Claudia: capítulos colocados en una hélice que gira al hacer scroll"></canvas>
+
+<div id="loader"><div><b id="pct">0</b><div class="mono">Cargando la trayectoria</div></div></div>
+
+<div class="hud tl mono"><b>Claudia Agromayor</b><span>Prototipo · contenido de ejemplo</span></div>
+<nav class="hud tr mono" aria-label="Principal">
+  <button type="button" aria-current="true" id="navTray">Trayectoria</button>
+  <button type="button" id="navList">Lista</button>
+  <button type="button" id="navContact">Contacto</button>
+</nav>
+
+<nav class="hud index" id="index" aria-label="Capítulos"></nav>
+
+<section class="statement" id="intro">
+  <h1>Curiosa. Perseverante. <em>Siempre buscando la siguiente.</em></h1>
+  <p class="mono" style="font-size:11.5px">Scroll ↓ &nbsp;·&nbsp; 16 capítulos de deporte, estudios, trabajo y vida</p>
+</section>
+<section class="statement" id="outro" style="opacity:0;visibility:hidden">
+  <h1>El siguiente capítulo <em>todavía no está escrito.</em></h1>
+  <p>Busco equipos, proyectos y preguntas difíciles. Si tienes alguno, escríbeme.</p>
+  <div class="mail mono"><span>hola@claudia.example</span><button type="button" id="copy">Copiar</button></div>
+</section>
+
+<div class="hud caption" id="caption" aria-live="polite"></div>
+
+<div class="hud bottom">
+  <div class="filters mono" id="filters"></div>
+  <div class="ruler" id="ruler" aria-hidden="true"></div>
+  <div class="count mono" id="count"><b>00</b> / 16</div>
+</div>
+
+<aside id="panel" aria-label="Historia del capítulo" aria-hidden="true"></aside>
+<section id="list" hidden aria-label="Todos los capítulos"></section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(() => {
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const SEC = {
+  dep:{n:'Deporte', c:'#5FB3A5', a:[34,82,76],  b:[10,20,22]},
+  est:{n:'Estudios',c:'#9D90E0', a:[74,64,138], b:[14,13,28]},
+  tra:{n:'Trabajo', c:'#D9A35A', a:[140,92,40], b:[26,17,10]},
+  vid:{n:'Vida',    c:'#D6786A', a:[128,58,48], b:[26,12,12]},
+};
+// Contenido de ejemplo
+const M = [
+ {s:'est',y:2008,title:'La niña de los porqués',line:'Preguntaba tanto que en casa acabaron comprando una enciclopedia.',start:'Tenía siete años y una costumbre: desmontar lo que funcionaba para entender por qué funcionaba.',challenge:'Nadie tenía tiempo para tantas preguntas.',did:'Aprendí a buscar las respuestas yo sola: libros, experimentos caseros y algún desastre en la cocina.',took:'Si nadie te responde, busca tú.'},
+ {s:'vid',y:2009,title:'Primera mudanza',line:'Nueva ciudad, nuevo colegio, cero amigos el primer día.',start:'Cambiamos de ciudad a mitad de curso.',challenge:'Empezar de cero sin conocer a nadie.',did:'Me apunté a todo lo que había: teatro, ajedrez, atletismo.',took:'Lo nuevo da miedo solo hasta que lo haces tuyo.'},
+ {s:'dep',y:2010,title:'Primer dorsal',line:'Mi primera carrera. Llegué la última y quise repetir al día siguiente.',start:'Una carrera escolar, sin ninguna expectativa.',challenge:'Quedar última delante de todo el mundo.',did:'Pedí entrenar con el grupo de los mayores, dos veces por semana, sin faltar.',took:'Quedar última no es perder: es tener un punto de partida.'},
+ {s:'est',y:2012,title:'Descubro las matemáticas',line:'Dejaron de ser una asignatura y se convirtieron en un juego.',start:'Un profesor que planteaba los problemas como acertijos.',challenge:'No era la más rápida de la clase.',did:'Hacía los problemas extra del final del libro, los que nadie tocaba.',took:'La constancia gana a la velocidad.'},
+ {s:'tra',y:2013,title:'Mi primer negocio',line:'Pulseras hechas a mano, vendidas en la playa. 43 € de beneficio.',start:'Un verano largo y ganas de comprarme algo yo misma.',challenge:'Nadie compra a una niña de trece años porque sí.',did:'Cambié los diseños según lo que pedía la gente y probé tres sitios distintos.',took:'Las oportunidades no se esperan: se prueban.'},
+ {s:'vid',y:2014,title:'Un verano fuera',line:'Un mes en otro país con un idioma que apenas hablaba.',start:'Una beca de verano en el extranjero.',challenge:'Entender y hacerme entender.',did:'Me obligué a hablar aunque me equivocara, cada día un poco más.',took:'Hacer el ridículo es el peaje de aprender.'},
+ {s:'dep',y:2015,title:'Capitana del equipo',line:'Pasé de competir por mí a competir por todas.',start:'El equipo me eligió capitana.',challenge:'Motivar a otras cuando yo también tenía días malos.',did:'Organicé entrenamientos extra y aprendí a escuchar antes de hablar.',took:'Liderar es sostener a otros sin dejar de sostenerte a ti.'},
+ {s:'est',y:2016,title:'La universidad',line:'Elegí la carrera difícil. A propósito.',start:'Dudaba entre lo seguro y lo que me daba curiosidad.',challenge:'Un primer año muy exigente.',did:'Monté un grupo de estudio que duró toda la carrera.',took:'Si no da un poco de vértigo, no es tu siguiente paso.'},
+ {s:'tra',y:2017,title:'Primeras prácticas',line:'La primera vez que mi trabajo le servía a alguien de verdad.',start:'Prácticas en una empresa pequeña, de las que te dejan tocarlo todo.',challenge:'No conocía casi ninguna de las herramientas.',did:'Me ofrecí para las tareas que nadie quería y aprendí de ellas.',took:'Las tareas feas son las que más enseñan.'},
+ {s:'vid',y:2018,title:'Erasmus',line:'Otra ciudad, otra forma de pensar. Volví distinta.',start:'Un año fuera en plena carrera.',challenge:'Adaptarme a otro sistema y a otra manera de evaluar.',did:'Cursé asignaturas que no existían en mi universidad.',took:'Mirar desde fuera te enseña a mirar lo de dentro.'},
+ {s:'dep',y:2019,title:'La lesión',line:'Ocho meses parada. El reto más largo hasta entonces.',reto:true,start:'Mi mejor temporada, hasta una mala caída.',challenge:'Ocho meses de recuperación sin saber si volvería al mismo nivel.',did:'Rehabilitación diaria, un plan por semanas y mucha paciencia.',took:'Perseverar es aparecer también los días en que no avanzas.'},
+ {s:'est',y:2020,title:'El examen que suspendí',line:'Suspendí la asignatura que más me gustaba. Y volví.',reto:true,start:'Una asignatura que me apasionaba.',challenge:'Suspender justo en lo que creía dominar.',did:'Rehíce todos los ejercicios desde cero y pedí tutorías cada semana.',took:'Un suspenso es información, no un veredicto.'},
+ {s:'tra',y:2021,title:'Mi primer modelo de IA',line:'Algo que construí yo empezó a tomar decisiones reales.',start:'Un proyecto de datos que nadie quería liderar.',challenge:'Datos sucios, plazos cortos y mucha incertidumbre.',did:'Iteré versión tras versión hasta que el modelo llegó a producción.',took:'La curiosidad abre la puerta; la perseverancia la cruza.'},
+ {s:'vid',y:2022,title:'Hablar en público',line:'Me daba pánico. Por eso me apunté.',start:'Me propusieron presentar un proyecto ante 200 personas.',challenge:'El miedo escénico.',did:'Ensayé doce veces y grabé cada ensayo.',took:'Lo que te asusta te señala por dónde crecer.'},
+ {s:'dep',y:2023,title:'Volver a competir',line:'Cuatro años después de la lesión, otra vez en la línea de salida.',start:'Había vuelto a entrenar sin decírselo a nadie.',challenge:'Mi cabeza todavía recordaba la caída.',did:'Una competición pequeña para empezar. Luego otra. Luego otra.',took:'Volver también es llegar.'},
+ {s:'est',y:2025,title:'Ahora',line:'Aprendiendo lo que todavía no sé. Como siempre.',start:'Una nueva etapa de estudio e investigación.',challenge:'Todo lo que está por venir.',did:'Seguir haciendo preguntas.',took:'La hélice sigue subiendo.'},
+];
+const N = M.length;
+const $ = s => document.querySelector(s);
+const pad = n => String(n).padStart(2,'0');
+
+/* ---------- placeholder "photos": generated per chapter ---------- */
+function cardTexture(m, i){
+  const W=640, H=800, c=document.createElement('canvas'); c.width=W; c.height=H;
+  const x=c.getContext('2d'), S=SEC[m.s];
+  const g=x.createLinearGradient(0,0,W*.4,H); g.addColorStop(0,`rgb(${S.a})`); g.addColorStop(1,`rgb(${S.b})`);
+  x.fillStyle=g; x.fillRect(0,0,W,H);
+  // soft light
+  const r=x.createRadialGradient(W*.75,H*.2,0,W*.75,H*.2,W*.9); r.addColorStop(0,'rgba(255,240,220,.28)'); r.addColorStop(1,'rgba(255,240,220,0)');
+  x.fillStyle=r; x.fillRect(0,0,W,H);
+  // a motif per area
+  x.strokeStyle='rgba(236,234,228,.22)'; x.lineWidth=1.5;
+  if(m.s==='dep'){ for(let k=0;k<7;k++){ x.beginPath(); x.ellipse(W*.5,H*.42,90+k*34,60+k*22,0,0,Math.PI*2); x.stroke(); } }
+  if(m.s==='est'){ for(let k=0;k<14;k++){ x.beginPath(); x.moveTo(60,120+k*34); x.lineTo(W-60,120+k*34); x.stroke(); } x.beginPath(); x.arc(W*.62,H*.36,120,0,Math.PI*2); x.stroke(); }
+  if(m.s==='tra'){ for(let k=0;k<6;k++) for(let j=0;j<6;j++){ x.strokeRect(90+k*80,110+j*80,58,58); } }
+  if(m.s==='vid'){ x.beginPath(); for(let t=0;t<Math.PI*9;t+=.05){ const rr=6+t*9; x.lineTo(W*.5+Math.cos(t)*rr, H*.4+Math.sin(t)*rr); } x.stroke(); }
+  // grain
+  const id=x.getImageData(0,0,W,H), d=id.data;
+  for(let k=0;k<d.length;k+=4){ const n=(Math.random()-.5)*22; d[k]+=n; d[k+1]+=n; d[k+2]+=n; }
+  x.putImageData(id,0,0);
+  // type
+  x.fillStyle='rgba(236,234,228,.9)'; x.font='500 20px "Geist Mono", monospace';
+  x.fillText(`${pad(i+1)} — ${S.n.toUpperCase()}`, 44, 64);
+  x.textAlign='right'; x.fillStyle='rgba(236,234,228,.5)'; x.fillText('+ TU FOTO', W-44, 64); x.textAlign='left';
+  x.fillStyle='rgba(236,234,228,.95)'; x.font='italic 200px "Instrument Serif", Georgia, serif';
+  x.fillText(m.y, 36, H-52);
+  const tex=new THREE.CanvasTexture(c); tex.anisotropy=4; return tex;
+}
+
+/* ---------- three.js scene ---------- */
+const canvas=$('#gl');
+const renderer=new THREE.WebGLRenderer({canvas, antialias:true, alpha:false});
+renderer.setClearColor(0x0A0B0D,1);
+const scene=new THREE.Scene(); scene.fog=new THREE.Fog(0x0A0B0D, 5, 13);
+const camera=new THREE.PerspectiveCamera(34,1,.1,50); camera.position.set(0,.15,6.2);
+const group=new THREE.Group(); scene.add(group);
+
+const vert=`uniform float uVel; varying vec2 vUv;
+void main(){ vUv=uv; vec3 p=position; p.z += sin(uv.x*3.14159)*uVel*.9; p.x += sin(uv.y*3.14159)*uVel*.12;
+gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`;
+const frag=`uniform sampler2D uTex; uniform float uAlpha,uGray,uVel,uHover; varying vec2 vUv;
+float rbox(vec2 p, vec2 b, float r){ vec2 q=abs(p)-b+r; return length(max(q,0.))+min(max(q.x,q.y),0.)-r; }
+void main(){
+  vec2 uv=vUv; uv=(uv-.5)*(1.-uHover*.04)+.5;
+  float sh=clamp(uVel,-1.,1.)*.012;
+  vec3 c=vec3(texture2D(uTex,uv+vec2(sh,0)).r, texture2D(uTex,uv).g, texture2D(uTex,uv-vec2(sh,0)).b);
+  float l=dot(c,vec3(.299,.587,.114)); c=mix(c,vec3(l)*.75,uGray);
+  float d=rbox((vUv-.5)*vec2(0.8,1.), vec2(.4,.5), .018);
+  float a=1.-smoothstep(-.002,.002,d);
+  gl_FragColor=vec4(c,a*uAlpha);
+}`;
+const geo=new THREE.PlaneGeometry(1.6,2,24,24);
+const cards=M.map((m,i)=>{
+  const mat=new THREE.ShaderMaterial({vertexShader:vert, fragmentShader:frag, transparent:true, depthWrite:false,
+    uniforms:{uTex:{value:null},uAlpha:{value:0},uGray:{value:1},uVel:{value:0},uHover:{value:0}}});
+  const mesh=new THREE.Mesh(geo,mat); mesh.userData.i=i; group.add(mesh); return mesh;
+});
+
+// drifting dust
+const PN=500, pg=new THREE.BufferGeometry(), pp=new Float32Array(PN*3);
+for(let i=0;i<PN;i++){ pp[i*3]=(Math.random()-.5)*14; pp[i*3+1]=(Math.random()-.5)*9; pp[i*3+2]=(Math.random()-.5)*10-2; }
+pg.setAttribute('position',new THREE.BufferAttribute(pp,3));
+const dust=new THREE.Points(pg,new THREE.PointsMaterial({color:0xECEAE4,size:.018,transparent:true,opacity:.35,depthWrite:false}));
+scene.add(dust);
+
+// a faint helix thread linking the chapters
+const thread=new THREE.Line(new THREE.BufferGeometry(), new THREE.LineBasicMaterial({color:0xECEAE4,transparent:true,opacity:.14}));
+group.add(thread);
+
+/* ---------- state ---------- */
+let cur=-1.2, target=-1, vel=0, active=-9, filter=null, panelOpen=false, hovered=-1;
+let offX=0, snapT=null;
+const ANG=.62, R=3.1, STEP=.62;
+function place(d){ // d = chapter index minus current position
+  const a=d*ANG; return {x:Math.sin(a)*R, y:d*STEP, z:Math.cos(a)*R-R, ry:a};
+}
+
+function resize(){
+  const w=innerWidth, h=innerHeight, dpr=Math.min(devicePixelRatio||1,2);
+  renderer.setPixelRatio(dpr); renderer.setSize(w,h,false);
+  camera.aspect=w/h; camera.position.z = w<640 ? 7.6 : 6.2; camera.updateProjectionMatrix();
+}
+addEventListener('resize',resize); resize();
+
+/* ---------- HUD ---------- */
+const idx=$('#index'), ruler=$('#ruler'), filters=$('#filters');
+idx.innerHTML=M.map((m,i)=>`<button type="button" data-go="${i}" style="--c:${SEC[m.s].c}"><span class="n">${pad(i+1)}</span><span>${m.title}</span></button>`).join('');
+ruler.innerHTML=M.map((m,i)=>`<span data-go="${i}" style="--c:${SEC[m.s].c}" title="${m.title}"></span>`).join('');
+filters.innerHTML=`<button type="button" data-f="" aria-pressed="true">Todo</button>`+Object.entries(SEC).map(([k,v])=>`<button type="button" data-f="${k}" aria-pressed="false" style="--c:${v.c}"><i></i>${v.n}</button>`).join('');
+$('#count').innerHTML=`<b>00</b> / ${N}`;
+
+function setActive(a){
+  if(a===active) return; active=a;
+  const cap=$('#caption');
+  idx.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',i===a));
+  ruler.querySelectorAll('span').forEach((s,i)=>s.classList.toggle('on',i===a));
+  $('#count').innerHTML=`<b>${a>=0&&a<N?pad(a+1):a<0?'00':pad(N)}</b> / ${N}`;
+  cap.classList.add('swap');
+  setTimeout(()=>{
+    if(a>=0 && a<N){ const m=M[a], S=SEC[m.s];
+      cap.style.setProperty('--c',S.c);
+      cap.innerHTML=`<div class="meta mono"><i></i><span>${S.n}</span><span>${m.y}</span>${m.reto?'<span class="tag" style="--c:'+S.c+'">Reto superado</span>':''}</div>
+        <h2>${m.title}</h2><button type="button" class="open mono" data-story="${a}">Leer la historia</button>`;
+    } else cap.innerHTML='';
+    cap.classList.remove('swap');
+  }, reduce?0:220);
+  if(panelOpen && a>=0 && a<N) renderPanel(a);
+}
+function applyFilter(f){
+  filter=f||null;
+  filters.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed', String((b.dataset.f||null)===filter)));
+  idx.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('off', !!filter && M[i].s!==filter));
+  ruler.querySelectorAll('span').forEach((s,i)=>s.classList.toggle('off', !!filter && M[i].s!==filter));
+  if(filter){ const first=M.findIndex((m,i)=>m.s===filter && i>=Math.round(target)); go(first>=0?first:M.findIndex(m=>m.s===filter)); }
+}
+function go(i){ target=Math.max(-1,Math.min(N,i)); }
+
+/* ---------- story panel ---------- */
+const panel=$('#panel');
+function renderPanel(i){
+  const m=M[i], S=SEC[m.s], prev=M[i-1], next=M[i+1];
+  panel.style.setProperty('--c',S.c);
+  panel.innerHTML=`<div class="inner">
+    <div class="head mono"><span>Capítulo ${pad(i+1)} / ${N}</span><button type="button" data-close>Cerrar ✕</button></div>
+    <div class="meta mono"><i></i><span>${S.n}</span><span>${m.y}</span>${m.reto?'<span class="tag">Reto superado</span>':''}</div>
+    <h1>${m.title}</h1>
+    <p class="lede">${m.line}</p>
+    <div class="beat"><h3 class="mono">El comienzo</h3><p>${m.start}</p></div>
+    <div class="beat"><h3 class="mono">El reto</h3><p>${m.challenge}</p></div>
+    <div class="beat"><h3 class="mono">Lo que hice</h3><p>${m.did}</p></div>
+    <div class="beat"><h3 class="mono">Lo que me llevé</h3><p class="took">${m.took}</p></div>
+    <div class="pnav mono">${prev?`<button type="button" data-go="${i-1}">← ${prev.title}</button>`:'<span></span>'}${next?`<button type="button" data-go="${i+1}">${next.title} →</button>`:`<button type="button" data-go="${N}">Contacto →</button>`}</div>
+  </div>`;
+  panel.scrollTop=0;
+}
+function openPanel(i){ go(i); renderPanel(i); panelOpen=true; panel.classList.add('open'); panel.setAttribute('aria-hidden','false'); setTimeout(()=>panel.querySelector('[data-close]')?.focus(),50); }
+function closePanel(){ panelOpen=false; panel.classList.remove('open'); panel.setAttribute('aria-hidden','true'); }
+
+/* ---------- list view ---------- */
+const list=$('#list');
+function openList(){
+  list.innerHTML=`<div class="inner"><div class="head mono"><span>${N} capítulos</span><button type="button" data-close>Volver a la trayectoria ✕</button></div>
+    <h1>Todo, en orden.</h1>`+M.map((m,i)=>`<button type="button" class="row" data-story="${i}" style="--c:${SEC[m.s].c}"><span class="mono">${pad(i+1)}</span><span class="t">${m.title}</span><span class="mono"><i></i>${SEC[m.s].n}</span><span class="mono">${m.y}</span></button>`).join('')+`</div>`;
+  list.hidden=false; requestAnimationFrame(()=>list.classList.add('open'));
+  $('#navList').setAttribute('aria-current','true'); $('#navTray').setAttribute('aria-current','false');
+}
+function closeList(){ list.classList.remove('open'); list.hidden=true; $('#navList').setAttribute('aria-current','false'); $('#navTray').setAttribute('aria-current','true'); }
+
+/* ---------- input ---------- */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-go],[data-story],[data-close],[data-f]'); if(!t) return;
+  if(t.dataset.close!==undefined){ closePanel(); closeList(); return; }
+  if(t.dataset.f!==undefined){ applyFilter(t.dataset.f); return; }
+  if(t.dataset.story!==undefined){ closeList(); openPanel(+t.dataset.story); return; }
+  const g=+t.dataset.go; if(g>=N) closePanel(); go(g);
+});
+$('#navList').onclick=openList;
+$('#navTray').onclick=()=>{ closeList(); closePanel(); };
+$('#navContact').onclick=()=>{ closeList(); closePanel(); go(N); };
+$('#copy').onclick=e=>{ const b=e.currentTarget; (navigator.clipboard?navigator.clipboard.writeText('hola@claudia.example'):Promise.reject()).then(()=>b.textContent='Copiado',()=>b.textContent='Selecciónalo'); };
+
+function nudge(d){ target=Math.max(-1,Math.min(N,target+d)); clearTimeout(snapT); snapT=setTimeout(()=>{ target=Math.round(target); },160); }
+addEventListener('wheel',e=>{
+  if(!list.hidden || (panelOpen && panel.contains(e.target))) return;
+  e.preventDefault(); const k=e.deltaMode===1?40:1; nudge((Math.abs(e.deltaY)>Math.abs(e.deltaX)?e.deltaY:e.deltaX)*k*.0018);
+},{passive:false});
+let ty=null, down=null;
+canvas.addEventListener('pointerdown',e=>{ down={x:e.clientX,y:e.clientY}; ty=e.clientY; });
+canvas.addEventListener('pointermove',e=>{
+  if(ty!==null && e.pointerType!=='mouse'){ nudge((ty-e.clientY)*.006); ty=e.clientY; }
+  pointer.x=e.clientX/innerWidth*2-1; pointer.y=-(e.clientY/innerHeight)*2+1; pointer.moved=true;
+});
+canvas.addEventListener('pointerup',e=>{
+  ty=null; if(!down) return; const moved=Math.hypot(e.clientX-down.x,e.clientY-down.y); down=null;
+  if(moved>6) return;
+  if(hovered>=0){ hovered===Math.round(cur) ? openPanel(hovered) : go(hovered); }
+  else if(panelOpen) closePanel();
+});
+addEventListener('keydown',e=>{
+  if(e.key==='Escape'){ closePanel(); closeList(); return; }
+  if(!list.hidden) return;
+  if(['ArrowDown','ArrowRight','PageDown'].includes(e.key)){ e.preventDefault(); go(Math.round(target)+1); }
+  if(['ArrowUp','ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); go(Math.round(target)-1); }
+  if(e.key==='Enter' && document.activeElement===document.body && active>=0 && active<N) openPanel(active);
+});
+
+/* ---------- loop ---------- */
+const ray=new THREE.Raycaster(), pointer={x:9,y:9,moved:false};
+const tmp=new THREE.Vector3();
+let t0=performance.now();
+function frame(now){
+  const dt=Math.min((now-t0)/16.67,3); t0=now;
+  const prev=cur; cur+=(target-cur)*(reduce?1:1-Math.pow(1-.085,dt));
+  vel+=((cur-prev)*6-vel)*.2;
+  setActive(Math.round(cur));
+
+  // shift the helix left when the story panel is open (desktop)
+  const wantX = panelOpen && innerWidth>820 ? -Math.min(2.2, innerWidth/innerHeight*.9) : 0;
+  offX+=(wantX-offX)*.07; group.position.x=offX;
+  group.position.y=-.35;
+
+  cards.forEach((mesh,i)=>{
+    const d=i-cur, p=place(d), u=mesh.material.uniforms;
+    mesh.position.set(p.x,p.y,p.z); mesh.rotation.y=p.ry;
+    const near=Math.abs(d), isA=i===Math.round(cur);
+    let a = near<4.5 ? 1-Math.max(0,(near-2.2)/2.3) : 0;
+    if(filter && M[i].s!==filter) a*=.18;
+    if(panelOpen && !isA) a*=.15;
+    u.uAlpha.value+= (a-u.uAlpha.value)*.12;
+    u.uGray.value += ((isA?0:.85)-u.uGray.value)*.1;
+    u.uVel.value = vel;
+    u.uHover.value += ((i===hovered?1:0)-u.uHover.value)*.15;
+    mesh.renderOrder = Math.round(100-near*10);
+    mesh.visible = u.uAlpha.value>.01;
+    if(!u.uTex.value && near<6) u.uTex.value=cardTexture(M[i],i); // lazy
+  });
+
+  // helix thread through card centres (behind the cards)
+  const pts=[]; for(let d=-4.5; d<=N+1; d+=.08){ const q=place(d-cur); if(Math.abs(d-cur)<5) pts.push(new THREE.Vector3(q.x,q.y-1.15,q.z)); }
+  thread.geometry.setFromPoints(pts);
+
+  // hover
+  hovered=-1;
+  if(pointer.moved){ ray.setFromCamera(pointer,camera);
+    const hit=ray.intersectObjects(cards.filter(c=>c.visible && c.material.uniforms.uAlpha.value>.3))[0];
+    if(hit) hovered=hit.object.userData.i; }
+  canvas.style.cursor = hovered>=0 ? 'pointer' : 'default';
+
+  // gentle camera parallax
+  camera.position.x += ((pointer.moved?pointer.x*.25:0)-camera.position.x)*.04;
+  camera.position.y += ((pointer.moved?pointer.y*.15:0)+.15-camera.position.y)*.04;
+  camera.lookAt(offX*.25,0,0);
+  if(!reduce){ dust.rotation.y+=.0004*dt; dust.position.y=Math.sin(now*.0002)*.15; }
+
+  // intro / outro statements
+  const intro=$('#intro'), outro=$('#outro');
+  const ia=Math.max(0,Math.min(1,-cur-.2)/.6); intro.style.opacity=Math.min(1,ia*1.2); intro.style.visibility=ia>0?'visible':'hidden';
+  const oa=Math.max(0,Math.min(1,(cur-(N-.6))/.5)); outro.style.opacity=oa; outro.style.visibility=oa>0?'visible':'hidden';
+  $('#caption').style.opacity = (cur>-.5 && cur<N-.5 && !panelOpen) ? 1 : 0;
+
+  renderer.render(scene,camera);
+  requestAnimationFrame(frame);
+}
+
+/* ---------- boot ---------- */
+const pctEl=$('#pct'); let pct=0;
+const fontsReady=(document.fonts?document.fonts.ready:Promise.resolve());
+const tick=setInterval(()=>{ pct=Math.min(pct+7+Math.random()*9, 96); pctEl.textContent=Math.round(pct); },60);
+Promise.race([fontsReady, new Promise(r=>setTimeout(r,2500))]).then(()=>{
+  // build textures after fonts so the type renders correctly
+  cards.forEach((c,i)=>{ if(i<4) c.material.uniforms.uTex.value=cardTexture(M[i],i); });
+  clearInterval(tick); pctEl.textContent='100';
+  setTimeout(()=>{ $('#loader').classList.add('done'); target=-1; }, reduce?0:350);
+});
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
