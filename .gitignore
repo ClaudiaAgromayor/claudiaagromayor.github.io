@@ -1,5 +1,5 @@
 node_modules/
 dist/
 # Documentos personales (CVs, cartas, teléfono): nunca al repositorio público
-data/
+/data/
 .DS_Store
