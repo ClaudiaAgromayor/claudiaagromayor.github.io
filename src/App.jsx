@@ -6,12 +6,11 @@ import { AREAS, CHAPTERS, PROFILE } from './data/chapters'
 const N = CHAPTERS.length
 const pad = (n) => String(n).padStart(2, '0')
 const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
-const areaStyle = () => ({})
-// categories in use, in the order of AREAS
-const USED = Object.keys(AREAS).filter((k) => CHAPTERS.some((c) => c.area === k))
+const FIRST = CHAPTERS[0].year, LAST = CHAPTERS[N - 1].year
 
 export default function App() {
   const [active, setActive] = useState(-1)
+  const [progress, setProgress] = useState(0)
   const [story, setStory] = useState(null) // chapter index shown in the side panel
   const [list, setList] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -38,13 +37,19 @@ export default function App() {
 
   const copy = () => navigator.clipboard?.writeText(PROFILE.email).then(() => setCopied(true), () => {})
   const ch = active >= 0 && active < N ? CHAPTERS[active] : null
+  const [first, ...rest] = PROFILE.name.split(' ')
 
   return (
     <>
-      <div className={`stage${story !== null ? ' shift' : ''}`}>
-        <Canvas camera={{ fov: 38, position: [0, 0.6, 4], near: 0.1, far: 40 }} dpr={[1, 2]} gl={{ antialias: true }}>
+      {/* the name sits behind the statue, like a watermark */}
+      <div className={`watermark${active === -1 ? '' : ' hide'}`} aria-hidden="true">
+        <span>{first}</span><span>{rest.join(' ')}</span>
+      </div>
+
+      <div className="stage">
+        <Canvas camera={{ fov: 32, position: [0, 0, 6], near: 0.1, far: 50 }} dpr={[1, 2]} gl={{ antialias: true, alpha: true }}>
           <Suspense fallback={null}>
-            <Experience onActive={setActive} onSelect={openStory} reduced={reduced} />
+            <Experience onActive={setActive} onProgress={setProgress} onSelect={openStory} reduced={reduced} />
           </Suspense>
         </Canvas>
       </div>
@@ -52,66 +57,51 @@ export default function App() {
       <div className="track" style={{ height: `${(N + 2) * 100}vh` }} aria-hidden="true" />
 
       <header className="hud top">
-        <button type="button" className="brand" onClick={() => { setList(false); setStory(null); goTo(-1) }}>
-          <b>{PROFILE.name}</b><span className="mono">{PROFILE.places}</span>
+        <button type="button" className="logo" onClick={() => { setList(false); setStory(null); goTo(-1) }}>
+          {first}<br />{rest.join(' ')}
         </button>
-        <nav className="mono" aria-label="Main">
-          <button type="button" aria-current={!list} onClick={() => { setList(false); setStory(null) }}>Journey</button>
-          <button type="button" aria-current={list} onClick={() => setList(true)}>Index</button>
-          <button type="button" className="talk" onClick={() => { setList(false); setStory(null); goTo(N) }}>Let’s talk</button>
+        <div className={`timeline${active === -1 ? ' hide' : ''}`} aria-hidden="true">
+          <span>{FIRST}</span><i><b style={{ transform: `scaleX(${progress})` }} /></i><span>{LAST}</span>
+        </div>
+        <nav aria-label="Main">
+          <button type="button" onClick={() => setList(true)}>Index</button>
+          <button type="button" onClick={() => { setList(false); setStory(null); goTo(N) }}>Contact</button>
         </nav>
       </header>
 
-      <nav className={`hud index${ch ? '' : ' hide'}`} aria-label="Chapters">
-        {CHAPTERS.map((c, i) => (
-          <button key={i} type="button" style={areaStyle(c.area)} className={i === active ? 'on' : ''} onClick={() => goTo(i)}>
-            <span className="n mono">{c.year}</span><span>{c.title} <em className="mono tag">{AREAS[c.area].name}</em></span>
-          </button>
-        ))}
-      </nav>
-
-      <section className={`statement${active === -1 ? '' : ' hide'}`}>
-        <p className="mono eyebrow">{PROFILE.role}</p>
-        <h1 className="name">Claudia<br />Agromayor</h1>
-        <p className="mono places">{PROFILE.places}</p>
-        <p className="phrase">{PROFILE.intro} <em>{PROFILE.introEm}</em></p>
-        <p className="sub">{PROFILE.sub}</p>
-        <div className="scrollhint mono"><i />Scroll to begin</div>
+      <section className={`intro${active === -1 ? '' : ' hide'}`}>
+        <i className="dash" />
+        <p className="role">{PROFILE.role}</p>
+        <p className="places">{PROFILE.places}</p>
+        <p className="lead">{PROFILE.intro} {PROFILE.introEm} {PROFILE.sub}</p>
+        <button type="button" className="explore" onClick={() => goTo(0)}>Explore</button>
       </section>
 
-      <section className={`statement outro${active === N ? '' : ' hide'}`}>
-        <p className="mono eyebrow">Chapter {pad(N + 1)}</p>
-        <h1>The next chapter<br /><em>is still unwritten.</em></h1>
-        <p className="sub">{PROFILE.next}</p>
-        <div className="contact mono">
-          <span className="mail">{PROFILE.email}</span>
-          <button type="button" onClick={copy}>{copied ? 'Copied' : 'Copy'}</button>
-          <a href={PROFILE.linkedin} target="_blank" rel="noreferrer">LinkedIn ↗</a>
-          <a href={PROFILE.github} target="_blank" rel="noreferrer">GitHub ↗</a>
-        </div>
-      </section>
-
-      <div className={`hud caption${ch && story === null ? '' : ' hide'}`} aria-live="polite">
+      <div className={`hud chapter${ch && story === null ? '' : ' hide'}`} aria-live="polite">
         {ch && (
-          <div key={active} className="fade" style={areaStyle(ch.area)}>
-            {ch.img && <figure className="snap"><img src={ch.img} alt={ch.title} /></figure>}
-            <div className="meta mono"><span className="area">{AREAS[ch.area].name}</span><span>{ch.date}</span><span>{ch.place}</span></div>
+          <div key={active} className="rise">
+            <p className="kicker">{AREAS[ch.area].name} · {ch.date}</p>
             <h2>{ch.title}</h2>
-            <p>{ch.line}</p>
-            <button type="button" className="open mono" onClick={() => openStory(active)}>Read the story</button>
+            <button type="button" className="more" onClick={() => openStory(active)}>Read the story</button>
           </div>
         )}
       </div>
 
-      <div className="hud bottom mono">
-        <div className="legend" aria-label="Categories">
-          {USED.map((k) => <span key={k} className={ch && ch.area === k ? 'on' : ''}>{AREAS[k].name}</span>)}
-        </div>
-        <div className="ruler" aria-hidden="true">
-          {CHAPTERS.map((c, i) => <span key={i} style={areaStyle(c.area)} className={i === active ? 'on' : i < active ? 'past' : ''} onClick={() => goTo(i)} />)}
-        </div>
-        <div className="count"><b>{ch ? pad(active + 1) : active >= N ? pad(N) : '00'}</b> / {pad(N)}</div>
+      <div className={`hud yearmark${ch ? '' : ' hide'}`} aria-hidden="true">
+        {ch && <div key={active} className="rise"><small>{AREAS[ch.area].name}</small><b>{ch.year}</b></div>}
       </div>
+
+      <section className={`outro${active === N ? '' : ' hide'}`}>
+        <p className="kicker">What comes next</p>
+        <h2>The next chapter is still unwritten.</h2>
+        <p className="lead">{PROFILE.next}</p>
+        <div className="contact">
+          <span className="mail">{PROFILE.email}</span>
+          <button type="button" onClick={copy}>{copied ? 'Copied' : 'Copy'}</button>
+          <a href={PROFILE.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
+          <a href={PROFILE.github} target="_blank" rel="noreferrer">GitHub</a>
+        </div>
+      </section>
 
       <aside className={`panel${story !== null ? ' open' : ''}`} aria-hidden={story === null} aria-label="Chapter story">
         {story !== null && <Story i={story} onClose={() => setStory(null)} onGo={openStory} onEnd={() => { setStory(null); goTo(N) }} />}
@@ -120,12 +110,10 @@ export default function App() {
       {list && (
         <section className="list" aria-label="All chapters">
           <div className="inner">
-            <div className="head mono"><span>{N} chapters</span><button type="button" onClick={() => setList(false)}>Back to the journey ✕</button></div>
-            <h1>Everything, in order.</h1>
+            <div className="head"><span>{N} chapters</span><button type="button" onClick={() => setList(false)}>Close</button></div>
             {CHAPTERS.map((c, i) => (
-              <button key={i} type="button" className="row" style={areaStyle(c.area)} onClick={() => openStory(i)}>
-                <span className="mono">{c.year}</span><span className="t">{c.title}</span>
-                <span className="mono area">{AREAS[c.area].name}</span><span className="mono">{c.place}</span>
+              <button key={i} type="button" className="row" onClick={() => openStory(i)}>
+                <span className="y">{c.year}</span><span className="t">{c.title}</span><span className="a">{AREAS[c.area].name}</span>
               </button>
             ))}
           </div>
@@ -136,22 +124,24 @@ export default function App() {
 }
 
 function Story({ i, onClose, onGo, onEnd }) {
-  const c = CHAPTERS[i], a = AREAS[c.area], prev = CHAPTERS[i - 1], next = CHAPTERS[i + 1]
+  const c = CHAPTERS[i], prev = CHAPTERS[i - 1], next = CHAPTERS[i + 1]
   const ref = useRef(null)
   useEffect(() => { ref.current?.scrollTo(0, 0) }, [i])
   return (
-    <div className="inner" ref={ref} style={{ '--c': a.color }}>
-      <div className="head mono"><span>Chapter {pad(i + 1)} / {pad(N)}</span><button type="button" onClick={onClose}>Close ✕</button></div>
-      <div className="meta mono"><i />{a.name}<span>{c.date}</span><span>{c.place}</span></div>
+    <div className="inner" ref={ref}>
+      <div className="head"><span>{pad(i + 1)} / {pad(N)}</span><button type="button" onClick={onClose}>Close</button></div>
+      <p className="kicker">{AREAS[c.area].name} · {c.date} · {c.place}</p>
       <h1>{c.title}</h1>
       <p className="lede">{c.line}</p>
-      {c.img && <img className="photo" src={c.img} alt={c.title} loading="lazy" />}
-      <div className="beat"><h3 className="mono">What I did</h3><ul>{c.facts.map((f, k) => <li key={k}>{f}</li>)}</ul></div>
-      <div className="beat"><h3 className="mono">What I took</h3><p className="took">{c.took}</p></div>
-      {c.link && <a className="src mono" href={c.link} target="_blank" rel="noreferrer">Read the news (Spanish) ↗</a>}
-      <div className="pnav mono">
+      {[c.img, ...(c.photos || [])].filter(Boolean).map((src, k) => <img key={k} className="photo" src={src} alt="" loading="lazy" />)}
+      <h3>What I did</h3>
+      <ul>{c.facts.map((f, k) => <li key={k}>{f}</li>)}</ul>
+      <h3>What I took</h3>
+      <p className="took">{c.took}</p>
+      {c.link && <a className="src" href={c.link} target="_blank" rel="noreferrer">Read the news (Spanish)</a>}
+      <div className="pnav">
         {prev ? <button type="button" onClick={() => onGo(i - 1)}>← {prev.title}</button> : <span />}
-        {next ? <button type="button" onClick={() => onGo(i + 1)}>{next.title} →</button> : <button type="button" onClick={onEnd}>Let’s talk →</button>}
+        {next ? <button type="button" onClick={() => onGo(i + 1)}>{next.title} →</button> : <button type="button" onClick={onEnd}>Contact →</button>}
       </div>
     </div>
   )

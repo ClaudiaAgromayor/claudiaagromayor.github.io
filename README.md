@@ -1,6 +1,6 @@
 # Claudia Agromayor — web personal
 
-A stone figure grows while a graphite ribbon spirals around it, over an animated beige shader gradient that shifts tint at every chapter. Site in English.
+A pale statue on a dark rock; the camera circles her and the photos of each chapter float around, in the spirit of The Year of Greta. Site in English.
 React + Vite + React Three Fiber + drei. Se publica sola en https://claudiaagromayor.github.io con cada `git push` a `main`.
 
 ## Editar el contenido

@@ -4,7 +4,8 @@
 //  · area: 'sport' | 'adventure' | 'edu' | 'research' | 'industry'  (see AREAS)
 //  · facts: what you did (short lines, with numbers)
 //  · took: what you took from it — DRAFT, rewrite it in your own voice
-//  · img: path inside /public (optional)
+//  · img: main photo, path inside /public (optional)
+//  · photos: extra photos that float around it, e.g. ['/img/aws-1.jpg', '/img/aws-2.jpg'] (optional)
 // ─────────────────────────────────────────────────────────────
 
 // The categories, in the order they are listed on the site.
@@ -154,5 +155,5 @@ export const PROFILE = {
 }
 
 // Once you have a 3D model, drop it in /public and set e.g. '/avatar.glb'.
-// While null, the site uses the abstract pearl figure.
+// While null, the site uses the abstract statue.
 export const AVATAR_URL = null
