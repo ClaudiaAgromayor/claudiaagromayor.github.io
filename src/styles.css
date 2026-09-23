@@ -10,13 +10,14 @@
   --ease: cubic-bezier(.7, 0, .2, 1);
 }
 *, *::before, *::after { box-sizing: border-box }
-html, body, #root { height: 100%; margin: 0; background: var(--bg); color: var(--ink); overflow: hidden }
+html, body { margin: 0; background: var(--bg); color: var(--ink); overflow-x: hidden }
 body { font-family: var(--sans); font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased }
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer }
 a { color: inherit }
 button:focus-visible, a:focus-visible { outline: 1px solid var(--ink); outline-offset: 4px }
 .mono { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase }
 
+.track { width: 100% }
 .stage { position: fixed; inset: 0; transition: transform 1s var(--ease) }
 .stage.shift { transform: translateX(-18vw) }
 
@@ -49,6 +50,9 @@ button:focus-visible, a:focus-visible { outline: 1px solid var(--ink); outline-o
 .statement .eyebrow { color: var(--mute); margin: 0 0 18px }
 .statement h1 { font-weight: 500; font-size: clamp(48px, 8.6vw, 148px); line-height: .9; letter-spacing: -.055em; margin: 0 0 24px; max-width: 12ch }
 .statement h1 em { font-family: var(--serif); font-weight: 400; letter-spacing: -.02em; color: var(--mute) }
+.statement h1.name { font-size: clamp(64px, 13vw, 230px); line-height: .82; letter-spacing: -.065em; margin: 0 0 22px; max-width: none }
+.statement .phrase { font-family: var(--serif); font-size: clamp(26px, 3vw, 46px); line-height: 1.05; margin: 0 0 14px }
+.statement .phrase em { color: var(--mute) }
 .statement .sub { font-size: clamp(16px, 1.4vw, 19px); color: var(--mute); margin: 0; max-width: 40ch }
 .scrollhint { display: flex; align-items: center; gap: 12px; margin-top: 28px; color: var(--ink) }
 .scrollhint i { width: 40px; height: 1px; background: var(--ink); transform-origin: left; animation: hint 2s var(--ease) infinite }
@@ -83,7 +87,7 @@ button:focus-visible, a:focus-visible { outline: 1px solid var(--ink); outline-o
 
 .panel { position: fixed; z-index: 6; top: 10px; right: 10px; bottom: 10px; width: min(540px, calc(100% - 20px)); background: var(--glass); backdrop-filter: blur(24px) saturate(1.2); -webkit-backdrop-filter: blur(24px) saturate(1.2); border: 1px solid rgba(255, 255, 255, .6); border-radius: 18px; box-shadow: 0 30px 80px rgba(30, 40, 50, .18); transform: translateX(calc(100% + 20px)); transition: transform .9s var(--ease) }
 .panel.open { transform: none }
-.panel .inner { height: 100%; overflow-y: auto; padding: 22px clamp(20px, 4vw, 40px) 56px }
+.panel .inner { height: 100%; overflow-y: auto; overscroll-behavior: contain; padding: 22px clamp(20px, 4vw, 40px) 56px }
 .head { display: flex; justify-content: space-between; gap: 12px; color: var(--mute); margin-bottom: 8vh }
 .head button:hover { color: var(--ink) }
 .panel h1 { font-weight: 500; font-size: clamp(40px, 4.6vw, 60px); line-height: .95; letter-spacing: -.045em; margin: 0 0 16px; text-wrap: balance }
@@ -99,7 +103,7 @@ button:focus-visible, a:focus-visible { outline: 1px solid var(--ink); outline-o
 .pnav button:last-child { text-align: right }
 .pnav button:hover { color: var(--ink) }
 
-.list { position: fixed; inset: 0; z-index: 7; background: var(--bg); overflow-y: auto; padding-inline: var(--gut); animation: fade .5s var(--ease) both }
+.list { position: fixed; inset: 0; z-index: 7; overscroll-behavior: contain; background: var(--bg); overflow-y: auto; padding-inline: var(--gut); animation: fade .5s var(--ease) both }
 .list .inner { max-width: 1100px; margin: 0 auto; padding-block: calc(22px + env(safe-area-inset-top, 0px)) 80px }
 .list h1 { font-weight: 500; font-size: clamp(48px, 8vw, 120px); line-height: .9; letter-spacing: -.055em; margin: 0 0 48px }
 .row { display: grid; grid-template-columns: 60px 1fr 140px 180px; gap: 18px; align-items: baseline; width: 100%; text-align: left; padding: 18px 0; border-top: 1px solid var(--line); transition: padding .4s var(--ease) }

@@ -1,7 +1,6 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { ScrollControls } from '@react-three/drei'
-import Experience, { cToOffset } from './Experience'
+import Experience, { cToOffset, maxScroll } from './Experience'
 import { AREAS, CHAPTERS, PROFILE } from './data/chapters'
 
 const N = CHAPTERS.length
@@ -10,17 +9,13 @@ const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduce
 const areaStyle = (a) => ({ '--c': AREAS[a].color })
 
 export default function App() {
-  const elRef = useRef(null)
   const [active, setActive] = useState(-1)
   const [story, setStory] = useState(null) // chapter index shown in the side panel
   const [list, setList] = useState(false)
   const [copied, setCopied] = useState(false)
 
   const goTo = useCallback((c) => {
-    const el = elRef.current
-    if (!el) return
-    const max = el.scrollHeight - el.clientHeight
-    el.scrollTo({ top: cToOffset(Math.max(-1, Math.min(N, c))) * max, behavior: reduced ? 'auto' : 'smooth' })
+    scrollTo({ top: cToOffset(Math.max(-1, Math.min(N, c))) * maxScroll(), behavior: reduced ? 'auto' : 'smooth' })
   }, [])
   const openStory = useCallback((i) => { setList(false); setStory(i); goTo(i) }, [goTo])
 
@@ -47,12 +42,12 @@ export default function App() {
       <div className={`stage${story !== null ? ' shift' : ''}`}>
         <Canvas camera={{ fov: 38, position: [0, 0.6, 4], near: 0.1, far: 40 }} dpr={[1, 2]} gl={{ antialias: true }}>
           <Suspense fallback={null}>
-            <ScrollControls pages={N + 2} damping={0.25}>
-              <Experience elRef={elRef} onActive={setActive} onSelect={openStory} reduced={reduced} />
-            </ScrollControls>
+            <Experience onActive={setActive} onSelect={openStory} reduced={reduced} />
           </Suspense>
         </Canvas>
       </div>
+      {/* the page's real height: one screen per chapter, plus intro and outro */}
+      <div className="track" style={{ height: `${(N + 2) * 100}vh` }} aria-hidden="true" />
 
       <header className="hud top">
         <button type="button" className="brand" onClick={() => { setList(false); setStory(null); goTo(-1) }}>
@@ -74,8 +69,9 @@ export default function App() {
       </nav>
 
       <section className={`statement${active === -1 ? '' : ' hide'}`}>
-        <p className="mono eyebrow">{PROFILE.name} — {PROFILE.role}</p>
-        <h1>{PROFILE.intro}<br /><em>{PROFILE.introEm}</em></h1>
+        <p className="mono eyebrow">{PROFILE.role} · Paris · Madrid · Montréal</p>
+        <h1 className="name">Claudia<br />Agromayor</h1>
+        <p className="phrase">{PROFILE.intro} <em>{PROFILE.introEm}</em></p>
         <p className="sub">{PROFILE.sub}</p>
         <div className="scrollhint mono"><i />Scroll to begin</div>
       </section>

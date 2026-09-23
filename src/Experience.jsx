@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { useScroll, Line, Sparkles, useGLTF, Environment, Lightformer, ContactShadows, Billboard } from '@react-three/drei'
+import { Line, Sparkles, useGLTF, Environment, Lightformer, Billboard } from '@react-three/drei'
 import { MarchingCubes } from 'three/examples/jsm/objects/MarchingCubes.js'
 import * as THREE from 'three'
 import { CHAPTERS, AREAS, AVATAR_URL } from './data/chapters'
@@ -15,6 +15,7 @@ export const BG = '#DDE3E6'
 // Scroll position → "chapter coordinate" c: -1 = intro, 0..N-1 = chapters, N = outro
 export const offsetToC = (o) => o * (N + 1) - 1
 export const cToOffset = (c) => (c + 1) / (N + 1)
+export const maxScroll = () => document.documentElement.scrollHeight - innerHeight
 
 // The life line: a helix that widens and rises as time goes on
 function helix(t, v = new THREE.Vector3()) {
@@ -96,6 +97,15 @@ function Avatar({ url }) {
   return <primitive object={obj} />
 }
 
+// soft blob shadow under the figure
+const shadowTex = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 128
+  const x = c.getContext('2d'), g = x.createRadialGradient(64, 64, 0, 64, 64, 64)
+  g.addColorStop(0, 'rgba(40,48,58,.9)'); g.addColorStop(0.35, 'rgba(40,48,58,.35)'); g.addColorStop(1, 'rgba(40,48,58,0)')
+  x.fillStyle = g; x.fillRect(0, 0, 128, 128)
+  return new THREE.CanvasTexture(c)
+})()
+
 /* A slow, fluid landscape with faint contour lines — the ground the story stands on */
 const groundMat = new THREE.ShaderMaterial({
   transparent: true, depthWrite: false,
@@ -123,18 +133,19 @@ const groundMat = new THREE.ShaderMaterial({
     }`,
 })
 
-export default function Experience({ elRef, onActive, onSelect, reduced }) {
-  const scroll = useScroll()
+export default function Experience({ onActive, onSelect, reduced }) {
+  const offset = useRef(0)
   const figure = useRef()
   const head = useRef()
   const nodes = useRef([])
   const rings = useRef([])
   const look = useRef(new THREE.Vector3(0, 0, 0))
+  const shift = useRef(1)
   const lastActive = useRef(null)
   const tmp = useMemo(() => new THREE.Vector3(), [])
 
   const tubeGeo = useMemo(() => {
-    const g = new THREE.TubeGeometry(new HelixCurve(), SEG, 0.02, RAD, false)
+    const g = new THREE.TubeGeometry(new HelixCurve(), SEG, 0.015, RAD, false)
     const col = new Float32Array(g.attributes.position.count * 3)
     for (let j = 0; j <= SEG; j++) {
       const c = colorAt(j / SEG)
@@ -147,32 +158,34 @@ export default function Experience({ elRef, onActive, onSelect, reduced }) {
   const ghost = useMemo(() => Array.from({ length: 500 }, (_, k) => helix(k / 499, new THREE.Vector3())), [])
   const nodePos = useMemo(() => CHAPTERS.map((_, i) => helix(chapterT(i), new THREE.Vector3())), [])
 
-  // Expose the scroll container, and settle on a chapter once scrolling stops —
-  // always in the direction the visitor was moving, so a small scroll never bounces back.
+  // Settle on a chapter once scrolling stops — always in the direction the
+  // visitor was moving, so a small scroll never bounces back.
   useEffect(() => {
-    const el = scroll.el
-    elRef.current = el
-    let timer, last = el.scrollTop, dir = 0
+    let timer, last = scrollY, dir = 0
     const onScroll = () => {
-      const d = el.scrollTop - last
+      const d = scrollY - last
       if (Math.abs(d) > 0.5) dir = Math.sign(d)
-      last = el.scrollTop
+      last = scrollY
       clearTimeout(timer)
       timer = setTimeout(() => {
-        const max = el.scrollHeight - el.clientHeight
+        const max = maxScroll()
         if (max <= 0) return
-        const c = offsetToC(el.scrollTop / max)
+        const c = offsetToC(scrollY / max)
         const to = dir > 0 ? Math.ceil(c - 0.08) : dir < 0 ? Math.floor(c + 0.08) : Math.round(c)
         const top = cToOffset(THREE.MathUtils.clamp(to, -1, N)) * max
-        if (Math.abs(top - el.scrollTop) > 2) el.scrollTo({ top, behavior: reduced ? 'auto' : 'smooth' })
+        if (Math.abs(top - scrollY) > 2) scrollTo({ top, behavior: reduced ? 'auto' : 'smooth' })
       }, 260)
     }
-    el.addEventListener('scroll', onScroll, { passive: true })
-    return () => { clearTimeout(timer); el.removeEventListener('scroll', onScroll) }
-  }, [scroll.el, elRef, reduced])
+    addEventListener('scroll', onScroll, { passive: true })
+    return () => { clearTimeout(timer); removeEventListener('scroll', onScroll) }
+  }, [reduced])
 
   useFrame((state, dt) => {
-    const c = offsetToC(scroll.offset)
+    // native page scroll, eased
+    const max = maxScroll()
+    const target = max > 0 ? THREE.MathUtils.clamp(scrollY / max, 0, 1) : 0
+    offset.current = reduced ? target : THREE.MathUtils.damp(offset.current, target, 5, dt)
+    const c = offsetToC(offset.current)
     const g = THREE.MathUtils.clamp((c + 1) / (N + 1), 0, 1)
     const t = cToT(c)
     const time = state.clock.elapsedTime
@@ -204,13 +217,19 @@ export default function Experience({ elRef, onActive, onSelect, reduced }) {
     })
 
     // camera orbits so the current point of the line faces us
-    const ang = Math.atan2(tmp.z, tmp.x) + 0.6
-    const dist = 3.7 + 2.4 * g
+    const ang = Math.atan2(tmp.z, tmp.x) + 0.45
+    const dist = 4.6 + 2.8 * g
     const want = new THREE.Vector3(Math.cos(ang) * dist, tmp.y * 0.55 + 0.55 + 0.35 * g, Math.sin(ang) * dist)
     const k = reduced ? 1 : 1 - Math.exp(-3 * dt)
     state.camera.position.lerp(want, k)
     look.current.lerp(new THREE.Vector3(tmp.x * 0.3, FLOOR + 0.72 * s + tmp.y * 0.25, tmp.z * 0.3), k)
     state.camera.lookAt(look.current)
+
+    // on the intro and outro screens the big type sits on the left: slide the scene right
+    const side = THREE.MathUtils.clamp(Math.max(-c, c - (N - 1)), 0, 1)
+    shift.current = THREE.MathUtils.damp(shift.current, state.size.width > 760 ? side : 0, 4, dt)
+    const { width: w, height: h } = state.size
+    state.camera.setViewOffset(w, h, -w * 0.2 * shift.current, 0, w, h)
   })
 
   return (
@@ -228,8 +247,11 @@ export default function Experience({ elRef, onActive, onSelect, reduced }) {
 
       <group ref={figure} position={[0, FLOOR, 0]}>
         {AVATAR_URL ? <Avatar url={AVATAR_URL} /> : <Figure reduced={reduced} />}
+        <mesh rotation-x={-Math.PI / 2} position={[0, 0.004, 0]} renderOrder={-1}>
+          <planeGeometry args={[1.3, 1.3]} />
+          <meshBasicMaterial map={shadowTex} transparent depthWrite={false} opacity={0.55} />
+        </mesh>
       </group>
-      <ContactShadows position={[0, FLOOR + 0.002, 0]} opacity={0.35} scale={4} blur={2.6} far={2.5} color="#3A4450" />
 
       <mesh rotation-x={-Math.PI / 2} position={[0, FLOOR - 0.02, 0]} material={groundMat}>
         <planeGeometry args={[24, 24, 220, 220]} />
@@ -262,7 +284,7 @@ export default function Experience({ elRef, onActive, onSelect, reduced }) {
 
       <mesh ref={head}>
         <sphereGeometry args={[0.035, 24, 24]} />
-        <meshBasicMaterial color="#15171A" />
+        <meshBasicMaterial color="#FFFFFF" />
       </mesh>
 
       <Sparkles count={140} scale={[9, 5, 9]} size={1.6} speed={reduced ? 0 : 0.15} opacity={0.5} color="#7D8894" />
