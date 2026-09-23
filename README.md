@@ -1,6 +1,6 @@
 # Claudia Agromayor — web personal
 
-A pale statue on a dark rock; the camera circles her and the photos of each chapter float around, in the spirit of The Year of Greta. Site in English.
+A cobalt rhythmic-gymnastics ribbon floats in white light; the camera circles it and the photos of each chapter float around, in the spirit of The Year of Greta. Site in English.
 React + Vite + React Three Fiber + drei. Se publica sola en https://claudiaagromayor.github.io con cada `git push` a `main`.
 
 ## Editar el contenido

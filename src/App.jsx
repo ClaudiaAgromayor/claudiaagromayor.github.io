@@ -6,11 +6,19 @@ import { AREAS, CHAPTERS, PROFILE } from './data/chapters'
 const N = CHAPTERS.length
 const pad = (n) => String(n).padStart(2, '0')
 const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
-const FIRST = CHAPTERS[0].year, LAST = CHAPTERS[N - 1].year
+const FIRST = PROFILE.born, LAST = CHAPTERS[N - 1].year
+// where we are on the timeline, in years: from her birth to the last chapter
+function yearAt(c) {
+  if (c <= 0) return FIRST + (CHAPTERS[0].year - FIRST) * THREE_CLAMP(c + 1)
+  const i = Math.min(Math.floor(c), N - 1), f = Math.min(c - i, 1)
+  return CHAPTERS[i].year + ((CHAPTERS[Math.min(i + 1, N - 1)].year - CHAPTERS[i].year) * f)
+}
+const THREE_CLAMP = (x) => Math.max(0, Math.min(1, x))
 
 export default function App() {
   const [active, setActive] = useState(-1)
-  const [progress, setProgress] = useState(0)
+  const [cpos, setCpos] = useState(-1)
+  const progress = THREE_CLAMP((yearAt(cpos) - FIRST) / (LAST - FIRST))
   const [story, setStory] = useState(null) // chapter index shown in the side panel
   const [list, setList] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -49,7 +57,7 @@ export default function App() {
       <div className="stage">
         <Canvas camera={{ fov: 32, position: [0, 0, 6], near: 0.1, far: 50 }} dpr={[1, 2]} gl={{ antialias: true, alpha: true }}>
           <Suspense fallback={null}>
-            <Experience onActive={setActive} onProgress={setProgress} onSelect={openStory} reduced={reduced} />
+            <Experience onActive={setActive} onProgress={setCpos} onSelect={openStory} reduced={reduced} />
           </Suspense>
         </Canvas>
       </div>
@@ -88,7 +96,7 @@ export default function App() {
       </div>
 
       <div className={`hud yearmark${ch ? '' : ' hide'}`} aria-hidden="true">
-        {ch && <div key={active} className="rise"><small>{AREAS[ch.area].name}</small><b>{ch.year}</b></div>}
+        {ch && <div key={active} className="rise"><b>{ch.year}</b></div>}
       </div>
 
       <section className={`outro${active === N ? '' : ' hide'}`}>

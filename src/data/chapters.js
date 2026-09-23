@@ -143,6 +143,7 @@ export const CHAPTERS = [
 
 export const PROFILE = {
   name: 'Claudia Agromayor',
+  born: 2003,
   role: '2nd-year double master’s student — Industrial Engineering & Computer Science',
   places: 'Madrid · Paris · Montréal',
   intro: 'Curious by nature.',
