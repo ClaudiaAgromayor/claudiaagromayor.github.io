@@ -7,12 +7,16 @@
 //  · img: path inside /public (optional)
 // ─────────────────────────────────────────────────────────────
 
+// shade: the three colours of the animated background while you read that chapter
+// (deep, mid, highlight). A chapter can override it with its own `shade: [...]`.
 export const AREAS = {
-  sport: { name: 'Sport', color: '#2F8C7E' },
-  edu: { name: 'Education', color: '#6B5BD6' },
-  industry: { name: 'Industry', color: '#C07F2A' },
-  research: { name: 'Research', color: '#C8553F' },
+  sport: { name: 'Sport', color: '#2F8C7E', shade: ['#123A38', '#4F9C8A', '#E6D7B2'] },
+  edu: { name: 'Education', color: '#6B5BD6', shade: ['#1E1B44', '#6E62B8', '#EFC8B4'] },
+  industry: { name: 'Industry', color: '#C07F2A', shade: ['#2E1D12', '#B8742F', '#F1D9AC'] },
+  research: { name: 'Research', color: '#C8553F', shade: ['#2C1520', '#A94B63', '#F0C29C'] },
 }
+// intro and outro
+export const HOME_SHADE = ['#1F2A24', '#5E7466', '#D8CDAF']
 
 export const CHAPTERS = [
   {

@@ -91,6 +91,7 @@ export default function App() {
       <div className={`hud caption${ch && story === null ? '' : ' hide'}`} aria-live="polite">
         {ch && (
           <div key={active} className="fade" style={areaStyle(ch.area)}>
+            {ch.img && <figure className="snap"><img src={ch.img} alt={ch.title} /></figure>}
             <div className="meta mono"><i />{AREAS[ch.area].name}<span>{ch.date}</span></div>
             <h2>{ch.title}</h2>
             <p>{ch.line}</p>

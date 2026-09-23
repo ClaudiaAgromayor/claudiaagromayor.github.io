@@ -2,8 +2,8 @@
 :root {
   --c: var(--ink);
   color-scheme: dark;
-  --bg: #34423A; --ink: #EEE8DA; --mute: #A7B0A6; --line: rgba(238, 232, 218, .16);
-  --glass: rgba(38, 48, 42, .9);
+  --bg: #1F2A24; --ink: #F1ECE0; --mute: #B9BDB2; --line: rgba(241, 236, 224, .18);
+  --glass: rgba(24, 28, 26, .72);
   --sans: "Geist", "Helvetica Neue", Arial, sans-serif;
   --mono: "Geist Mono", ui-monospace, Consolas, monospace;
   --serif: "Instrument Serif", Georgia, serif;
@@ -147,3 +147,11 @@ button:focus-visible, a:focus-visible { outline: 1px solid var(--ink); outline-o
 .panel { border-radius: 0; top: 0; right: 0; bottom: 0; width: min(520px, 100%); border: 0; border-left: 1px solid var(--line); box-shadow: none; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); transform: translateX(100%) }
 .top nav .talk { border-radius: 0; padding: 10px 16px }
 .caption h2, .panel h1 { font-weight: 400 }
+
+/* the photo that appears at each stop */
+.snap { margin: 0 0 20px; width: min(320px, 100%); aspect-ratio: 4 / 3; overflow: hidden; border-radius: 2px; box-shadow: 0 24px 60px rgba(0, 0, 0, .35); animation: reveal 1.1s var(--ease) both }
+.snap img { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.08); animation: settle 1.6s var(--ease) both }
+@keyframes reveal { from { clip-path: inset(100% 0 0 0) } to { clip-path: inset(0) } }
+@keyframes settle { to { transform: scale(1) } }
+@media (max-width: 760px) { .snap { width: 44%; margin-bottom: 12px } }
+@media (prefers-reduced-motion: reduce) { .snap, .snap img { animation: none; transform: none } }

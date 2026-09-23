@@ -1,16 +1,15 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Line, useGLTF, Sparkles } from '@react-three/drei'
+import { Line, useGLTF } from '@react-three/drei'
 import { MarchingCubes } from 'three/examples/jsm/objects/MarchingCubes.js'
 import * as THREE from 'three'
-import { CHAPTERS, AVATAR_URL } from './data/chapters'
+import { CHAPTERS, AREAS, HOME_SHADE, AVATAR_URL } from './data/chapters'
 
 const N = CHAPTERS.length
 const TURNS = 3.2
 const FLOOR = -1.25
-const SEG = 1400
-export const BG = '#34423A'     // fog / horizon: deep moss
-const SKY_TOP = '#5E6E63'
+export const BG = '#1F2A24'
+const WHITE = new THREE.Color('#FFFFFF')
 const LIGHT = '#F1E8D2'         // the life line: warm paper light
 
 // Scroll position → "chapter coordinate" c: -1 = intro, 0..N-1 = chapters, N = outro
@@ -26,9 +25,6 @@ function helix(t, v = new THREE.Vector3()) {
 }
 const cToT = (c) => THREE.MathUtils.clamp((c + 0.5) / N, 0, 1)
 
-class HelixCurve extends THREE.Curve {
-  getPoint(t, target = new THREE.Vector3()) { return helix(t, target) }
-}
 
 function canvasTex(size, draw) {
   const c = document.createElement('canvas'); c.width = c.height = size
@@ -126,57 +122,142 @@ function Rock() {
   return <mesh geometry={geo} material={stone} position={[0, -0.02, 0]} />
 }
 
-/* Rolling hills that rise away from a still pool in the middle */
-function Land() {
-  const geo = useMemo(() => {
-    const g = new THREE.PlaneGeometry(60, 60, 220, 220)
-    g.rotateX(-Math.PI / 2)
-    const p = g.attributes.position
-    for (let i = 0; i < p.count; i++) {
-      const x = p.getX(i), z = p.getZ(i), r = Math.hypot(x, z)
-      const hills = Math.sin(x * 0.35) * Math.cos(z * 0.28) * 1.1 + Math.sin((x + z) * 0.17 + 1.3) * 1.6 + Math.sin(x * 0.9 - z * 0.7) * 0.25
-      const rise = THREE.MathUtils.smoothstep(r, 5, 18)
-      p.setY(i, -0.02 + (hills + 1.2) * rise * 0.7)
-    }
-    g.computeVertexNormals()
-    return g
-  }, [])
-  return (
-    <mesh geometry={geo} position={[0, FLOOR, 0]}>
-      <meshStandardMaterial color="#4B5E50" roughness={1} />
-    </mesh>
-  )
-}
+// Background colours for every stop: intro, each chapter, outro
+const SHADES = [HOME_SHADE, ...CHAPTERS.map((c) => c.shade || AREAS[c.area].shade), HOME_SHADE]
+  .map((p) => p.map((h) => new THREE.Color(h)))
 
-const sky = new THREE.ShaderMaterial({
-  side: THREE.BackSide, depthWrite: false, fog: false,
-  uniforms: { top: { value: new THREE.Color(SKY_TOP) }, bottom: { value: new THREE.Color(BG) } },
-  vertexShader: 'varying vec3 vP; void main(){ vP = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }',
-  fragmentShader: `uniform vec3 top, bottom; varying vec3 vP;
+const NOISE = `
+  vec3 mod289(vec3 x){ return x - floor(x * (1.0 / 289.0)) * 289.0; }
+  vec2 mod289(vec2 x){ return x - floor(x * (1.0 / 289.0)) * 289.0; }
+  vec3 permute(vec3 x){ return mod289(((x * 34.0) + 1.0) * x); }
+  float snoise(vec2 v){
+    const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+    vec2 i = floor(v + dot(v, C.yy)); vec2 x0 = v - i + dot(i, C.xx);
+    vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+    vec4 x12 = x0.xyxy + C.xxzz; x12.xy -= i1; i = mod289(i);
+    vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
+    vec3 m = max(0.5 - vec3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)), 0.0);
+    m = m * m; m = m * m;
+    vec3 x = 2.0 * fract(p * C.www) - 1.0; vec3 h = abs(x) - 0.5; vec3 ox = floor(x + 0.5); vec3 a0 = x - ox;
+    m *= 1.79284291400159 - 0.85373472095314 * (a0 * a0 + h * h);
+    vec3 g; g.x = a0.x * x0.x + h.x * x0.y; g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+    return 130.0 * dot(m, g);
+  }`
+
+/* Full-screen animated gradient, in the spirit of shadergradient: soft warped colour fields + film grain */
+const backdrop = new THREE.ShaderMaterial({
+  depthTest: false, depthWrite: false,
+  uniforms: {
+    uTime: { value: 0 }, uAspect: { value: 1 },
+    uA: { value: SHADES[0][0].clone() }, uB: { value: SHADES[0][1].clone() }, uC: { value: SHADES[0][2].clone() },
+  },
+  vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.9999, 1.); }',
+  fragmentShader: NOISE + `
+    uniform float uTime, uAspect; uniform vec3 uA, uB, uC; varying vec2 vUv;
     void main(){
-      float h = smoothstep(-.05, .6, normalize(vP).y);
-      gl_FragColor = vec4(mix(bottom, top, h), 1.);
+      vec2 p = (vUv - .5) * vec2(uAspect, 1.);
+      float t = uTime * .045;
+      vec2 w = p + .35 * vec2(snoise(p * 1.1 + t), snoise(p * 1.1 - t + 4.));
+      float f1 = snoise(w * .9 + vec2(t * .8, -t)) * .5 + .5;
+      float f2 = snoise(w * 1.7 - vec2(t, t * .6) + 9.) * .5 + .5;
+      vec3 col = mix(uA, uB, smoothstep(.15, .85, f1));
+      col = mix(col, uC, smoothstep(.62, .98, f2) * .5);
+      col *= 1. - .35 * smoothstep(.35, 1.1, length(p * vec2(.8, 1.)));   // vignette
+      col = mix(col, uA, smoothstep(.3, .95, abs(p.x / uAspect * 2.)) * .45); // calmer behind the text, both sides
+      float grain = fract(sin(dot(vUv * 1000. + uTime, vec2(12.9898, 78.233))) * 43758.5453);
+      col += (grain - .5) * .045;
+      gl_FragColor = vec4(col, 1.);
       #include <colorspace_fragment>
     }`,
 })
 
-/* Slow drifting wisps of mist */
-function Mist({ reduced }) {
-  const wisps = useMemo(() => Array.from({ length: 16 }, (_, i) => ({
-    a: (i / 16) * Math.PI * 2 + Math.random(), r: 3 + Math.random() * 6, y: FLOOR + 0.2 + Math.random() * 1.2,
-    s: 4 + Math.random() * 6, o: 0.06 + Math.random() * 0.08, v: 0.01 + Math.random() * 0.02,
-  })), [])
-  const refs = useRef([])
-  useFrame(({ clock }) => {
-    if (reduced) return
-    const t = clock.elapsedTime
-    wisps.forEach((w, i) => { const m = refs.current[i]; if (m) m.position.set(Math.cos(w.a + t * w.v) * w.r, w.y, Math.sin(w.a + t * w.v) * w.r) })
-  })
-  return wisps.map((w, i) => (
-    <sprite key={i} ref={(m) => (refs.current[i] = m)} position={[Math.cos(w.a) * w.r, w.y, Math.sin(w.a) * w.r]} scale={[w.s, w.s * 0.45, 1]}>
-      <spriteMaterial map={soft} color="#C9D2C6" transparent opacity={w.o} depthWrite={false} />
-    </sprite>
-  ))
+/* The life line as a ribbon of light: a bright core, a soft twisting band and a slow shimmer */
+const ribbonMat = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending,
+  uniforms: { uProgress: { value: 0 }, uTime: { value: 0 }, uColor: { value: new THREE.Color('#F4E6CC') } },
+  vertexShader: `attribute float aT; attribute float aSide; varying float vT; varying float vSide;
+    void main(){ vT = aT; vSide = aSide; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
+  fragmentShader: `uniform float uProgress, uTime; uniform vec3 uColor; varying float vT; varying float vSide;
+    void main(){
+      if (vT > uProgress) discard;
+      float edge = 1. - abs(vSide);
+      float core = smoothstep(.82, 1., edge);
+      float band = pow(edge, 2.2) * .35;
+      float age = smoothstep(uProgress - .35, uProgress, vT);                 // brighter near "now"
+      float shimmer = .75 + .25 * sin(vT * 180. - uTime * 2.2);
+      float tip = smoothstep(uProgress - .004, uProgress, vT);                 // soft end
+      float a = (core * (.55 + .45 * age) + band * (.4 + .6 * age) * shimmer) * (1. - tip * .6);
+      gl_FragColor = vec4(uColor * a, a);
+    }`,
+})
+function useRibbonGeometry() {
+  return useMemo(() => {
+    const n = 1600, W = 0.09
+    const pos = new Float32Array((n + 1) * 2 * 3), at = new Float32Array((n + 1) * 2), side = new Float32Array((n + 1) * 2)
+    const idx = []
+    const p = new THREE.Vector3(), q = new THREE.Vector3(), tan = new THREE.Vector3(), rad = new THREE.Vector3(), nrm = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0)
+    for (let i = 0; i <= n; i++) {
+      const t = i / n
+      helix(t, p); helix(Math.min(1, t + 0.001), q); tan.subVectors(q, p).normalize()
+      rad.set(p.x, 0, p.z).normalize()
+      const tw = t * TURNS * Math.PI * 1.5 // a slow twist along the way
+      nrm.copy(up).multiplyScalar(Math.cos(tw)).addScaledVector(rad, Math.sin(tw))
+      nrm.addScaledVector(tan, -nrm.dot(tan)).normalize()
+      const w = W * (0.6 + 0.4 * t)
+      for (let k = 0; k < 2; k++) {
+        const sgn = k ? 1 : -1, o = i * 2 + k
+        pos[o * 3] = p.x + nrm.x * w * sgn; pos[o * 3 + 1] = p.y + nrm.y * w * sgn; pos[o * 3 + 2] = p.z + nrm.z * w * sgn
+        at[o] = t; side[o] = sgn
+      }
+      if (i < n) { const a = i * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2) }
+    }
+    const g = new THREE.BufferGeometry()
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+    g.setAttribute('aT', new THREE.BufferAttribute(at, 1))
+    g.setAttribute('aSide', new THREE.BufferAttribute(side, 1))
+    g.setIndex(idx)
+    return g
+  }, [])
+}
+
+/* Specks of light drifting along the part of the line already lived */
+const dustMat = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  uniforms: { uProgress: { value: 0 }, uTime: { value: 0 }, uPx: { value: 1 } },
+  vertexShader: `attribute float aT; attribute vec3 aOff; attribute float aSeed; uniform float uTime, uPx; varying float vA; varying float vT;
+    void main(){
+      vT = aT;
+      vec3 p = position + aOff * (1. + .5 * sin(uTime * .6 + aSeed * 6.28));
+      p.y += sin(uTime * .8 + aSeed * 20.) * .03;
+      vec4 mv = modelViewMatrix * vec4(p, 1.);
+      vA = .35 + .65 * (.5 + .5 * sin(uTime * 2. + aSeed * 40.));
+      gl_PointSize = (2. + aSeed * 3.) * uPx * (3.5 / -mv.z);
+      gl_Position = projectionMatrix * mv;
+    }`,
+  fragmentShader: `uniform float uProgress; varying float vA; varying float vT;
+    void main(){
+      if (vT > uProgress) discard;
+      float d = length(gl_PointCoord - .5); if (d > .5) discard;
+      float a = smoothstep(.5, 0., d) * vA * .8;
+      gl_FragColor = vec4(vec3(1., .95, .86) * a, a);
+    }`,
+})
+function useDustGeometry() {
+  return useMemo(() => {
+    const n = 900, pos = new Float32Array(n * 3), off = new Float32Array(n * 3), at = new Float32Array(n), seed = new Float32Array(n), v = new THREE.Vector3()
+    for (let i = 0; i < n; i++) {
+      const t = Math.random(); helix(t, v)
+      pos.set([v.x, v.y, v.z], i * 3)
+      off.set([(Math.random() - 0.5) * 0.22, (Math.random() - 0.5) * 0.22, (Math.random() - 0.5) * 0.22], i * 3)
+      at[i] = t; seed[i] = Math.random()
+    }
+    const g = new THREE.BufferGeometry()
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+    g.setAttribute('aOff', new THREE.BufferAttribute(off, 3))
+    g.setAttribute('aT', new THREE.BufferAttribute(at, 1))
+    g.setAttribute('aSeed', new THREE.BufferAttribute(seed, 1))
+    return g
+  }, [])
 }
 
 export default function Experience({ onActive, reduced }) {
@@ -188,11 +269,10 @@ export default function Experience({ onActive, reduced }) {
   const lastActive = useRef(null)
   const tmp = useMemo(() => new THREE.Vector3(), [])
 
-  const tubeGeo = useMemo(() => {
-    const g = new THREE.TubeGeometry(new HelixCurve(), SEG, 0.006, 6, false)
-    g.setDrawRange(0, 0)
-    return g
-  }, [])
+  const ribbonGeo = useRibbonGeometry()
+  const dustGeo = useDustGeometry()
+  const key = useRef()
+  const rim = useRef()
   const ghost = useMemo(() => Array.from({ length: 500 }, (_, k) => helix(k / 499, new THREE.Vector3())), [])
 
   // Settle on a chapter once scrolling stops — always in the direction the
@@ -235,12 +315,25 @@ export default function Experience({ onActive, reduced }) {
     figure.current.scale.setScalar(s)
     figure.current.rotation.y = -g * Math.PI * 1.5 + (reduced ? 0 : Math.sin(time * 0.3) * 0.05)
 
-    // the line of light draws itself up to "now"
-    tubeGeo.setDrawRange(0, Math.floor(t * SEG) * 6 * 6)
+    // the ribbon of light draws itself up to "now"
+    ribbonMat.uniforms.uProgress.value = t
+    ribbonMat.uniforms.uTime.value = time
+    dustMat.uniforms.uProgress.value = t
+    dustMat.uniforms.uTime.value = reduced ? 0 : time
+    dustMat.uniforms.uPx.value = state.viewport.dpr * (state.size.height / 900) * 1.6
     helix(t, tmp)
+
+    // every stop has its own colours: blend towards them as we arrive
+    const k0 = THREE.MathUtils.clamp(c + 1, 0, N + 1), i0 = Math.floor(k0), i1 = Math.min(i0 + 1, N + 1), f = k0 - i0
+    const u = backdrop.uniforms
+    ;['uA', 'uB', 'uC'].forEach((name, j) => u[name].value.copy(SHADES[i0][j]).lerp(SHADES[i1][j], f))
+    u.uTime.value = reduced ? 0 : time
+    u.uAspect.value = state.size.width / state.size.height
+    rim.current.color.copy(u.uC.value)
+    key.current.color.copy(u.uB.value).lerp(WHITE, 0.6)
     head.current.position.copy(tmp)
     head.current.visible = c > -0.6
-    head.current.material.opacity = reduced ? 0.9 : 0.75 + Math.sin(time * 2) * 0.15
+    head.current.material.opacity = reduced ? 0.9 : 0.7 + Math.sin(time * 2) * 0.2
 
     // camera orbits so the current point of the line faces us
     const ang = Math.atan2(tmp.z, tmp.x) + 0.45
@@ -260,32 +353,26 @@ export default function Experience({ onActive, reduced }) {
 
   return (
     <>
-      <color attach="background" args={[BG]} />
-      <fog attach="fog" args={[BG, 5, 24]} />
-      <mesh material={sky}><sphereGeometry args={[30, 32, 16]} /></mesh>
+      <mesh material={backdrop} frustumCulled={false} renderOrder={-1000}>
+        <planeGeometry args={[2, 2]} />
+      </mesh>
 
-      <hemisphereLight args={['#B4C4B7', '#3A4A3F', 1.3]} />
-      <directionalLight position={[-4, 2.6, 2.5]} intensity={2.6} color="#FFD7A3" />
-      <directionalLight position={[3, 3, -4]} intensity={0.6} color="#BFD3C8" />
-
-      <Land />
+      <hemisphereLight args={['#FFFFFF', '#3A3A3A', 0.9]} />
+      <directionalLight ref={key} position={[-4, 3, 3]} intensity={2.4} />
+      <directionalLight ref={rim} position={[3, 2, -4]} intensity={1.8} />
 
       <group ref={figure} position={[0, FLOOR, 0]}>
         {AVATAR_URL ? <Avatar url={AVATAR_URL} /> : <Figure reduced={reduced} />}
         <Rock />
       </group>
 
-      <Line points={ghost} color={LIGHT} transparent opacity={0.14} lineWidth={1} dashed dashSize={0.02} gapSize={0.07} />
-      <mesh geometry={tubeGeo}>
-        <meshBasicMaterial color={LIGHT} toneMapped={false} />
-      </mesh>
+      <Line points={ghost} color={LIGHT} transparent opacity={0.12} lineWidth={1} dashed dashSize={0.015} gapSize={0.08} />
+      <mesh geometry={ribbonGeo} material={ribbonMat} frustumCulled={false} />
+      <points geometry={dustGeo} material={dustMat} frustumCulled={false} />
       {/* the present: a soft glow at the tip of the line */}
-      <sprite ref={head} scale={0.32}>
-        <spriteMaterial map={soft} color="#FFE9C4" transparent depthWrite={false} blending={THREE.AdditiveBlending} />
+      <sprite ref={head} scale={0.5}>
+        <spriteMaterial map={soft} color="#FFEBCB" transparent depthWrite={false} blending={THREE.AdditiveBlending} />
       </sprite>
-
-      <Mist reduced={reduced} />
-      <Sparkles count={70} scale={[10, 4, 10]} position={[0, 0, 0]} size={1.3} speed={reduced ? 0 : 0.12} opacity={0.45} color="#EDE4CC" />
     </>
   )
 }
