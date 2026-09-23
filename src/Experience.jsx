@@ -29,19 +29,14 @@ const silk = new THREE.MeshPhysicalMaterial({
 })
 
 function Ribbon({ reduced }) {
+  // built once: the shape is static, the whole ribbon turns and floats gently
   const geo = useMemo(() => {
     const g = new THREE.BufferGeometry()
-    g.setAttribute('position', new THREE.BufferAttribute(new Float32Array((SEGS + 1) * 2 * 3), 3))
+    const pos = new Float32Array((SEGS + 1) * 2 * 3)
     const idx = []
     for (let i = 0; i < SEGS; i++) { const a = i * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2) }
-    g.setIndex(idx)
-    return g
-  }, [])
-  const v = useMemo(() => ({ p: new THREE.Vector3(), q: new THREE.Vector3(), tan: new THREE.Vector3(), side: new THREE.Vector3(), up: new THREE.Vector3(0, 1, 0) }), [])
-  useFrame(({ clock }) => {
-    const time = reduced ? 0 : clock.elapsedTime
-    const pos = geo.attributes.position.array
-    const { p, q, tan, side, up } = v
+    const time = 0
+    const p = new THREE.Vector3(), q = new THREE.Vector3(), tan = new THREE.Vector3(), side = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0)
     for (let i = 0; i <= SEGS; i++) {
       const t = i / SEGS
       ribbonPath(t, time, p); ribbonPath(Math.min(1, t + 0.002), time, q)
@@ -53,10 +48,19 @@ function Ribbon({ reduced }) {
       const w = 0.11 * Math.sin(Math.PI * Math.min(1, t * 1.02 + 0.02)) + 0.02
       pos.set([p.x - side.x * w, p.y - side.y * w, p.z - side.z * w, p.x + side.x * w, p.y + side.y * w, p.z + side.z * w], i * 6)
     }
-    geo.attributes.position.needsUpdate = true
-    geo.computeVertexNormals()
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+    g.setIndex(idx)
+    g.computeVertexNormals()
+    return g
+  }, [])
+  const ref = useRef()
+  useFrame(({ clock }) => {
+    if (reduced) return
+    const t = clock.elapsedTime
+    ref.current.rotation.y = t * 0.08
+    ref.current.position.y = Math.sin(t * 0.5) * 0.05
   })
-  return <mesh geometry={geo} material={silk} frustumCulled={false} />
+  return <mesh ref={ref} geometry={geo} material={silk} frustumCulled={false} />
 }
 
 /* Optional: a 3D model of her, if one is set in data/chapters.js */
@@ -158,29 +162,35 @@ export default function Experience({ onActive, onProgress, onSelect, reduced }) 
   const state = useRef({ c: -1 })
   const look = useRef(new THREE.Vector3(0, CENTER_Y, 0))
   const lastActive = useRef(null)
-  const lastC = useRef(null)
+  const lastC = useRef(-9)
   const shift = useRef(1)
 
   // Settle on a chapter once scrolling stops — always in the direction the
   // visitor was moving, so a small scroll never bounces back.
   useEffect(() => {
-    let timer, last = scrollY, dir = 0
+    let timer, last = scrollY, dir = 0, lastInput = 0
+    const onInput = () => { lastInput = performance.now() }
     const onScroll = () => {
       const d = scrollY - last
       if (Math.abs(d) > 0.5) dir = Math.sign(d)
       last = scrollY
       clearTimeout(timer)
       timer = setTimeout(() => {
+        if (performance.now() - lastInput < 400) return onScroll()
         const max = maxScroll()
         if (max <= 0) return
         const c = offsetToC(scrollY / max)
         const to = dir > 0 ? Math.ceil(c - 0.08) : dir < 0 ? Math.floor(c + 0.08) : Math.round(c)
         const top = cToOffset(THREE.MathUtils.clamp(to, -1, N)) * max
         if (Math.abs(top - scrollY) > 2) scrollTo({ top, behavior: reduced ? 'auto' : 'smooth' })
-      }, 260)
+      }, 420)
     }
     addEventListener('scroll', onScroll, { passive: true })
-    return () => { clearTimeout(timer); removeEventListener('scroll', onScroll) }
+    ;['wheel', 'touchmove', 'keydown'].forEach((e) => addEventListener(e, onInput, { passive: true }))
+    return () => {
+      clearTimeout(timer); removeEventListener('scroll', onScroll)
+      ;['wheel', 'touchmove', 'keydown'].forEach((e) => removeEventListener(e, onInput))
+    }
   }, [reduced])
 
   useFrame((st, dt) => {
@@ -192,8 +202,7 @@ export default function Experience({ onActive, onProgress, onSelect, reduced }) 
 
     const act = THREE.MathUtils.clamp(Math.round(c), -1, N)
     if (act !== lastActive.current) { lastActive.current = act; onActive(act) }
-    const cr = Math.round(c * 50) / 50
-    if (cr !== lastC.current) { lastC.current = cr; onProgress(cr) }
+    if (Math.abs(c - lastC.current) > 0.002) { lastC.current = c; onProgress(c) }
 
     // the camera circles the ribbon; on the intro it stands back
     const intro = THREE.MathUtils.clamp(-c, 0, 1), outro = THREE.MathUtils.clamp(c - (N - 1), 0, 1)

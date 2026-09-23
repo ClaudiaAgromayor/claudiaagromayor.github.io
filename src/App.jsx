@@ -17,8 +17,11 @@ const THREE_CLAMP = (x) => Math.max(0, Math.min(1, x))
 
 export default function App() {
   const [active, setActive] = useState(-1)
-  const [cpos, setCpos] = useState(-1)
-  const progress = THREE_CLAMP((yearAt(cpos) - FIRST) / (LAST - FIRST))
+  const bar = useRef(null)
+  // the timeline bar is moved directly every frame, so scrolling never re-renders the page
+  const onProgress = useCallback((c) => {
+    if (bar.current) bar.current.style.transform = `scaleX(${THREE_CLAMP((yearAt(c) - FIRST) / (LAST - FIRST))})`
+  }, [])
   const [story, setStory] = useState(null) // chapter index shown in the side panel
   const [list, setList] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -55,9 +58,9 @@ export default function App() {
       </div>
 
       <div className="stage">
-        <Canvas camera={{ fov: 32, position: [0, 0, 6], near: 0.1, far: 50 }} dpr={[1, 2]} gl={{ antialias: true, alpha: true }}>
+        <Canvas camera={{ fov: 32, position: [0, 0, 6], near: 0.1, far: 50 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}>
           <Suspense fallback={null}>
-            <Experience onActive={setActive} onProgress={setCpos} onSelect={openStory} reduced={reduced} />
+            <Experience onActive={setActive} onProgress={onProgress} onSelect={openStory} reduced={reduced} />
           </Suspense>
         </Canvas>
       </div>
@@ -69,7 +72,7 @@ export default function App() {
           {first}<br />{rest.join(' ')}
         </button>
         <div className={`timeline${active === -1 ? ' hide' : ''}`} aria-hidden="true">
-          <span>{FIRST}</span><i><b style={{ transform: `scaleX(${progress})` }} /></i><span>{LAST}</span>
+          <span>{FIRST}</span><i><b ref={bar} /></i><span>{LAST}</span>
         </div>
         <nav aria-label="Main">
           <button type="button" onClick={() => setList(true)}>Index</button>

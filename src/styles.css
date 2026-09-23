@@ -34,7 +34,7 @@ button:focus-visible, a:focus-visible { outline: 1px solid var(--ink); outline-o
 .logo { justify-self: start; font-weight: 700; font-size: 14px; line-height: 1.1; text-align: center }
 .timeline { display: flex; align-items: center; gap: 18px; font-size: 12px; font-weight: 600; letter-spacing: .04em; transition: opacity .6s }
 .timeline i { width: clamp(120px, 18vw, 260px); height: 1px; background: var(--line); position: relative; overflow: hidden }
-.timeline b { position: absolute; inset: 0; background: var(--blue); transform-origin: left; transition: transform .8s var(--ease) }
+.timeline b { position: absolute; inset: 0; background: var(--blue); transform-origin: left; transform: scaleX(0) }
 .top nav { justify-self: end; display: flex; gap: 28px; font-size: 12px; font-weight: 600; letter-spacing: .04em }
 .top nav button { color: var(--mute); transition: color .2s }
 .top nav button:hover { color: var(--ink) }
