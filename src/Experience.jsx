@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { useScroll, Line, Sparkles, useGLTF } from '@react-three/drei'
+import { useScroll, Line, Sparkles, useGLTF, Environment, Lightformer, ContactShadows, Billboard } from '@react-three/drei'
+import { MarchingCubes } from 'three/examples/jsm/objects/MarchingCubes.js'
 import * as THREE from 'three'
-import { CHAPTERS, AREAS, AVATAR_URL, AVATAR_CLAY } from './data/chapters'
+import { CHAPTERS, AREAS, AVATAR_URL } from './data/chapters'
 
 const N = CHAPTERS.length
 const TURNS = 3.2
 const FLOOR = -1.25
 const SEG = 1400
-const RAD = 8
+const RAD = 10
+export const BG = '#DDE3E6'
 
 // Scroll position → "chapter coordinate" c: -1 = intro, 0..N-1 = chapters, N = outro
 export const offsetToC = (o) => o * (N + 1) - 1
@@ -34,38 +36,49 @@ function colorAt(t) {
   return areaColor(i).lerp(areaColor(i + 1), k - i)
 }
 
-function glowTexture() {
-  const s = 128, c = document.createElement('canvas')
-  c.width = c.height = s
-  const x = c.getContext('2d')
-  const g = x.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2)
-  g.addColorStop(0, 'rgba(255,255,255,1)')
-  g.addColorStop(0.25, 'rgba(255,255,255,.45)')
-  g.addColorStop(1, 'rgba(255,255,255,0)')
-  x.fillStyle = g
-  x.fillRect(0, 0, s, s)
-  return new THREE.CanvasTexture(c)
-}
+const pearl = new THREE.MeshPhysicalMaterial({
+  color: '#F4F2EF', roughness: 0.18, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.12,
+  iridescence: 1, iridescenceIOR: 1.35, iridescenceThicknessRange: [180, 620], sheen: 0.4, sheenColor: '#C9BFF5',
+})
 
-const clay = new THREE.MeshStandardMaterial({ color: '#D8D2C8', roughness: 0.62, metalness: 0 })
+/* Abstract, faceless figure made of metaballs: a gymnast's salute, one arm raised.
+   Bones are in world units (feet at y = 0, ~1.9 tall); each bone is a chain of balls. */
+const BONES = [
+  [[-0.09, 0.05, 0], [-0.075, 0.86, 0], 0.07], [[0.1, 0.05, 0.03], [0.075, 0.86, 0], 0.07], // legs
+  [[0, 0.9, 0], [0, 0.95, 0], 0.13],                                                            // hips
+  [[0, 0.98, 0], [0, 1.34, 0], 0.125],                                                          // torso
+  [[-0.14, 1.33, 0], [0.14, 1.33, 0], 0.07],                                                    // shoulders
+  [[0, 1.4, 0], [0, 1.5, 0], 0.05],                                                             // neck
+  [[0, 1.61, 0], [0, 1.64, 0], 0.105],                                                          // head
+  [[-0.17, 1.32, 0], [-0.25, 0.86, 0.03], 0.045],                                               // arm, down
+  [[0.17, 1.34, 0], [0.3, 1.86, 0], 0.045],                                                     // arm, raised
+]
+const BALLS = BONES.flatMap(([a, b, r]) => {
+  const A = new THREE.Vector3(...a), B = new THREE.Vector3(...b)
+  const n = Math.max(1, Math.ceil(A.distanceTo(B) / (r * 0.7)))
+  return Array.from({ length: n + 1 }, (_, k) => ({ p: A.clone().lerp(B, k / n), r }))
+})
+const ISO = 80, SUB = 12
 
-/* Placeholder figure until a real avatar is set in data/chapters.js */
-function Mannequin() {
-  const body = useMemo(() => {
-    const pts = [
-      [0.001, 0], [0.13, 0], [0.14, 0.03], [0.1, 0.1], [0.085, 0.5], [0.1, 0.78],
-      [0.15, 0.95], [0.19, 1.15], [0.2, 1.27], [0.15, 1.38], [0.07, 1.46], [0.05, 1.52], [0.001, 1.53],
-    ].map(([x, y]) => new THREE.Vector2(x, y))
-    return new THREE.LatheGeometry(pts, 64)
+function Figure({ reduced }) {
+  const mc = useMemo(() => {
+    const m = new MarchingCubes(56, pearl, false, false, 20000)
+    m.isolation = ISO
+    return m
   }, [])
-  return (
-    <group>
-      <mesh geometry={body} material={clay} castShadow />
-      <mesh position={[0, 1.67, 0]} material={clay} castShadow>
-        <sphereGeometry args={[0.12, 48, 48]} />
-      </mesh>
-    </group>
-  )
+  const build = (time) => {
+    mc.reset()
+    BALLS.forEach(({ p, r }, i) => {
+      const w = reduced ? 0 : Math.sin(time * 1.6 + i * 0.7) * 0.004
+      const rc = r / 2 // world → cube units (the cube spans 2 world units)
+      mc.addBall(0.5 + p.x / 2 + w, 0.02 + p.y / 2, 0.5 + p.z / 2 - w, rc * rc * (ISO + SUB) * 0.42, SUB)
+    })
+    mc.update()
+  }
+  useMemo(() => build(0), []) // eslint-disable-line
+  useFrame(({ clock }) => { if (!reduced) build(clock.elapsedTime) })
+  // cube local [-1, 1] → feet at y = 0
+  return <primitive object={mc} position={[0, 0.96, 0]} />
 }
 
 function Avatar({ url }) {
@@ -77,26 +90,51 @@ function Avatar({ url }) {
     s.scale.setScalar(1.8 / size.y)
     box.setFromObject(s)
     s.position.set(-(box.min.x + box.max.x) / 2, -box.min.y, -(box.min.z + box.max.z) / 2)
-    s.traverse((o) => { if (o.isMesh) { if (AVATAR_CLAY) o.material = clay; o.castShadow = true } })
+    s.traverse((o) => { if (o.isMesh) o.material = pearl })
     return s
   }, [scene])
   return <primitive object={obj} />
 }
 
+/* A slow, fluid landscape with faint contour lines — the ground the story stands on */
+const groundMat = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false,
+  uniforms: { uTime: { value: 0 }, uBg: { value: new THREE.Color(BG) } },
+  vertexShader: `
+    uniform float uTime; varying vec2 vP; varying float vH;
+    float h(vec2 p){ return sin(p.x*.9+uTime*.25)*.5 + sin(p.y*1.3-uTime*.2)*.5 + sin((p.x+p.y)*.55+uTime*.15)*.7; }
+    void main(){
+      vec3 p = position; vP = p.xy;
+      float d = length(p.xy);
+      vH = h(p.xy) * smoothstep(1.2, 6.0, d);
+      p.z += vH * .18;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.);
+    }`,
+  fragmentShader: `
+    uniform vec3 uBg; varying vec2 vP; varying float vH;
+    void main(){
+      vec3 mint = vec3(.80,.89,.86), lilac = vec3(.87,.84,.93), sand = vec3(.93,.90,.86);
+      float k = .5 + .5*sin(vP.x*.35 + vP.y*.22);
+      vec3 c = mix(mix(mint, lilac, k), sand, smoothstep(-.6,.9,vH)*.5);
+      float line = 1. - smoothstep(0., .035, abs(fract(vH*3.) - .5) - .45);
+      c = mix(c, vec3(.35,.39,.44), line * .10);
+      float fade = smoothstep(11., 3., length(vP));
+      gl_FragColor = vec4(mix(uBg, c, fade), fade);
+    }`,
+})
+
 export default function Experience({ elRef, onActive, onSelect, reduced }) {
   const scroll = useScroll()
   const figure = useRef()
-  const tube = useRef()
   const head = useRef()
   const nodes = useRef([])
-  const halos = useRef([])
+  const rings = useRef([])
   const look = useRef(new THREE.Vector3(0, 0, 0))
   const lastActive = useRef(null)
-  const glow = useMemo(glowTexture, [])
   const tmp = useMemo(() => new THREE.Vector3(), [])
 
   const tubeGeo = useMemo(() => {
-    const g = new THREE.TubeGeometry(new HelixCurve(), SEG, 0.014, RAD, false)
+    const g = new THREE.TubeGeometry(new HelixCurve(), SEG, 0.02, RAD, false)
     const col = new Float32Array(g.attributes.position.count * 3)
     for (let j = 0; j <= SEG; j++) {
       const c = colorAt(j / SEG)
@@ -107,27 +145,30 @@ export default function Experience({ elRef, onActive, onSelect, reduced }) {
     return g
   }, [])
   const ghost = useMemo(() => Array.from({ length: 500 }, (_, k) => helix(k / 499, new THREE.Vector3())), [])
-  const rings = useMemo(() => [0.7, 1.2, 1.7, 2.2, 2.7, 3.2].map((r) =>
-    Array.from({ length: 129 }, (_, k) => { const a = (k / 128) * Math.PI * 2; return [Math.cos(a) * r, FLOOR, Math.sin(a) * r] })), [])
   const nodePos = useMemo(() => CHAPTERS.map((_, i) => helix(chapterT(i), new THREE.Vector3())), [])
 
-  // expose the scroll container and snap to the nearest chapter when scrolling stops
+  // Expose the scroll container, and settle on a chapter once scrolling stops —
+  // always in the direction the visitor was moving, so a small scroll never bounces back.
   useEffect(() => {
     const el = scroll.el
     elRef.current = el
-    let timer
-    const snap = () => {
+    let timer, last = el.scrollTop, dir = 0
+    const onScroll = () => {
+      const d = el.scrollTop - last
+      if (Math.abs(d) > 0.5) dir = Math.sign(d)
+      last = el.scrollTop
       clearTimeout(timer)
       timer = setTimeout(() => {
         const max = el.scrollHeight - el.clientHeight
         if (max <= 0) return
-        const c = Math.round(offsetToC(el.scrollTop / max))
-        const to = cToOffset(c) * max
-        if (Math.abs(to - el.scrollTop) > 2) el.scrollTo({ top: to, behavior: reduced ? 'auto' : 'smooth' })
-      }, 200)
+        const c = offsetToC(el.scrollTop / max)
+        const to = dir > 0 ? Math.ceil(c - 0.08) : dir < 0 ? Math.floor(c + 0.08) : Math.round(c)
+        const top = cToOffset(THREE.MathUtils.clamp(to, -1, N)) * max
+        if (Math.abs(top - el.scrollTop) > 2) el.scrollTo({ top, behavior: reduced ? 'auto' : 'smooth' })
+      }, 260)
     }
-    el.addEventListener('scroll', snap, { passive: true })
-    return () => { clearTimeout(timer); el.removeEventListener('scroll', snap) }
+    el.addEventListener('scroll', onScroll, { passive: true })
+    return () => { clearTimeout(timer); el.removeEventListener('scroll', onScroll) }
   }, [scroll.el, elRef, reduced])
 
   useFrame((state, dt) => {
@@ -135,14 +176,15 @@ export default function Experience({ elRef, onActive, onSelect, reduced }) {
     const g = THREE.MathUtils.clamp((c + 1) / (N + 1), 0, 1)
     const t = cToT(c)
     const time = state.clock.elapsedTime
+    if (!reduced) groundMat.uniforms.uTime.value = time
 
     const act = THREE.MathUtils.clamp(Math.round(c), -1, N)
     if (act !== lastActive.current) { lastActive.current = act; onActive(act) }
 
     // the figure grows with the story
     const s = 0.38 + 1.07 * (1 - Math.pow(1 - g, 2))
-    figure.current.scale.setScalar(s * (reduced ? 1 : 1 + Math.sin(time * 1.2) * 0.004))
-    figure.current.rotation.y = -g * Math.PI * 1.5
+    figure.current.scale.setScalar(s)
+    figure.current.rotation.y = -g * Math.PI * 1.5 + (reduced ? 0 : Math.sin(time * 0.4) * 0.08)
 
     // the line draws itself up to "now"
     tubeGeo.setDrawRange(0, Math.floor(t * SEG) * RAD * 6)
@@ -154,12 +196,11 @@ export default function Experience({ elRef, onActive, onSelect, reduced }) {
       if (!m) return
       const reached = i <= c + 0.02
       const isA = i === act
-      const k = reached ? (isA ? 1.9 : 1.15) : 0.6
-      m.scale.setScalar(THREE.MathUtils.damp(m.scale.x, k, 6, dt))
-      m.material.color.set(reached ? AREAS[CHAPTERS[i].area].color : '#4A4E57')
-      const h = halos.current[i]
-      h.material.opacity = THREE.MathUtils.damp(h.material.opacity, isA ? 0.9 : reached ? 0.35 : 0, 6, dt)
-      h.scale.setScalar((isA ? 0.55 : 0.32) * (isA && !reduced ? 1 + Math.sin(time * 3) * 0.1 : 1))
+      m.scale.setScalar(THREE.MathUtils.damp(m.scale.x, reached ? (isA ? 1.8 : 1.1) : 0.55, 6, dt))
+      m.material.color.set(reached ? AREAS[CHAPTERS[i].area].color : '#9AA2AA')
+      const r = rings.current[i]
+      r.material.opacity = THREE.MathUtils.damp(r.material.opacity, isA ? 0.9 : 0, 6, dt)
+      r.scale.setScalar(isA && !reduced ? 1 + Math.sin(time * 2.5) * 0.08 : 1)
     })
 
     // camera orbits so the current point of the line faces us
@@ -168,29 +209,35 @@ export default function Experience({ elRef, onActive, onSelect, reduced }) {
     const want = new THREE.Vector3(Math.cos(ang) * dist, tmp.y * 0.55 + 0.55 + 0.35 * g, Math.sin(ang) * dist)
     const k = reduced ? 1 : 1 - Math.exp(-3 * dt)
     state.camera.position.lerp(want, k)
-    look.current.lerp(new THREE.Vector3(tmp.x * 0.3, FLOOR + 1.5 * s * 0.8 * 0.6 + tmp.y * 0.25, tmp.z * 0.3), k)
+    look.current.lerp(new THREE.Vector3(tmp.x * 0.3, FLOOR + 0.72 * s + tmp.y * 0.25, tmp.z * 0.3), k)
     state.camera.lookAt(look.current)
   })
 
   return (
     <>
-      <color attach="background" args={['#0A0B0D']} />
-      <fog attach="fog" args={['#0A0B0D', 6, 14]} />
-      <hemisphereLight args={['#bfc6d6', '#0A0B0D', 0.5]} />
-      <directionalLight position={[3, 5, 3]} intensity={1.8} color="#FFF1E2" />
-      <directionalLight position={[-4, 1.5, -3]} intensity={1.1} color="#5FB3A5" />
-      <directionalLight position={[4, 0.5, -3]} intensity={0.9} color="#9D90E0" />
+      <color attach="background" args={[BG]} />
+      <fog attach="fog" args={[BG, 7, 16]} />
+      <ambientLight intensity={0.35} />
+      <directionalLight position={[3, 5, 3]} intensity={1.2} color="#FFF4EA" />
+      <Environment resolution={256}>
+        <Lightformer form="rect" intensity={3} position={[0, 5, -4]} scale={[10, 4, 1]} color="#ffffff" />
+        <Lightformer form="rect" intensity={2.2} position={[-5, 1, 1]} rotation-y={Math.PI / 2} scale={[6, 3, 1]} color="#9FD8CC" />
+        <Lightformer form="rect" intensity={2.2} position={[5, 1, 1]} rotation-y={-Math.PI / 2} scale={[6, 3, 1]} color="#C9BFF5" />
+        <Lightformer form="ring" intensity={1.5} position={[0, 2, 5]} scale={3} color="#FFE3C8" />
+      </Environment>
 
       <group ref={figure} position={[0, FLOOR, 0]}>
-        {AVATAR_URL ? <Avatar url={AVATAR_URL} /> : <Mannequin />}
+        {AVATAR_URL ? <Avatar url={AVATAR_URL} /> : <Figure reduced={reduced} />}
       </group>
+      <ContactShadows position={[0, FLOOR + 0.002, 0]} opacity={0.35} scale={4} blur={2.6} far={2.5} color="#3A4450" />
 
-      {/* floor: faint concentric rings, like a sundial */}
-      {rings.map((pts, i) => <Line key={i} points={pts} color="#ECEAE4" transparent opacity={0.05} lineWidth={1} />)}
+      <mesh rotation-x={-Math.PI / 2} position={[0, FLOOR - 0.02, 0]} material={groundMat}>
+        <planeGeometry args={[24, 24, 220, 220]} />
+      </mesh>
 
-      <Line points={ghost} color="#ECEAE4" transparent opacity={0.12} lineWidth={1} dashed dashSize={0.04} gapSize={0.08} />
-      <mesh ref={tube} geometry={tubeGeo}>
-        <meshBasicMaterial vertexColors toneMapped={false} />
+      <Line points={ghost} color="#2A2F36" transparent opacity={0.16} lineWidth={1} dashed dashSize={0.04} gapSize={0.08} />
+      <mesh geometry={tubeGeo}>
+        <meshPhysicalMaterial vertexColors roughness={0.3} clearcoat={1} clearcoatRoughness={0.2} />
       </mesh>
 
       {nodePos.map((p, i) => (
@@ -201,20 +248,24 @@ export default function Experience({ elRef, onActive, onSelect, reduced }) {
             onPointerOver={() => (document.body.style.cursor = 'pointer')}
             onPointerOut={() => (document.body.style.cursor = '')}
           >
-            <sphereGeometry args={[0.045, 24, 24]} />
-            <meshBasicMaterial toneMapped={false} />
+            <sphereGeometry args={[0.05, 32, 32]} />
+            <meshPhysicalMaterial roughness={0.2} clearcoat={1} />
           </mesh>
-          <sprite ref={(h) => (halos.current[i] = h)}>
-            <spriteMaterial map={glow} color={AREAS[CHAPTERS[i].area].color} transparent opacity={0} depthWrite={false} blending={THREE.AdditiveBlending} />
-          </sprite>
+          <Billboard>
+            <mesh ref={(r) => (rings.current[i] = r)}>
+              <ringGeometry args={[0.13, 0.142, 64]} />
+              <meshBasicMaterial color={AREAS[CHAPTERS[i].area].color} transparent opacity={0} depthWrite={false} />
+            </mesh>
+          </Billboard>
         </group>
       ))}
 
-      <sprite ref={head} scale={0.35}>
-        <spriteMaterial map={glow} color="#FFF6EA" transparent depthWrite={false} blending={THREE.AdditiveBlending} />
-      </sprite>
+      <mesh ref={head}>
+        <sphereGeometry args={[0.035, 24, 24]} />
+        <meshBasicMaterial color="#15171A" />
+      </mesh>
 
-      <Sparkles count={160} scale={[9, 5, 9]} size={1.4} speed={reduced ? 0 : 0.15} opacity={0.35} color="#ECEAE4" />
+      <Sparkles count={140} scale={[9, 5, 9]} size={1.6} speed={reduced ? 0 : 0.15} opacity={0.5} color="#7D8894" />
     </>
   )
 }

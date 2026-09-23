@@ -1,6 +1,6 @@
 # Claudia Agromayor — web personal
 
-Una figura en el centro que crece mientras la línea de su vida la rodea en espiral.
+An abstract liquid figure grows while the line of her life spirals around it. Site in English.
 React + Vite + React Three Fiber + drei. Se publica sola en https://claudiaagromayor.github.io con cada `git push` a `main`.
 
 ## Editar el contenido
