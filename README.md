@@ -1,7 +1,17 @@
 # Claudia Agromayor — web personal
 
-Web personal en una sola página (`index.html`): los capítulos de mi vida colocados en una hélice 3D (Three.js) que gira con el scroll.
+Una figura en el centro que crece mientras la línea de su vida la rodea en espiral.
+React + Vite + React Three Fiber + drei. Se publica sola en https://claudiaagromayor.github.io con cada `git push` a `main`.
 
-- Para editar el contenido, busca `const M = [` en `index.html`: cada objeto es un capítulo.
-- Ámbitos y colores: `const SEC = {`.
-- Se publica con GitHub Pages desde la rama `main`, carpeta `/ (root)`.
+## Editar el contenido
+- Capítulos, textos, contacto: `src/data/chapters.js`
+- Fotos: `public/img/` (y en el capítulo `img: '/img/nombre.jpg'`)
+- Avatar: copia el `.glb` a `public/avatar.glb` y pon `AVATAR_URL = '/avatar.glb'` en `src/data/chapters.js`
+
+## Ver en local
+```
+npm install
+npm run dev
+```
+
+`data/` (CVs y cartas) está en `.gitignore`: nunca se sube.
