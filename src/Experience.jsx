@@ -123,7 +123,7 @@ const CARDS = CHAPTERS.flatMap((ch, i) => {
   return [main, ...extras]
 })
 
-function Card({ card, onSelect, state }) {
+function Card({ card, onSelect }) {
   const ref = useRef()
   const mat = useMemo(cardMat, [])
   useEffect(() => {
@@ -137,9 +137,9 @@ function Card({ card, onSelect, state }) {
     m.lookAt(Math.cos(card.a) * 20, card.y, Math.sin(card.a) * 20) // face outwards, towards the camera path
   }, [card])
   useFrame((_, dt) => {
-    const near = Math.abs(state.current.c - card.i)
+    const near = Math.abs(rig.c - card.i)
     const act = card.main ? THREE.MathUtils.clamp(1 - near, 0, 1) : 0
-    const vis = THREE.MathUtils.clamp(2.6 - near * 0.55, 0, 1) * THREE.MathUtils.clamp(state.current.c + 1, 0, 1) // hidden on the intro
+    const vis = THREE.MathUtils.clamp(2.6 - near * 0.55, 0, 1) * THREE.MathUtils.clamp(rig.c + 1, 0, 1) // hidden on the intro
     const u = mat.uniforms
     u.uColor.value = THREE.MathUtils.damp(u.uColor.value, act * 0.95, 5, dt)
     u.uOpacity.value = THREE.MathUtils.damp(u.uOpacity.value, (card.main ? 0.55 + 0.45 * act : 0.75) * vis, 5, dt)
@@ -157,14 +157,12 @@ function Card({ card, onSelect, state }) {
 }
 
 /* ── scene ─────────────────────────────────────────────────── */
-export default function Experience({ onActive, onProgress, onSelect, reduced }) {
-  const offset = useRef(0)
-  const state = useRef({ c: -1 })
-  const look = useRef(new THREE.Vector3(0, CENTER_Y, 0))
-  const lastActive = useRef(null)
-  const lastC = useRef(-9)
-  const shift = useRef(1)
+// The scene is drawn in two layers so her name can sit between them:
+//   back  — the ribbon, softly blurred (CSS)      front — the photos, sharp
+// The back layer drives the camera; the front layer copies it every frame.
+const rig = { c: -1, pos: new THREE.Vector3(0, CENTER_Y + 0.25, 6.8), look: new THREE.Vector3(0, CENTER_Y, 0), shift: 1 }
 
+function useSnap(reduced) {
   // Settle on a chapter once scrolling stops — always in the direction the
   // visitor was moving, so a small scroll never bounces back.
   useEffect(() => {
@@ -185,20 +183,36 @@ export default function Experience({ onActive, onProgress, onSelect, reduced }) 
         if (Math.abs(top - scrollY) > 2) scrollTo({ top, behavior: reduced ? 'auto' : 'smooth' })
       }, 420)
     }
+    const inputs = ['wheel', 'touchmove', 'keydown']
     addEventListener('scroll', onScroll, { passive: true })
-    ;['wheel', 'touchmove', 'keydown'].forEach((e) => addEventListener(e, onInput, { passive: true }))
+    inputs.forEach((e) => addEventListener(e, onInput, { passive: true }))
     return () => {
-      clearTimeout(timer); removeEventListener('scroll', onScroll)
-      ;['wheel', 'touchmove', 'keydown'].forEach((e) => removeEventListener(e, onInput))
+      clearTimeout(timer)
+      removeEventListener('scroll', onScroll)
+      inputs.forEach((e) => removeEventListener(e, onInput))
     }
   }, [reduced])
+}
+
+function applyCamera(camera, size) {
+  camera.position.copy(rig.pos)
+  camera.lookAt(rig.look)
+  const { width: w, height: h } = size
+  camera.setViewOffset(w, h, -w * 0.16 * rig.shift, 0, w, h)
+}
+
+export function BackScene({ onActive, onProgress, reduced }) {
+  const offset = useRef(0)
+  const lastActive = useRef(null)
+  const lastC = useRef(-9)
+  useSnap(reduced)
 
   useFrame((st, dt) => {
     const max = maxScroll()
     const target = max > 0 ? THREE.MathUtils.clamp(scrollY / max, 0, 1) : 0
     offset.current = reduced ? target : THREE.MathUtils.damp(offset.current, target, 4.5, dt)
     const c = offsetToC(offset.current)
-    state.current.c = c
+    rig.c = c
 
     const act = THREE.MathUtils.clamp(Math.round(c), -1, N)
     if (act !== lastActive.current) { lastActive.current = act; onActive(act) }
@@ -209,17 +223,12 @@ export default function Experience({ onActive, onProgress, onSelect, reduced }) 
     const ang = FRONT + THREE.MathUtils.clamp(c, 0, N - 1) * STEP + outro * 0.6
     const dist = 5.6 + intro * 1.2 + outro * 1.4
     const y = CENTER_Y + 0.25 + outro * 0.5 + (reduced ? 0 : Math.sin(st.clock.elapsedTime * 0.25) * 0.04)
-    const want = new THREE.Vector3(Math.cos(ang) * dist, y, Math.sin(ang) * dist)
     const k = reduced ? 1 : 1 - Math.exp(-3 * dt)
-    st.camera.position.lerp(want, k)
-    look.current.lerp(new THREE.Vector3(0, CENTER_Y, 0), k)
-    st.camera.lookAt(look.current)
-
+    rig.pos.lerp(new THREE.Vector3(Math.cos(ang) * dist, y, Math.sin(ang) * dist), k)
+    rig.look.lerp(new THREE.Vector3(0, CENTER_Y, 0), k)
     // on the intro and outro screens the text sits on the left: slide the scene right
-    const side = st.size.width > 760 ? Math.max(intro, outro) : 0
-    shift.current = THREE.MathUtils.damp(shift.current, side, 4, dt)
-    const { width: w, height: h } = st.size
-    st.camera.setViewOffset(w, h, -w * 0.16 * shift.current, 0, w, h)
+    rig.shift = THREE.MathUtils.damp(rig.shift, st.size.width > 760 ? Math.max(intro, outro) : 0, 4, dt)
+    applyCamera(st.camera, st.size)
   })
 
   return (
@@ -227,10 +236,23 @@ export default function Experience({ onActive, onProgress, onSelect, reduced }) 
       <hemisphereLight args={['#FFFFFF', '#C9D6EA', 1.4]} />
       <directionalLight position={[3, 5, 4]} intensity={2} color="#FFFFFF" />
       <directionalLight position={[-4, 1, -3]} intensity={1.2} color="#8FAEE8" />
+      {!AVATAR_URL && <Ribbon reduced={reduced} />}
+    </>
+  )
+}
 
-      {AVATAR_URL ? <Avatar url={AVATAR_URL} /> : <Ribbon reduced={reduced} />}
-
-      {CARDS.map((card, k) => <Card key={k} card={card} onSelect={onSelect} state={state} />)}
+export function FrontScene({ onSelect }) {
+  useFrame((st) => applyCamera(st.camera, st.size))
+  return (
+    <>
+      {AVATAR_URL && (
+        <>
+          <hemisphereLight args={['#FFFFFF', '#C9D6EA', 1.4]} />
+          <directionalLight position={[3, 5, 4]} intensity={2} />
+          <Avatar url={AVATAR_URL} />
+        </>
+      )}
+      {CARDS.map((card, k) => <Card key={k} card={card} onSelect={onSelect} />)}
     </>
   )
 }

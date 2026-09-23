@@ -19,12 +19,14 @@ a { color: inherit }
 button:focus-visible, a:focus-visible { outline: 1px solid var(--ink); outline-offset: 4px }
 .hide { opacity: 0 !important; visibility: hidden; pointer-events: none !important }
 
-/* layers: watermark name < 3D statue & photos < text */
-.watermark { position: fixed; z-index: 0; inset: 0; display: grid; place-content: center; pointer-events: none; transition: opacity .8s, visibility .8s }
+/* layers: blurred ribbon < her name < photos < text */
+.watermark { position: fixed; z-index: 1; inset: 0; display: grid; place-content: center; pointer-events: none; transition: opacity .8s, visibility .8s }
 .watermark span { font-family: var(--serif); font-weight: 600; font-size: clamp(52px, 8vw, 132px); line-height: .95; letter-spacing: -.01em; color: var(--ink) }
 .watermark span:first-child { transform: translate(-.9em, -.2em) }
 .watermark span:last-child { transform: translate(.6em, -.2em) }
-.stage { position: fixed; inset: 0; z-index: 1 }
+.stage { position: fixed; inset: 0 }
+.stage.back { z-index: 0; pointer-events: none; filter: blur(10px); opacity: .85 }
+.stage.front { z-index: 2 }
 .track { width: 100% }
 .hud { position: fixed; z-index: 3; pointer-events: none }
 .hud button, .hud a { pointer-events: auto }

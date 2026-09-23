@@ -1,6 +1,6 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
-import Experience, { cToOffset, maxScroll } from './Experience'
+import { BackScene, FrontScene, cToOffset, maxScroll } from './Experience'
 import { AREAS, CHAPTERS, PROFILE } from './data/chapters'
 
 const N = CHAPTERS.length
@@ -52,15 +52,21 @@ export default function App() {
 
   return (
     <>
-      {/* the name sits behind the statue, like a watermark */}
+      {/* three layers: the blurred ribbon, her name, then the photos */}
+      <div className="stage back" aria-hidden="true">
+        <Canvas camera={{ fov: 32, position: [0, 0, 6], near: 0.1, far: 50 }} dpr={1} gl={{ antialias: true, alpha: true }}>
+          <BackScene onActive={setActive} onProgress={onProgress} reduced={reduced} />
+        </Canvas>
+      </div>
+
       <div className={`watermark${active === -1 ? '' : ' hide'}`} aria-hidden="true">
         <span>{first}</span><span>{rest.join(' ')}</span>
       </div>
 
-      <div className="stage">
+      <div className="stage front">
         <Canvas camera={{ fov: 32, position: [0, 0, 6], near: 0.1, far: 50 }} dpr={[1, 1.5]} gl={{ antialias: true, alpha: true }}>
           <Suspense fallback={null}>
-            <Experience onActive={setActive} onProgress={onProgress} onSelect={openStory} reduced={reduced} />
+            <FrontScene onSelect={openStory} />
           </Suspense>
         </Canvas>
       </div>
