@@ -1,8 +1,9 @@
-/* Single light world on purpose: soft studio mist, like a 3D render. */
+/* Single light, monochrome world on purpose: paper, ink, one plaster figure. */
 :root {
+  --c: var(--ink);
   color-scheme: light;
-  --bg: #DDE3E6; --ink: #15171A; --mute: #5E666F; --line: rgba(21, 23, 26, .14);
-  --glass: rgba(236, 240, 242, .78);
+  --bg: #F1F1EF; --ink: #141414; --mute: #77776F; --line: rgba(20, 20, 20, .12);
+  --glass: rgba(246, 246, 244, .92);
   --sans: "Geist", "Helvetica Neue", Arial, sans-serif;
   --mono: "Geist Mono", ui-monospace, Consolas, monospace;
   --serif: "Instrument Serif", Georgia, serif;
@@ -133,3 +134,15 @@ button:focus-visible, a:focus-visible { outline: 1px solid var(--ink); outline-o
   .stage, .panel, .statement, .caption { transition: none }
   .fade, .list, .scrollhint i { animation: none }
 }
+
+/* Minimal pass: no area colours, no decoration */
+[style*="--c"] { --c: var(--ink) !important }
+.meta i, .legend, .row i { display: none }
+.bottom { grid-template-columns: 1fr auto }
+.ruler span::after { background: var(--ink); opacity: .25 }
+.ruler span.past::after { opacity: .6 }
+.ruler span.on::after { width: 1px }
+.beat h3 { color: var(--mute) }
+.panel { border-radius: 0; top: 0; right: 0; bottom: 0; width: min(520px, 100%); border: 0; border-left: 1px solid var(--line); box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; transform: translateX(100%) }
+.top nav .talk { border-radius: 0; padding: 10px 16px }
+.caption h2, .panel h1 { font-weight: 400 }

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Line, Sparkles, useGLTF, Environment, Lightformer, Billboard } from '@react-three/drei'
+import { Line, useGLTF, Billboard } from '@react-three/drei'
 import { MarchingCubes } from 'three/examples/jsm/objects/MarchingCubes.js'
 import * as THREE from 'three'
 import { CHAPTERS, AREAS, AVATAR_URL } from './data/chapters'
@@ -9,8 +9,9 @@ const N = CHAPTERS.length
 const TURNS = 3.2
 const FLOOR = -1.25
 const SEG = 1400
-const RAD = 10
-export const BG = '#DDE3E6'
+const RAD = 6
+export const BG = '#F1F1EF'
+const INK = '#141414'
 
 // Scroll position → "chapter coordinate" c: -1 = intro, 0..N-1 = chapters, N = outro
 export const offsetToC = (o) => o * (N + 1) - 1
@@ -30,17 +31,7 @@ class HelixCurve extends THREE.Curve {
   getPoint(t, target = new THREE.Vector3()) { return helix(t, target) }
 }
 
-const areaColor = (i) => new THREE.Color(AREAS[CHAPTERS[THREE.MathUtils.clamp(i, 0, N - 1)].area].color)
-function colorAt(t) {
-  const k = THREE.MathUtils.clamp(t * N - 0.5, 0, N - 1)
-  const i = Math.floor(k)
-  return areaColor(i).lerp(areaColor(i + 1), k - i)
-}
-
-const pearl = new THREE.MeshPhysicalMaterial({
-  color: '#F4F2EF', roughness: 0.18, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.12,
-  iridescence: 1, iridescenceIOR: 1.35, iridescenceThicknessRange: [180, 620], sheen: 0.4, sheenColor: '#C9BFF5',
-})
+const pearl = new THREE.MeshStandardMaterial({ color: '#ECECE8', roughness: 0.9, metalness: 0 })
 
 /* Abstract, faceless figure made of metaballs: a gymnast's salute, one arm raised.
    Bones are in world units (feet at y = 0, ~1.9 tall); each bone is a chain of balls. */
@@ -106,32 +97,6 @@ const shadowTex = (() => {
   return new THREE.CanvasTexture(c)
 })()
 
-/* A slow, fluid landscape with faint contour lines — the ground the story stands on */
-const groundMat = new THREE.ShaderMaterial({
-  transparent: true, depthWrite: false,
-  uniforms: { uTime: { value: 0 }, uBg: { value: new THREE.Color(BG) } },
-  vertexShader: `
-    uniform float uTime; varying vec2 vP; varying float vH;
-    float h(vec2 p){ return sin(p.x*.9+uTime*.25)*.5 + sin(p.y*1.3-uTime*.2)*.5 + sin((p.x+p.y)*.55+uTime*.15)*.7; }
-    void main(){
-      vec3 p = position; vP = p.xy;
-      float d = length(p.xy);
-      vH = h(p.xy) * smoothstep(1.2, 6.0, d);
-      p.z += vH * .18;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.);
-    }`,
-  fragmentShader: `
-    uniform vec3 uBg; varying vec2 vP; varying float vH;
-    void main(){
-      vec3 mint = vec3(.80,.89,.86), lilac = vec3(.87,.84,.93), sand = vec3(.93,.90,.86);
-      float k = .5 + .5*sin(vP.x*.35 + vP.y*.22);
-      vec3 c = mix(mix(mint, lilac, k), sand, smoothstep(-.6,.9,vH)*.5);
-      float line = 1. - smoothstep(0., .035, abs(fract(vH*3.) - .5) - .45);
-      c = mix(c, vec3(.35,.39,.44), line * .10);
-      float fade = smoothstep(11., 3., length(vP));
-      gl_FragColor = vec4(mix(uBg, c, fade), fade);
-    }`,
-})
 
 export default function Experience({ onActive, onSelect, reduced }) {
   const offset = useRef(0)
@@ -145,13 +110,7 @@ export default function Experience({ onActive, onSelect, reduced }) {
   const tmp = useMemo(() => new THREE.Vector3(), [])
 
   const tubeGeo = useMemo(() => {
-    const g = new THREE.TubeGeometry(new HelixCurve(), SEG, 0.015, RAD, false)
-    const col = new Float32Array(g.attributes.position.count * 3)
-    for (let j = 0; j <= SEG; j++) {
-      const c = colorAt(j / SEG)
-      for (let i = 0; i <= RAD; i++) c.toArray(col, (j * (RAD + 1) + i) * 3)
-    }
-    g.setAttribute('color', new THREE.BufferAttribute(col, 3))
+    const g = new THREE.TubeGeometry(new HelixCurve(), SEG, 0.0045, RAD, false)
     g.setDrawRange(0, 0)
     return g
   }, [])
@@ -189,7 +148,6 @@ export default function Experience({ onActive, onSelect, reduced }) {
     const g = THREE.MathUtils.clamp((c + 1) / (N + 1), 0, 1)
     const t = cToT(c)
     const time = state.clock.elapsedTime
-    if (!reduced) groundMat.uniforms.uTime.value = time
 
     const act = THREE.MathUtils.clamp(Math.round(c), -1, N)
     if (act !== lastActive.current) { lastActive.current = act; onActive(act) }
@@ -209,11 +167,10 @@ export default function Experience({ onActive, onSelect, reduced }) {
       if (!m) return
       const reached = i <= c + 0.02
       const isA = i === act
-      m.scale.setScalar(THREE.MathUtils.damp(m.scale.x, reached ? (isA ? 1.8 : 1.1) : 0.55, 6, dt))
-      m.material.color.set(reached ? AREAS[CHAPTERS[i].area].color : '#9AA2AA')
+      m.scale.setScalar(THREE.MathUtils.damp(m.scale.x, isA ? 1.5 : 1, 6, dt))
+      m.material.color.set(reached ? INK : '#BDBDB8')
       const r = rings.current[i]
-      r.material.opacity = THREE.MathUtils.damp(r.material.opacity, isA ? 0.9 : 0, 6, dt)
-      r.scale.setScalar(isA && !reduced ? 1 + Math.sin(time * 2.5) * 0.08 : 1)
+      r.material.opacity = THREE.MathUtils.damp(r.material.opacity, isA ? 1 : 0, 6, dt)
     })
 
     // camera orbits so the current point of the line faces us
@@ -236,30 +193,20 @@ export default function Experience({ onActive, onSelect, reduced }) {
     <>
       <color attach="background" args={[BG]} />
       <fog attach="fog" args={[BG, 7, 16]} />
-      <ambientLight intensity={0.35} />
-      <directionalLight position={[3, 5, 3]} intensity={1.2} color="#FFF4EA" />
-      <Environment resolution={256}>
-        <Lightformer form="rect" intensity={3} position={[0, 5, -4]} scale={[10, 4, 1]} color="#ffffff" />
-        <Lightformer form="rect" intensity={2.2} position={[-5, 1, 1]} rotation-y={Math.PI / 2} scale={[6, 3, 1]} color="#9FD8CC" />
-        <Lightformer form="rect" intensity={2.2} position={[5, 1, 1]} rotation-y={-Math.PI / 2} scale={[6, 3, 1]} color="#C9BFF5" />
-        <Lightformer form="ring" intensity={1.5} position={[0, 2, 5]} scale={3} color="#FFE3C8" />
-      </Environment>
+      <hemisphereLight args={['#FFFFFF', '#DADAD5', 2.2]} />
+      <directionalLight position={[3, 5, 2]} intensity={2} />
 
       <group ref={figure} position={[0, FLOOR, 0]}>
         {AVATAR_URL ? <Avatar url={AVATAR_URL} /> : <Figure reduced={reduced} />}
         <mesh rotation-x={-Math.PI / 2} position={[0, 0.004, 0]} renderOrder={-1}>
           <planeGeometry args={[1.3, 1.3]} />
-          <meshBasicMaterial map={shadowTex} transparent depthWrite={false} opacity={0.55} />
+          <meshBasicMaterial map={shadowTex} transparent depthWrite={false} opacity={0.3} />
         </mesh>
       </group>
 
-      <mesh rotation-x={-Math.PI / 2} position={[0, FLOOR - 0.02, 0]} material={groundMat}>
-        <planeGeometry args={[24, 24, 220, 220]} />
-      </mesh>
-
-      <Line points={ghost} color="#2A2F36" transparent opacity={0.16} lineWidth={1} dashed dashSize={0.04} gapSize={0.08} />
+      <Line points={ghost} color={INK} transparent opacity={0.12} lineWidth={1} dashed dashSize={0.02} gapSize={0.06} />
       <mesh geometry={tubeGeo}>
-        <meshPhysicalMaterial vertexColors roughness={0.3} clearcoat={1} clearcoatRoughness={0.2} />
+        <meshBasicMaterial color={INK} />
       </mesh>
 
       {nodePos.map((p, i) => (
@@ -270,24 +217,22 @@ export default function Experience({ onActive, onSelect, reduced }) {
             onPointerOver={() => (document.body.style.cursor = 'pointer')}
             onPointerOut={() => (document.body.style.cursor = '')}
           >
-            <sphereGeometry args={[0.05, 32, 32]} />
-            <meshPhysicalMaterial roughness={0.2} clearcoat={1} />
+            <sphereGeometry args={[0.022, 16, 16]} />
+            <meshBasicMaterial />
           </mesh>
           <Billboard>
             <mesh ref={(r) => (rings.current[i] = r)}>
-              <ringGeometry args={[0.13, 0.142, 64]} />
-              <meshBasicMaterial color={AREAS[CHAPTERS[i].area].color} transparent opacity={0} depthWrite={false} />
+              <ringGeometry args={[0.07, 0.075, 64]} />
+              <meshBasicMaterial color={INK} transparent opacity={0} depthWrite={false} />
             </mesh>
           </Billboard>
         </group>
       ))}
 
       <mesh ref={head}>
-        <sphereGeometry args={[0.035, 24, 24]} />
-        <meshBasicMaterial color="#FFFFFF" />
+        <sphereGeometry args={[0.014, 16, 16]} />
+        <meshBasicMaterial color={INK} />
       </mesh>
-
-      <Sparkles count={140} scale={[9, 5, 9]} size={1.6} speed={reduced ? 0 : 0.15} opacity={0.5} color="#7D8894" />
     </>
   )
 }
