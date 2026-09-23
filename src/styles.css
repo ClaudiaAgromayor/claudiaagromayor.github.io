@@ -25,7 +25,7 @@ button:focus-visible, a:focus-visible { outline: 1px solid var(--ink); outline-o
 .watermark span:first-child { transform: translate(-.9em, -.2em) }
 .watermark span:last-child { transform: translate(.6em, -.2em) }
 .stage { position: fixed; inset: 0 }
-.stage.back { z-index: 0; pointer-events: none; filter: blur(4px); opacity: .9 }
+.stage.back { z-index: 0; pointer-events: none }
 .stage.front { z-index: 2 }
 .track { width: 100% }
 .hud { position: fixed; z-index: 3; pointer-events: none }

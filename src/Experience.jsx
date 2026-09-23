@@ -158,7 +158,7 @@ function Card({ card, onSelect }) {
 
 /* ── scene ─────────────────────────────────────────────────── */
 // The scene is drawn in two layers so her name can sit between them:
-//   back  — the ribbon, softly blurred (CSS)      front — the photos, sharp
+//   back  — the ribbon                            front — the photos
 // The back layer drives the camera; the front layer copies it every frame.
 const rig = { c: -1, pos: new THREE.Vector3(0, CENTER_Y + 0.25, 6.8), look: new THREE.Vector3(0, CENTER_Y, 0), shift: 1 }
 
