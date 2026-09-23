@@ -21,7 +21,7 @@ button:focus-visible, a:focus-visible { outline: 1px solid var(--ink); outline-o
 
 /* layers: watermark name < 3D statue & photos < text */
 .watermark { position: fixed; z-index: 0; inset: 0; display: grid; place-content: center; pointer-events: none; transition: opacity .8s, visibility .8s }
-.watermark span { font-family: var(--serif); font-weight: 600; font-size: clamp(52px, 8vw, 132px); line-height: .95; letter-spacing: -.01em; color: rgba(36, 72, 168, .1) }
+.watermark span { font-family: var(--serif); font-weight: 600; font-size: clamp(52px, 8vw, 132px); line-height: .95; letter-spacing: -.01em; color: var(--ink) }
 .watermark span:first-child { transform: translate(-.9em, -.2em) }
 .watermark span:last-child { transform: translate(.6em, -.2em) }
 .stage { position: fixed; inset: 0; z-index: 1 }

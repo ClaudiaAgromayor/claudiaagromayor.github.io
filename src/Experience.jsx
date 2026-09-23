@@ -24,7 +24,7 @@ function ribbonPath(t, time, v = new THREE.Vector3()) {
   return v.set(Math.cos(a) * r, -1.0 + 2.5 * t + 0.08 * Math.sin(t * 11 + time), Math.sin(a) * r)
 }
 const silk = new THREE.MeshPhysicalMaterial({
-  color: '#2448A8', roughness: 0.35, metalness: 0.05, sheen: 1, sheenColor: '#9DB8F5', sheenRoughness: 0.4,
+  color: '#A6C0F2', roughness: 0.3, metalness: 0.05, sheen: 1, sheenColor: '#FFFFFF', sheenRoughness: 0.35,
   clearcoat: 0.4, clearcoatRoughness: 0.3, side: THREE.DoubleSide,
 })
 
@@ -226,7 +226,7 @@ export default function Experience({ onActive, onProgress, onSelect, reduced }) 
     <>
       <hemisphereLight args={['#FFFFFF', '#C9D6EA', 1.4]} />
       <directionalLight position={[3, 5, 4]} intensity={2} color="#FFFFFF" />
-      <directionalLight position={[-4, 1, -3]} intensity={1.2} color="#BFD2FF" />
+      <directionalLight position={[-4, 1, -3]} intensity={1.2} color="#8FAEE8" />
 
       {AVATAR_URL ? <Avatar url={AVATAR_URL} /> : <Ribbon reduced={reduced} />}
 
