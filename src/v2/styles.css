@@ -1,0 +1,147 @@
+/* v2 — a studio-style home: pale lavender-grey paper, black type, cobalt, and a dark finale.
+   Single world on purpose; every colour is set explicitly. */
+:root {
+  color-scheme: light;
+  --bg: #EEF0F8; --ink: #0E1016; --mute: #5B6072; --line: rgba(14, 16, 22, .14);
+  --card: #101218; --blue: #2340D8; --blue-soft: #4F63E8; --night: #04050A;
+  --sans: "Geist", "Helvetica Neue", Arial, sans-serif;
+  --gut: clamp(16px, 5vw, 72px);
+  --radius: clamp(14px, 1.6vw, 22px);
+  --ease: cubic-bezier(.7, 0, .2, 1);
+}
+*, *::before, *::after { box-sizing: border-box }
+html { scroll-behavior: auto }
+html, body { margin: 0; background: var(--bg); color: var(--ink); overflow-x: clip }
+body { font-family: var(--sans); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased }
+a { color: inherit; text-decoration: none }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; text-align: inherit }
+img { max-width: 100%; display: block }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px }
+.caps { font-size: 12px; font-weight: 500; letter-spacing: .02em; text-transform: uppercase; line-height: 1.5 }
+
+/* ── header ── */
+.bar { position: fixed; z-index: 20; top: calc(24px + env(safe-area-inset-top, 0px)); left: var(--gut); right: var(--gut); display: flex; justify-content: space-between; align-items: center; pointer-events: none; mix-blend-mode: normal }
+.bar > * { pointer-events: auto }
+.logo { position: fixed; z-index: 21; left: var(--gut); top: calc(24px + env(safe-area-inset-top, 0px)); height: 44px; display: flex; align-items: center; font-size: clamp(15px, 1.5vw, 22px); font-weight: 500; letter-spacing: .1em; line-height: 1; color: #fff; mix-blend-mode: difference }
+.actions { display: flex; gap: 12px }
+.pill { display: inline-flex; align-items: center; gap: 12px; height: 44px; padding: 0 22px; border-radius: 99px; background: #E3E6F0; font-size: 13px; font-weight: 600; letter-spacing: -.01em; transition: transform .35s var(--ease), background .3s }
+.pill:hover { transform: scale(1.04) }
+.pill.dark { background: #262833; color: #fff }
+.pill.ghost { background: #fff; box-shadow: 0 6px 24px rgba(14, 16, 40, .08) }
+.pill.light { background: #fff; color: var(--ink) }
+.pill.outline { background: transparent; color: #fff; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35) }
+.pill.center { display: flex; width: max-content; margin: clamp(48px, 7vw, 96px) auto 0 }
+.dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; display: inline-block }
+.dots { width: 12px; height: 5px; display: inline-block; background: radial-gradient(circle, currentColor 2.4px, transparent 2.6px) 0 0 / 6px 5px repeat-x }
+
+/* ── hero ── */
+.hero { padding: calc(24px + env(safe-area-inset-top, 0px)) var(--gut) 0 }
+.lede { margin: 0 0 clamp(28px, 3.5vw, 44px) 30%; max-width: 21em; font-size: clamp(20px, 2.1vw, 31px); line-height: 1.16; letter-spacing: -.02em; font-weight: 400 }
+.card { border-radius: var(--radius); overflow: hidden; background: var(--card); display: block }
+.hero-card { height: min(72vh, 56vw); min-height: 360px; cursor: grab }
+.hero-card canvas { touch-action: pan-y }
+.pluses { display: flex; justify-content: space-between; align-items: center; height: 44px; font-size: 22px; font-weight: 300; line-height: 1 }
+.plus-label { font-size: 13px; font-weight: 600 }
+
+/* ── big type sections ── */
+.big { margin: 0; font-weight: 400; font-size: clamp(52px, 9.4vw, 150px); line-height: 1.04; letter-spacing: -.045em; text-wrap: balance; position: relative; z-index: 1 }
+.indent { padding-left: 16% }
+.intro, .statement { position: relative; padding: clamp(100px, 14vw, 220px) var(--gut) clamp(60px, 8vw, 120px) }
+.intro-copy, .statement-copy { position: relative; z-index: 1; margin: clamp(40px, 5vw, 72px) 0 0 auto; width: min(560px, 100%); font-size: clamp(17px, 1.5vw, 21px); line-height: 1.42; letter-spacing: -.01em }
+.intro-copy p, .statement-copy p { margin: 0 0 28px }
+.tube { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible }
+.tube.t1 { z-index: 0; top: 18%; height: 82% }
+.tube.t2 { z-index: 0; top: 5% }
+
+/* ── story card ── */
+.story { padding: 0 var(--gut) }
+.story-card { position: relative; height: min(75vh, 58vw); min-height: 320px; background: var(--blue) }
+.story-card img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.15) brightness(1.05); mix-blend-mode: screen; opacity: .85; transform: scale(1.04); transition: transform 1.2s var(--ease) }
+.story-card:hover img { transform: scale(1.08) }
+.story-words { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: clamp(18px, 3vw, 44px); color: #fff; font-size: clamp(48px, 8.4vw, 132px); letter-spacing: -.03em; line-height: 1; white-space: nowrap }
+.story-words > span { will-change: transform }
+.play { width: clamp(84px, 9.5vw, 136px); height: clamp(56px, 6vw, 86px); border-radius: 99px; background: #fff; display: grid; place-items: center; transition: transform .4s var(--ease) }
+.play svg { width: 28%; fill: var(--ink) }
+.story-card:hover .play { transform: scale(1.08) }
+
+/* ── work ── */
+.work { padding: clamp(100px, 13vw, 200px) var(--gut) clamp(40px, 6vw, 80px) }
+.work-head { display: flex; justify-content: space-between; align-items: end; gap: 32px; margin-bottom: clamp(36px, 5vw, 64px) }
+.work-head .caps { width: min(320px, 40%); margin: 0 0 12px; text-align: left }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px, 5vw, 72px) clamp(16px, 2vw, 28px) }
+.item { display: block; text-align: left }
+.art { position: relative; aspect-ratio: 16 / 10.4; max-width: 100% }
+.art > * { transition: transform 1s var(--ease) }
+.item:hover .art > * { transform: scale(1.04) }
+.art.ink { background: radial-gradient(120% 90% at 80% 10%, #1D2140 0%, #0C0D14 60%) }
+.art.cobalt { background: radial-gradient(120% 100% at 85% 0%, #5B72FF 0%, #2340D8 45%, #16248F 100%) }
+.art.soft { background: linear-gradient(160deg, #C9D2FF 0%, #8FA0F5 100%) }
+.art.paper { background: linear-gradient(160deg, #FFFFFF 0%, #DDE2F3 100%); box-shadow: inset 0 0 0 1px var(--line) }
+.art.photo { background: var(--blue) }
+.art.photo img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.1); mix-blend-mode: screen; opacity: .9 }
+.pattern { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke-width: 1 }
+.ink .pattern, .cobalt .pattern { stroke: rgba(255, 255, 255, .22); fill: none }
+.ink .pattern .fill, .cobalt .pattern .fill { fill: rgba(140, 160, 255, .55); stroke: none }
+.paper .pattern, .soft .pattern { stroke: rgba(35, 64, 216, .28) }
+.paper .pattern .fill, .soft .pattern .fill { fill: rgba(35, 64, 216, .45); stroke: none }
+.metric { position: absolute; left: clamp(18px, 2.4vw, 34px); bottom: clamp(16px, 2.2vw, 30px); display: grid; gap: 4px }
+.metric b { font-size: clamp(48px, 7vw, 108px); font-weight: 400; letter-spacing: -.05em; line-height: .95 }
+.metric small { font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: .02em }
+.ink .metric, .cobalt .metric { color: #fff }
+.paper .metric, .soft .metric { color: var(--ink) }
+.soft .metric b, .paper .metric b { color: var(--blue) }
+.tags { display: block; margin-top: 18px; font-size: 12px; font-weight: 500; letter-spacing: .01em }
+.title { display: block; margin-top: 4px; font-size: clamp(26px, 2.8vw, 42px); letter-spacing: -.035em; line-height: 1.1 }
+
+/* ── finale: the dark part with her avatar ── */
+.finale { position: relative; height: 320vh; background: var(--night); color: #fff; margin-top: clamp(60px, 8vw, 120px) }
+.dusk { position: absolute; left: 0; right: 0; top: -40vh; height: 40vh; background: linear-gradient(var(--bg), var(--night)); pointer-events: none }
+.finale-stick { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden }
+.finale-canvas { position: absolute; inset: 0 }
+.halo { position: absolute; left: 50%; top: 50%; width: min(120vh, 110vw); aspect-ratio: 1; border-radius: 50%; transform: translate(-50%, -50%);
+  background: conic-gradient(from 90deg, #ff6a6a33, #ffd76a33, #6aff9a33, #6ad0ff44, #9a6aff33, #ff6a6a33);
+  -webkit-mask: radial-gradient(circle, transparent 60%, #000 64%, #000 67%, transparent 72%); mask: radial-gradient(circle, transparent 60%, #000 64%, #000 67%, transparent 72%);
+  filter: blur(18px); opacity: .9 }
+.finale-text { position: absolute; left: 0; right: 0; top: 50%; translate: 0 -50%; margin: 0; padding: 0 var(--gut); text-align: center; font-weight: 400; text-transform: uppercase; font-size: clamp(38px, 6.2vw, 96px); line-height: 1.04; letter-spacing: -.01em; pointer-events: none }
+.finale-contact { position: absolute; left: var(--gut); right: var(--gut); bottom: calc(48px + env(safe-area-inset-bottom, 0px)); display: grid; justify-items: center; gap: 22px; text-align: center; opacity: 0 }
+.finale-contact .caps { margin: 0; color: #B8BED4 }
+.contact-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px }
+.mail { font-size: clamp(20px, 2.4vw, 34px); letter-spacing: -.02em; user-select: all; margin-right: 8px }
+
+.foot { display: flex; flex-wrap: wrap; gap: 12px 28px; padding: 28px var(--gut) calc(28px + env(safe-area-inset-bottom, 0px)); background: var(--night); color: #8E94AA; font-size: 13px }
+.foot span { margin-right: auto }
+.foot a:hover { color: #fff }
+
+/* ── overlays ── */
+.menu { position: fixed; inset: 0; z-index: 40; background: var(--bg); padding: calc(24px + env(safe-area-inset-top, 0px)) var(--gut) 40px; display: flex; flex-direction: column; justify-content: space-between; animation: fade .5s var(--ease) both }
+.menu nav { display: grid; gap: 4px }
+.menu nav > * { font-size: clamp(52px, 9vw, 130px); letter-spacing: -.045em; line-height: 1.02; text-align: left; transition: color .25s, transform .4s var(--ease); width: max-content }
+.menu nav > *:hover { color: var(--blue); transform: translateX(12px) }
+.menu-close { align-self: flex-end; background: #fff }
+.detail { position: fixed; inset: 0; z-index: 40; background: rgba(8, 10, 20, .45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); display: grid; place-items: center; padding: 16px; animation: fade .35s ease both }
+.detail-card { position: relative; width: min(680px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; overscroll-behavior: contain; background: var(--bg); border-radius: var(--radius); padding: clamp(24px, 4vw, 48px) }
+.detail-card .menu-close { position: absolute; top: 18px; right: 18px; height: 36px; padding: 0 16px }
+.detail-card h3 { margin: 8px 0 12px; font-size: clamp(32px, 4vw, 52px); font-weight: 400; letter-spacing: -.04em; line-height: 1.05; padding-right: 90px }
+.detail-line { font-size: 19px; line-height: 1.4; margin: 0 0 22px }
+.detail-card img { border-radius: 12px; margin: 0 0 22px }
+.detail-card ul { margin: 0 0 22px; padding-left: 20px; display: grid; gap: 8px; color: #2A2E3B }
+.detail-took { font-size: 22px; letter-spacing: -.02em; color: var(--blue); margin: 0 }
+.src { display: inline-block; margin-top: 18px; font-size: 13px; font-weight: 600; border-bottom: 1px solid var(--line) }
+@keyframes fade { from { opacity: 0 } }
+
+/* ── small screens ── */
+@media (max-width: 760px) {
+  .actions .pill.dark { display: none }
+  .lede { margin-left: 0; margin-top: 72px }
+  .hero-card { height: 62vh }
+  .indent { padding-left: 0 }
+  .work-head { flex-direction: column; align-items: start }
+  .work-head .caps { width: auto }
+  .grid { grid-template-columns: 1fr }
+  .plus-label { font-size: 11px }
+  .mail { font-size: 20px; margin: 0 }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pill, .art > *, .story-card img, .play, .menu nav > * { transition: none }
+  .menu, .detail { animation: none }
+}
