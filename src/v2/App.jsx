@@ -2,10 +2,9 @@ import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import Lenis from 'lenis'
 import Hero3D, { LABELS } from './Hero3D'
-import Avatar3D, { Floating, StudioLights } from './Avatar3D'
+import Avatar3D from './Avatar3D'
 import { AVATAR } from './avatar'
 import Device3D from './Device3D'
-import { STICKERS, LAYOUT } from './Stickers'
 import { AREAS, CHAPTERS, PROFILE } from '../data/chapters'
 
 const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -168,7 +167,6 @@ export default function App() {
         <Story go={go} />
         <Statement />
         <Finale />
-        <Together />
       </main>
 
       <footer className="foot">
@@ -399,23 +397,34 @@ function Statement() {
   )
 }
 
-/* The dark part: the text, then (once she has one) her avatar rises into the halo */
+/* The ending, on one dark screen: the next chapter, then her avatar, then how to reach her */
 function Finale() {
-  const wrap = useRef(null), text = useRef(null), halo = useRef(null)
+  const wrap = useRef(null), text = useRef(null), halo = useRef(null), contact = useRef(null)
   const progress = useRef(0)
   const live = useInView(wrap, '0px')
+  const [copied, setCopied] = useState(false)
+  const copy = () => navigator.clipboard?.writeText(PROFILE.email).then(() => setCopied(true), () => {})
   const scrub = useCallback((el) => {
     const p = stickyProgress(el)
     progress.current = p
-    if (AVATAR) { // the text makes way for her
-      text.current.style.opacity = 1 - clamp01((p - 0.3) / 0.18)
-      text.current.style.transform = `translateY(${-clamp01((p - 0.3) / 0.3) * 60}px)`
+    if (AVATAR) {
+      // the text makes way for her
+      text.current.style.opacity = 1 - clamp01((p - 0.25) / 0.15)
+      text.current.style.transform = `translateY(${-clamp01((p - 0.25) / 0.3) * 60}px)`
+    } else {
+      // no avatar yet: the text stays and moves up to make room for the contact
+      text.current.style.transform = `translateY(${-clamp01((p - 0.45) / 0.3) * 14}vh)`
     }
+    const c = clamp01((p - (AVATAR ? 0.68 : 0.5)) / 0.16)
+    contact.current.style.opacity = c
+    contact.current.style.transform = `translateY(${(1 - c) * 30}px)`
+    contact.current.style.visibility = c > 0.01 ? 'visible' : 'hidden'
     halo.current.style.transform = `translate(-50%, -50%) scale(${0.85 + p * 0.3})`
   }, [])
   useScrub(wrap, scrub)
   return (
     <section className="finale" ref={wrap}>
+      <span id="contact" className="contact-anchor" aria-hidden="true" />
       <div className="dusk" aria-hidden="true" />
       <div className="finale-stick">
         <div className="halo" ref={halo} aria-hidden="true" />
@@ -427,46 +436,14 @@ function Finale() {
           </div>
         )}
         <h2 className="finale-text" ref={text}>The next chapter<br />is still<br />unwritten</h2>
-      </div>
-    </section>
-  )
-}
-
-/* Call to action: the things she loves, and how to reach her */
-function Together() {
-  const wrap = useRef(null)
-  const live = useInView(wrap)
-  const [copied, setCopied] = useState(false)
-  const copy = () => navigator.clipboard?.writeText(PROFILE.email).then(() => setCopied(true), () => {})
-  const onMove = (e) => {
-    const r = wrap.current.getBoundingClientRect()
-    wrap.current.style.setProperty('--mx', ((e.clientX - r.left) / r.width - 0.5).toFixed(3))
-    wrap.current.style.setProperty('--my', ((e.clientY - r.top) / r.height - 0.5).toFixed(3))
-  }
-  return (
-    <section className="together" id="contact" ref={wrap} onPointerMove={onMove}>
-      {AVATAR && (
-        <div className="together-canvas" aria-hidden="true">
-          <Canvas camera={{ position: [0, 0, 5], fov: 35 }} dpr={[1, 1.75]} frameloop={live ? 'always' : 'never'} gl={{ antialias: true, alpha: true }}>
-            <StudioLights />
-            <Suspense fallback={null}><group position={[0, -0.35, 0]} scale={1.25}><Floating reduced={reduced} /></group></Suspense>
-          </Canvas>
-        </div>
-      )}
-      <div className="stickers" aria-hidden="true">
-        {LAYOUT.map(([k, x, y, rot, depth], i) => (
-          <span key={k} className="sticker" style={{ left: `${x}%`, top: `${y}%`, '--r': `${rot}deg`, '--d': depth, '--i': i }}>{STICKERS[k]}</span>
-        ))}
-      </div>
-      <div className="together-text">
-        <p className="caps">Got a hard problem worth solving?</p>
-        <h2>Let’s work<br />together!</h2>
-        <p className="caps muted">{PROFILE.next}</p>
-        <div className="contact-row">
-          <span className="mail">{PROFILE.email}</span>
-          <button type="button" className="pill light" onClick={copy}>{copied ? 'COPIED' : 'COPY EMAIL'}</button>
-          <a className="pill outline" href={PROFILE.linkedin} target="_blank" rel="noreferrer">LINKEDIN</a>
-          <a className="pill outline" href={PROFILE.github} target="_blank" rel="noreferrer">GITHUB</a>
+        <div className="finale-contact" ref={contact}>
+          <p className="caps">Got a hard problem worth solving? {PROFILE.next}</p>
+          <div className="contact-row">
+            <span className="mail">{PROFILE.email}</span>
+            <button type="button" className="pill light" onClick={copy}>{copied ? 'COPIED' : 'COPY EMAIL'}</button>
+            <a className="pill outline" href={PROFILE.linkedin} target="_blank" rel="noreferrer">LINKEDIN</a>
+            <a className="pill outline" href={PROFILE.github} target="_blank" rel="noreferrer">GITHUB</a>
+          </div>
         </div>
       </div>
     </section>

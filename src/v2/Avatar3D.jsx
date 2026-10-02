@@ -50,13 +50,14 @@ export default function Avatar3D({ progress, reduced }) {
   const g = useRef()
   useFrame(({ clock }, dt) => {
     const t = reduced ? 0 : clock.elapsedTime
-    const rise = smooth(progress.current, 0.3, 0.75)
-    const y = THREE.MathUtils.lerp(-3.6, -0.1, rise) + Math.sin(t * 0.8) * 0.08
+    const rise = smooth(progress.current, 0.28, 0.62)
+    const lift = smooth(progress.current, 0.66, 0.85)
+    const y = THREE.MathUtils.lerp(-3.6, -0.1, rise) + lift * 0.45 + Math.sin(t * 0.8) * 0.08
     g.current.position.y = THREE.MathUtils.damp(g.current.position.y, y, 6, dt)
     g.current.rotation.y = Math.sin(t * 0.25) * 0.35
     g.current.rotation.z = Math.sin(t * 0.5) * 0.06
     g.current.rotation.x = 0.08 + Math.sin(t * 0.4) * 0.04
-    g.current.scale.setScalar(THREE.MathUtils.lerp(1, 1.2, rise))
+    g.current.scale.setScalar(THREE.MathUtils.lerp(1, 1.2, rise) * (1 - lift * 0.18))
   })
   return (
     <>
