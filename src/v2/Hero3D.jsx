@@ -4,7 +4,7 @@ import { Environment, Lightformer } from '@react-three/drei'
 import * as THREE from 'three'
 
 /* A pile of rhythmic-gymnastics apparatus — hoops, balls and clubs — that
-   drifts together, moves out of the way of the cursor and bursts on click. */
+   drifts together, swirls around the cursor and bursts on click. */
 
 const MATS = {
   cobalt: new THREE.MeshPhysicalMaterial({ color: '#2340D8', roughness: 0.18, clearcoat: 1, clearcoatRoughness: 0.08 }),
@@ -60,10 +60,15 @@ export default function Hero3D({ reduced }) {
       // soft pull towards a wide, flat pile in the middle of the card
       d.set(-o.p.x * 0.35, -o.p.y * 0.9, -o.p.z * 1.4)
       o.v.addScaledVector(d, dt * 2.2)
-      // push away from the cursor
+      // near the cursor they get caught in a swirl, like a ribbon being twirled
       d.subVectors(o.p, mouse.current); d.z *= 0.3
-      const dist = d.length(), R = 2.1
-      if (dist < R) o.v.addScaledVector(d.normalize(), (1 - dist / R) * 26 * dt)
+      const dist = d.length(), R = 2.6
+      if (dist < R) {
+        const f = (1 - dist / R) * dt
+        o.v.x += -d.y * 9 * f + d.x * 4 * f
+        o.v.y += d.x * 9 * f + d.y * 4 * f
+        o.v.z += Math.sin(o.p.x * 3) * 2 * f
+      }
       // a click sends everything outwards
       if (b > 0) o.v.addScaledVector(o.p.clone().normalize(), b * 30 * dt)
       o.v.multiplyScalar(Math.pow(0.12, dt))

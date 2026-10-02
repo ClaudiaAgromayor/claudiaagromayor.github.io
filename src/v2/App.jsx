@@ -1,11 +1,15 @@
 import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
+import Lenis from 'lenis'
 import Hero3D from './Hero3D'
-import Avatar3D from './Avatar3D'
-import { CHAPTERS, PROFILE } from '../data/chapters'
+import Avatar3D, { Floating, StudioLights } from './Avatar3D'
+import Device3D from './Device3D'
+import { STICKERS, LAYOUT } from './Stickers'
+import { AREAS, CHAPTERS, PROFILE } from '../data/chapters'
 
 const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
 const clamp01 = (x) => Math.max(0, Math.min(1, x))
+const pad = (n) => String(n).padStart(2, '0')
 
 // Selected work: the headline number of each project. Titles must match src/data/chapters.js.
 const WORK = [
@@ -20,6 +24,17 @@ const WORK = [
   { title: 'From 0 to 1,000 on TikTok', metric: '1,000', label: 'followers in month one', tags: ['Marketing', 'Social media'], tone: 'ink', art: 'orbit' },
   { title: 'Fifth in the world', tags: ['Sport', 'Gymnastics'], tone: 'photo' },
 ].map((w) => ({ ...w, ch: CHAPTERS.find((c) => c.title === w.title) })).filter((w) => w.ch)
+
+const USED = Object.keys(AREAS).filter((k) => CHAPTERS.some((c) => c.area === k))
+
+/* ── smooth scrolling ──────────────────────────────────────── */
+let lenis = null
+function scrollToId(id) {
+  const el = document.getElementById(id)
+  if (!el) return
+  if (lenis) lenis.scrollTo(el, { duration: 1.6 })
+  else el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' })
+}
 
 /* ── scroll-driven helpers ─────────────────────────────────── */
 // progress of an element through the viewport: 0 when its top enters, 1 when its bottom leaves
@@ -80,41 +95,66 @@ function Tube({ d, from, to, className }) {
 export default function App() {
   const [menu, setMenu] = useState(false)
   const [open, setOpen] = useState(null)
+
+  useEffect(() => {
+    if (reduced) return
+    lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9 })
+    let id
+    const raf = (t) => { lenis.raf(t); id = requestAnimationFrame(raf) }
+    id = requestAnimationFrame(raf)
+    return () => { cancelAnimationFrame(id); lenis.destroy(); lenis = null }
+  }, [])
+  useEffect(() => { if (lenis) (menu || open) ? lenis.stop() : lenis.start() }, [menu, open])
+
+  // text and rows rise into place as they enter the screen
+  useEffect(() => {
+    const io = new IntersectionObserver((es) => es.forEach((e) => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target) }
+    }), { rootMargin: '0px 0px -8% 0px' })
+    const scan = () => document.querySelectorAll('.reveal:not(.in)').forEach((el) => io.observe(el))
+    scan()
+    const mo = new MutationObserver(scan)
+    mo.observe(document.body, { childList: true, subtree: true })
+    return () => { io.disconnect(); mo.disconnect() }
+  }, [])
+
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') { setMenu(false); setOpen(null) } }
     addEventListener('keydown', onKey)
     return () => removeEventListener('keydown', onKey)
   }, [])
-  const toContact = () => { setMenu(false); document.getElementById('contact')?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }) }
+  const go = (id) => { setMenu(false); scrollToId(id) }
 
   return (
     <>
-      <a className="logo" href="#top" aria-label="Claudia Agromayor, back to top">CLAUDIA AGROMAYOR</a>
+      <a className="logo" href="#top" onClick={(e) => { e.preventDefault(); go('top') }} aria-label="Claudia Agromayor, back to top">CLAUDIA AGROMAYOR</a>
       <header className="bar">
         <span />
         <div className="actions">
-          <button type="button" className="pill dark" onClick={toContact}>LET’S TALK <i className="dot" /></button>
+          <button type="button" className="pill dark" onClick={() => go('contact')}>LET’S TALK <i className="dot" /></button>
           <button type="button" className="pill" onClick={() => setMenu(true)} aria-expanded={menu}>MENU <i className="dots" /></button>
         </div>
       </header>
 
       <main id="top">
         <Hero />
-        <Intro />
-        <StoryCard />
+        <Intro onJourney={() => go('journey')} />
+        <StoryCard onJourney={() => go('journey')} />
         <Work onOpen={setOpen} />
+        <Journey />
         <Statement />
         <Finale />
+        <Together />
       </main>
 
       <footer className="foot">
         <span>© {new Date().getFullYear()} Claudia Agromayor</span>
-        <a href="/">Journey (v1)</a>
+        <a href="/">Version 1</a>
         <a href={PROFILE.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
         <a href={PROFILE.github} target="_blank" rel="noreferrer">GitHub</a>
       </footer>
 
-      {menu && <Menu onClose={() => setMenu(false)} onContact={toContact} />}
+      {menu && <Menu onClose={() => setMenu(false)} go={go} />}
       {open && <Detail w={open} onClose={() => setOpen(null)} />}
     </>
   )
@@ -149,57 +189,59 @@ function Pluses({ label, n = 4 }) {
   )
 }
 
-function Intro() {
+function Intro({ onJourney }) {
   return (
     <section className="intro">
       <Tube className="t1" from="#4B63FF" to="#1B2FC8" d="M 520 -40 C 620 120 640 260 560 380 C 470 520 120 470 90 640 C 60 800 330 860 470 760 C 600 670 560 520 420 520" />
-      <h2 className="big"><span className="indent">Curious by Nature,</span><br />Persistent by Choice</h2>
-      <div className="intro-copy">
+      <h2 className="big reveal"><span className="indent">Curious by Nature,</span><br />Persistent by Choice</h2>
+      <div className="intro-copy reveal">
         <p>
           I combine engineering, machine learning and economics to build systems that work outside the notebook —
           from federated learning and LLM pipelines to drug discovery at the scale of billions.
         </p>
-        <a className="pill ghost" href="/"><i className="dot" /> MY JOURNEY</a>
+        <button type="button" className="pill ghost" onClick={onJourney}><i className="dot" /> MY JOURNEY</button>
       </div>
     </section>
   )
 }
 
-function StoryCard() {
-  const wrap = useRef(null), left = useRef(null), right = useRef(null)
+function StoryCard({ onJourney }) {
+  const wrap = useRef(null), left = useRef(null), right = useRef(null), img = useRef(null)
   const move = useCallback((el) => {
     const p = reduced ? 1 : clamp01((passProgress(el) - 0.1) / 0.4)
     const off = (1 - p) * 38
     left.current.style.transform = `translateX(${-off}vw)`
     right.current.style.transform = `translateX(${off}vw)`
+    img.current.style.transform = `scale(${1.25 - 0.2 * p})`
   }, [])
   useScrub(wrap, move)
   return (
     <section className="story" ref={wrap}>
       <Pluses n={4} />
-      <a className="card story-card" href="/" aria-label="My story: the full journey">
-        <img src="/img/gimnasia-2013.jpg" alt="" />
+      <button type="button" className="card story-card" onClick={onJourney} aria-label="My story: open the journey">
+        <img ref={img} src="/img/gimnasia-2013.jpg" alt="" />
         <span className="story-words">
           <span ref={left}>MY</span>
           <span className="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg></span>
           <span ref={right}>STORY</span>
         </span>
-      </a>
+      </button>
       <Pluses n={4} />
     </section>
   )
 }
 
+/* Selected work: one project per line, image and text alternating sides */
 function Work({ onOpen }) {
   return (
     <section className="work" id="work">
       <div className="work-head">
-        <h2 className="big">Selected Work</h2>
-        <p className="caps">A selection of research and engineering projects — from HPC pipelines to LLM systems.</p>
+        <h2 className="big reveal">Selected Work</h2>
+        <p className="caps reveal">A selection of research and engineering projects — from HPC pipelines to LLM systems.</p>
       </div>
-      <div className="grid">
-        {WORK.map((w) => (
-          <button key={w.title} type="button" className="item" onClick={() => onOpen(w)}>
+      <div className="rows">
+        {WORK.map((w, i) => (
+          <button key={w.title} type="button" className="wrow reveal" onClick={() => onOpen(w)}>
             <span className={`card art ${w.tone}`}>
               {w.tone === 'photo'
                 ? <img src={w.ch.img} alt="" loading="lazy" />
@@ -208,12 +250,16 @@ function Work({ onOpen }) {
                     <span className="metric"><b>{w.metric}</b><small>{w.label}</small></span>
                   </>}
             </span>
-            <span className="tags">{w.tags.join(' • ').toUpperCase()}</span>
-            <span className="title">{w.title}</span>
+            <span className="wtext">
+              <span className="widx">{pad(i + 1)} / {pad(WORK.length)}</span>
+              <span className="tags">{w.tags.join(' • ').toUpperCase()}</span>
+              <span className="title"><i className="arrow" aria-hidden="true">→</i>{w.title}</span>
+              <span className="wline">{w.ch.line}</span>
+              <span className="wmeta">{w.ch.date} · {w.ch.place}</span>
+            </span>
           </button>
         ))}
       </div>
-      <a className="pill ghost center" href="/"><i className="dot" /> SEE THE FULL JOURNEY</a>
     </section>
   )
 }
@@ -245,39 +291,116 @@ function Pattern({ kind }) {
   )
 }
 
+/* The journey: a numbered outline, one line per chapter, one image per line */
+function Journey() {
+  const [area, setArea] = useState('all')
+  const [open, setOpen] = useState(null)
+  const list = useRef(null), fill = useRef(null)
+  const scrub = useCallback((el) => {
+    const r = el.getBoundingClientRect()
+    fill.current.style.transform = `scaleY(${clamp01((innerHeight * 0.55 - r.top) / r.height)})`
+  }, [])
+  useScrub(list, scrub)
+  const rows = CHAPTERS.map((c, i) => ({ ...c, n: i + 1 })).filter((c) => area === 'all' || c.area === area)
+  return (
+    <section className="journey" id="journey">
+      <div className="work-head">
+        <h2 className="big reveal">The Journey</h2>
+        <p className="caps reveal">{CHAPTERS.length} chapters, from {PROFILE.born} to today — sport, study, work and research. Open any line.</p>
+      </div>
+      <div className="chips" role="group" aria-label="Filter by category">
+        {['all', ...USED].map((k) => (
+          <button key={k} type="button" aria-pressed={area === k} onClick={() => { setArea(k); setOpen(null) }}>
+            {k === 'all' ? 'All' : AREAS[k].name}
+          </button>
+        ))}
+      </div>
+      <ol className="jlist" ref={list}>
+        <i className="rail" aria-hidden="true"><b ref={fill} /></i>
+        {rows.map((c) => {
+          const isOpen = open === c.n
+          return (
+            <li key={c.n} className={`jrow reveal${isOpen ? ' open' : ''}`}>
+              <button type="button" className="jline" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : c.n)}>
+                <span className="jn">{pad(c.n)}</span>
+                <span className="jy">{c.year}</span>
+                <span className="jt"><b>{c.title}</b><small>{c.line}</small></span>
+                <span className="ja">{AREAS[c.area].name}</span>
+                <Thumb c={c} />
+              </button>
+              <div className="jmore"><div>
+                <p className="jmeta">{c.date} · {c.place}</p>
+                <ul>{c.facts.map((f, k) => <li key={k}>{f}</li>)}</ul>
+                <p className="jtook">{c.took}</p>
+                {c.link && <a className="src" href={c.link} target="_blank" rel="noreferrer">Read the news (Spanish) ↗</a>}
+              </div></div>
+            </li>
+          )
+        })}
+        {area === 'all' && (
+          <li className="jrow next reveal">
+            <button type="button" className="jline" onClick={() => scrollToId('contact')}>
+              <span className="jn">{pad(CHAPTERS.length + 1)}</span>
+              <span className="jy">2027</span>
+              <span className="jt"><b>The next chapter</b><small>{PROFILE.next}</small></span>
+              <span className="ja">Coming soon</span>
+              <span className="thumb soon"><b>?</b></span>
+            </button>
+          </li>
+        )}
+      </ol>
+    </section>
+  )
+}
+
+function Thumb({ c }) {
+  if (c.img) return <span className="thumb"><img src={c.img} alt="" loading="lazy" /></span>
+  return <span className={`thumb gen ${c.area}`}><b>{c.year}</b></span>
+}
+
 function Statement() {
+  const tablet = useRef(null)
+  const live = useInView(tablet)
   return (
     <section className="statement">
       <Tube className="t2" from="#7FD8FF" to="#2E6BFF" d="M 1500 520 C 1200 420 1000 520 980 300 C 960 80 1180 -20 1260 120 C 1330 250 1180 460 820 470 C 520 480 380 380 330 220" />
-      <h2 className="big">Where Curiosity<br />Becomes Research<br />That Matters</h2>
-      <div className="statement-copy">
-        <p>I like problems that sit between disciplines: a trading strategy that needs honest validation, a hospital that cannot share its data, a molecule library too large to screen by hand.</p>
-        <p>Gymnastics taught me that precision is trained. Engineering taught me to measure it. Research taught me to question the measurement.</p>
+      <h2 className="big reveal">Where Curiosity<br />Becomes Research<br />That Matters</h2>
+      <div className="device-row">
+        <div className="tablet reveal" ref={tablet}>
+          <div className="screen">
+            <Canvas camera={{ position: [0, 0.2, 5.4], fov: 34 }} dpr={[1, 1.75]} frameloop={live ? 'always' : 'never'} gl={{ antialias: true }}>
+              <Suspense fallback={null}><Device3D reduced={reduced} /></Suspense>
+            </Canvas>
+          </div>
+        </div>
+        <div className="statement-copy reveal">
+          <p>I like problems that sit between disciplines: a trading strategy that needs honest validation, a set of factories that cannot share their data, a molecule library too large to screen by hand.</p>
+          <p>Gymnastics taught me that precision is trained. Engineering taught me to measure it. Research taught me to question the measurement.</p>
+        </div>
       </div>
     </section>
   )
 }
 
+/* The dark part: she rises into view, then dives into a tunnel of data */
 function Finale() {
-  const wrap = useRef(null), text = useRef(null), contact = useRef(null), halo = useRef(null)
+  const wrap = useRef(null), text = useRef(null), dive = useRef(null), halo = useRef(null)
   const progress = useRef(0)
   const live = useInView(wrap, '0px')
   const scrub = useCallback((el) => {
     const p = stickyProgress(el)
     progress.current = p
-    text.current.style.opacity = 1 - clamp01((p - 0.45) / 0.2)
-    text.current.style.transform = `translateY(${-clamp01((p - 0.45) / 0.3) * 60}px)`
-    const c = clamp01((p - 0.66) / 0.18)
-    contact.current.style.opacity = c
-    contact.current.style.transform = `translateY(${(1 - c) * 30}px)`
-    contact.current.style.pointerEvents = c > 0.5 ? 'auto' : 'none'
-    halo.current.style.transform = `translate(-50%, -50%) scale(${0.85 + p * 0.35})`
+    text.current.style.opacity = 1 - clamp01((p - 0.38) / 0.14)
+    text.current.style.transform = `translateY(${-clamp01((p - 0.38) / 0.3) * 60}px)`
+    const d = clamp01((p - 0.64) / 0.08) * (1 - clamp01((p - 0.9) / 0.08))
+    dive.current.style.opacity = d
+    dive.current.style.transform = `scale(${0.94 + d * 0.06})`
+    halo.current.style.opacity = 1 - clamp01((p - 0.45) / 0.15)
+    halo.current.style.transform = `translate(-50%, -50%) scale(${0.85 + p * 0.5})`
   }, [])
   useScrub(wrap, scrub)
-  const [copied, setCopied] = useState(false)
-  const copy = () => navigator.clipboard?.writeText(PROFILE.email).then(() => setCopied(true), () => {})
   return (
-    <section className="finale" ref={wrap} id="contact">
+    <section className="finale" ref={wrap}>
       <div className="dusk" aria-hidden="true" />
       <div className="finale-stick">
         <div className="halo" ref={halo} aria-hidden="true" />
@@ -287,30 +410,60 @@ function Finale() {
           </Canvas>
         </div>
         <h2 className="finale-text" ref={text}>The next chapter<br />is still<br />unwritten</h2>
-        <div className="finale-contact" ref={contact}>
-          <p className="caps">{PROFILE.next}</p>
-          <div className="contact-row">
-            <span className="mail">{PROFILE.email}</span>
-            <button type="button" className="pill light" onClick={copy}>{copied ? 'COPIED' : 'COPY EMAIL'}</button>
-            <a className="pill outline" href={PROFILE.linkedin} target="_blank" rel="noreferrer">LINKEDIN</a>
-            <a className="pill outline" href={PROFILE.github} target="_blank" rel="noreferrer">GITHUB</a>
-          </div>
+        <p className="dive-text" ref={dive}>Every chapter is new data.<br /><span>The model keeps learning.</span></p>
+      </div>
+    </section>
+  )
+}
+
+/* Call to action: her avatar, the things she loves, and how to reach her */
+function Together() {
+  const wrap = useRef(null)
+  const live = useInView(wrap)
+  const [copied, setCopied] = useState(false)
+  const copy = () => navigator.clipboard?.writeText(PROFILE.email).then(() => setCopied(true), () => {})
+  const onMove = (e) => {
+    const r = wrap.current.getBoundingClientRect()
+    wrap.current.style.setProperty('--mx', ((e.clientX - r.left) / r.width - 0.5).toFixed(3))
+    wrap.current.style.setProperty('--my', ((e.clientY - r.top) / r.height - 0.5).toFixed(3))
+  }
+  return (
+    <section className="together" id="contact" ref={wrap} onPointerMove={onMove}>
+      <div className="together-canvas" aria-hidden="true">
+        <Canvas camera={{ position: [0, 0, 5], fov: 35 }} dpr={[1, 1.75]} frameloop={live ? 'always' : 'never'} gl={{ antialias: true, alpha: true }}>
+          <StudioLights />
+          <Suspense fallback={null}><group position={[0, -0.35, 0]} scale={1.25}><Floating reduced={reduced} sway={0.5} /></group></Suspense>
+        </Canvas>
+      </div>
+      <div className="stickers" aria-hidden="true">
+        {LAYOUT.map(([k, x, y, rot, depth], i) => (
+          <span key={k} className="sticker" style={{ left: `${x}%`, top: `${y}%`, '--r': `${rot}deg`, '--d': depth, '--i': i }}>{STICKERS[k]}</span>
+        ))}
+      </div>
+      <div className="together-text">
+        <p className="caps">Got a hard problem worth solving?</p>
+        <h2>Let’s work<br />together!</h2>
+        <p className="caps muted">{PROFILE.next}</p>
+        <div className="contact-row">
+          <span className="mail">{PROFILE.email}</span>
+          <button type="button" className="pill light" onClick={copy}>{copied ? 'COPIED' : 'COPY EMAIL'}</button>
+          <a className="pill outline" href={PROFILE.linkedin} target="_blank" rel="noreferrer">LINKEDIN</a>
+          <a className="pill outline" href={PROFILE.github} target="_blank" rel="noreferrer">GITHUB</a>
         </div>
       </div>
     </section>
   )
 }
 
-function Menu({ onClose, onContact }) {
-  const go = (id) => { onClose(); document.getElementById(id)?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }) }
+function Menu({ onClose, go }) {
   return (
-    <div className="menu" role="dialog" aria-modal="true" aria-label="Menu">
+    <div className="menu" role="dialog" aria-modal="true" aria-label="Menu" data-lenis-prevent>
       <button type="button" className="pill menu-close" onClick={onClose}>CLOSE</button>
       <nav>
         <button type="button" onClick={() => go('top')}>Home</button>
         <button type="button" onClick={() => go('work')}>Work</button>
-        <a href="/">Journey</a>
-        <button type="button" onClick={onContact}>Contact</button>
+        <button type="button" onClick={() => go('journey')}>Journey</button>
+        <button type="button" onClick={() => go('contact')}>Contact</button>
       </nav>
       <p className="caps">{PROFILE.places}</p>
     </div>
@@ -321,7 +474,7 @@ function Detail({ w, onClose }) {
   const c = w.ch
   return (
     <div className="detail" role="dialog" aria-modal="true" aria-label={c.title} onClick={onClose}>
-      <article className="detail-card" onClick={(e) => e.stopPropagation()}>
+      <article className="detail-card" data-lenis-prevent onClick={(e) => e.stopPropagation()}>
         <button type="button" className="pill menu-close" onClick={onClose}>CLOSE</button>
         <p className="tags">{w.tags.join(' • ').toUpperCase()} — {c.date} · {c.place}</p>
         <h3>{c.title}</h3>
