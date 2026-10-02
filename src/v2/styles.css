@@ -86,7 +86,7 @@ img { max-width: 100%; display: block }
 .soft .metric b, .paper .metric b { color: var(--blue) }
 
 /* ── finale: the dark part with her avatar ── */
-.finale { position: relative; height: 440vh; background: var(--night); color: #fff; margin-top: clamp(60px, 8vw, 120px) }
+.finale { position: relative; height: 260vh; background: var(--night); color: #fff; margin-top: clamp(60px, 8vw, 120px) }
 .dusk { position: absolute; left: 0; right: 0; top: -40vh; height: 40vh; background: linear-gradient(var(--bg), var(--night)); pointer-events: none }
 .finale-stick { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden }
 .finale-canvas { position: absolute; inset: 0 }
@@ -95,8 +95,6 @@ img { max-width: 100%; display: block }
   -webkit-mask: radial-gradient(circle, transparent 60%, #000 64%, #000 67%, transparent 72%); mask: radial-gradient(circle, transparent 60%, #000 64%, #000 67%, transparent 72%);
   filter: blur(18px); opacity: .9 }
 .finale-text { position: absolute; left: 0; right: 0; top: 50%; translate: 0 -50%; margin: 0; padding: 0 var(--gut); text-align: center; font-weight: 400; text-transform: uppercase; font-size: clamp(38px, 6.2vw, 96px); line-height: 1.04; letter-spacing: -.01em; pointer-events: none }
-.dive-text { position: absolute; left: var(--gut); right: var(--gut); bottom: 14vh; margin: 0; text-align: center; font-size: clamp(28px, 3.6vw, 56px); line-height: 1.08; letter-spacing: -.03em; opacity: 0; pointer-events: none; text-shadow: 0 0 40px rgba(60, 110, 255, .5) }
-.dive-text span { color: #8FC9FF }
 .contact-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 12px }
 .mail { font-size: clamp(20px, 2.4vw, 34px); letter-spacing: -.02em; user-select: all; margin-right: 8px }
 

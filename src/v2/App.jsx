@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber'
 import Lenis from 'lenis'
 import Hero3D, { LABELS } from './Hero3D'
 import Avatar3D, { Floating, StudioLights } from './Avatar3D'
+import { AVATAR } from './avatar'
 import Device3D from './Device3D'
 import { STICKERS, LAYOUT } from './Stickers'
 import { AREAS, CHAPTERS, PROFILE } from '../data/chapters'
@@ -398,21 +399,19 @@ function Statement() {
   )
 }
 
-/* The dark part: the ribbon rises into view, then dives into a tunnel of data */
+/* The dark part: the text, then (once she has one) her avatar rises into the halo */
 function Finale() {
-  const wrap = useRef(null), text = useRef(null), dive = useRef(null), halo = useRef(null)
+  const wrap = useRef(null), text = useRef(null), halo = useRef(null)
   const progress = useRef(0)
   const live = useInView(wrap, '0px')
   const scrub = useCallback((el) => {
     const p = stickyProgress(el)
     progress.current = p
-    text.current.style.opacity = 1 - clamp01((p - 0.38) / 0.14)
-    text.current.style.transform = `translateY(${-clamp01((p - 0.38) / 0.3) * 60}px)`
-    const d = clamp01((p - 0.64) / 0.08) * (1 - clamp01((p - 0.9) / 0.08))
-    dive.current.style.opacity = d
-    dive.current.style.transform = `scale(${0.94 + d * 0.06})`
-    halo.current.style.opacity = 1 - clamp01((p - 0.45) / 0.15)
-    halo.current.style.transform = `translate(-50%, -50%) scale(${0.85 + p * 0.5})`
+    if (AVATAR) { // the text makes way for her
+      text.current.style.opacity = 1 - clamp01((p - 0.3) / 0.18)
+      text.current.style.transform = `translateY(${-clamp01((p - 0.3) / 0.3) * 60}px)`
+    }
+    halo.current.style.transform = `translate(-50%, -50%) scale(${0.85 + p * 0.3})`
   }, [])
   useScrub(wrap, scrub)
   return (
@@ -420,13 +419,14 @@ function Finale() {
       <div className="dusk" aria-hidden="true" />
       <div className="finale-stick">
         <div className="halo" ref={halo} aria-hidden="true" />
-        <div className="finale-canvas">
-          <Canvas camera={{ position: [0, 0, 6], fov: 35 }} dpr={[1, 1.75]} frameloop={live ? 'always' : 'never'} gl={{ antialias: true, alpha: true }}>
-            <Suspense fallback={null}><Avatar3D progress={progress} reduced={reduced} /></Suspense>
-          </Canvas>
-        </div>
+        {AVATAR && (
+          <div className="finale-canvas">
+            <Canvas camera={{ position: [0, 0, 6], fov: 35 }} dpr={[1, 1.75]} frameloop={live ? 'always' : 'never'} gl={{ antialias: true, alpha: true }}>
+              <Suspense fallback={null}><Avatar3D progress={progress} reduced={reduced} /></Suspense>
+            </Canvas>
+          </div>
+        )}
         <h2 className="finale-text" ref={text}>The next chapter<br />is still<br />unwritten</h2>
-        <p className="dive-text" ref={dive}>Every chapter is new data.<br /><span>The model keeps learning.</span></p>
       </div>
     </section>
   )
@@ -445,12 +445,14 @@ function Together() {
   }
   return (
     <section className="together" id="contact" ref={wrap} onPointerMove={onMove}>
-      <div className="together-canvas" aria-hidden="true">
-        <Canvas camera={{ position: [0, 0, 5], fov: 35 }} dpr={[1, 1.75]} frameloop={live ? 'always' : 'never'} gl={{ antialias: true, alpha: true }}>
-          <StudioLights />
-          <Suspense fallback={null}><group scale={1.35}><Floating reduced={reduced} sway={0.5} color="#2E4BE0" /></group></Suspense>
-        </Canvas>
-      </div>
+      {AVATAR && (
+        <div className="together-canvas" aria-hidden="true">
+          <Canvas camera={{ position: [0, 0, 5], fov: 35 }} dpr={[1, 1.75]} frameloop={live ? 'always' : 'never'} gl={{ antialias: true, alpha: true }}>
+            <StudioLights />
+            <Suspense fallback={null}><group position={[0, -0.35, 0]} scale={1.25}><Floating reduced={reduced} /></group></Suspense>
+          </Canvas>
+        </div>
+      )}
       <div className="stickers" aria-hidden="true">
         {LAYOUT.map(([k, x, y, rot, depth], i) => (
           <span key={k} className="sticker" style={{ left: `${x}%`, top: `${y}%`, '--r': `${rot}deg`, '--d': depth, '--i': i }}>{STICKERS[k]}</span>
