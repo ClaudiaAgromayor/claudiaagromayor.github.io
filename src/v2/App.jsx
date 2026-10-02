@@ -9,13 +9,15 @@ const clamp01 = (x) => Math.max(0, Math.min(1, x))
 
 // Selected work: the headline number of each project. Titles must match src/data/chapters.js.
 const WORK = [
-  { title: 'IRIC, Université de Montréal', metric: '4B+', label: 'compounds screened', tags: ['Research', 'ML', 'HPC'], tone: 'ink', art: 'dots' },
+  { title: 'IRIC, Université de Montréal', metric: '1.04M', label: 'candidates from billions screened', tags: ['Research', 'ML', 'HPC'], tone: 'ink', art: 'dots' },
   { title: 'Amazon Web Services', metric: '75→85%', label: 'first-attempt accuracy', tags: ['Industry', 'GenAI', 'Cloud'], tone: 'cobalt', art: 'rings' },
   { title: 'LLMs that follow rules', metric: '46→91%', label: 'exact match', tags: ['Research', 'LLM', 'RAG'], tone: 'paper', art: 'lines' },
   { title: 'Learning without sharing data', metric: '15', label: 'clients, zero data shared', tags: ['Thesis', 'Federated learning'], tone: 'soft', art: 'orbit' },
   { title: 'First place in 48 hours', metric: '1st', label: 'Smart Industry Hackathon', tags: ['Hackathon', 'NLP', 'FastAPI'], tone: 'ink', art: 'rings' },
   { title: 'Seeing inside a tooth', metric: '<1%', label: 'positive voxels', tags: ['Research', 'Medical imaging', '3D'], tone: 'paper', art: 'dots' },
   { title: 'Altex Asset Management', metric: '15%', label: 'annualised returns', tags: ['Industry', 'Quant', 'Time series'], tone: 'cobalt', art: 'lines' },
+  { title: 'Treasurer of France’s largest student forum', metric: '€1.4M', label: 'revenue, 3,500 students', tags: ['Leadership', 'Finance'], tone: 'soft', art: 'rings' },
+  { title: 'From 0 to 1,000 on TikTok', metric: '1,000', label: 'followers in month one', tags: ['Marketing', 'Social media'], tone: 'ink', art: 'orbit' },
   { title: 'Fifth in the world', tags: ['Sport', 'Gymnastics'], tone: 'photo' },
 ].map((w) => ({ ...w, ch: CHAPTERS.find((c) => c.title === w.title) })).filter((w) => w.ch)
 
