@@ -321,7 +321,12 @@ export const PROFILE = {
   title: 'AI & Machine Learning Engineer | Researcher',
   field: 'Industrial Engineering & Computer Science',
   places: 'Madrid · Paris · Montréal',
-  now: 'Currently pursuing a double master’s degree in Industrial Engineering and Intelligent Industry at ICAI, with research and engineering experience across machine learning, generative AI and applied computational science.',
+  // the opening block. **like this** comes out bold
+  blurb: [
+    'Currently pursuing a double master’s degree in Industrial Engineering and Intelligent Industry at ICAI, I work on AI and machine learning for complex real-world problems.',
+    'My experience spans **large-scale drug discovery, generative AI at AWS, industrial machine learning and quantitative finance**, from screening **43.6 billion molecules** to deploying AI systems processing **5,000+ support tickets per month**.',
+    'I am particularly interested in **AI research beyond benchmarks**, especially scientific discovery, heterogeneous data and reliable systems deployed in the real world.',
+  ],
   next: 'Seeking an AI research internship for summer or September 2027.',
   email: 'clauuagromayor@gmail.com',
   linkedin: 'https://linkedin.com/in/claudia-agromayor',

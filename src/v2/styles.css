@@ -68,10 +68,13 @@ img { max-width: 100%; display: block }
 .big { margin: 0; font-weight: 400; font-size: var(--t-display); line-height: 1.04; letter-spacing: -.045em; text-wrap: balance; position: relative; z-index: 1 }
 .indent { padding-left: 14% }
 .intro { position: relative; padding: clamp(80px, 9vw, 140px) var(--gut) clamp(40px, 5vw, 80px) }
-.intro-lead { font-size: var(--t-lead); line-height: 1.45; letter-spacing: -.02em; color: var(--ink) }
+.intro-lead { color: var(--ink) }
 .intro-copy { position: relative; z-index: 1; margin: 0; max-width: 48em; font-size: var(--t-body); line-height: 1.55; letter-spacing: -.01em }
 .intro-copy p { margin: 0 0 24px }
-.intro-punch { font-weight: 500; color: var(--blue-soft) }
+.intro-copy b { font-weight: 600; color: #fff }
+.intro-links { display: flex; flex-wrap: wrap; gap: 10px 28px; margin: 0 0 30px }
+.intro-links a { font-size: var(--t-ui); font-weight: 600; border-bottom: 1px solid var(--line); transition: color .25s, border-color .25s }
+.intro-links a:hover { color: var(--blue-soft); border-color: var(--blue-soft) }
 .tube { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible }
 .tube.t1 { z-index: 0; top: 18%; height: 82% }
 

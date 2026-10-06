@@ -125,7 +125,8 @@ function Hero() {
         <div className="hero-copy">
           <h1 className="hero-name">Claudia<br />Agromayor</h1>
           <p className="hero-title">{PROFILE.title}</p>
-          <p className="hero-role">{PROFILE.field} · {PROFILE.places}</p>
+          <p className="hero-role">{PROFILE.field}</p>
+          <p className="hero-role">{PROFILE.places}</p>
         </div>
         <p className="hero-label" aria-live="polite">
           {view === 'places' && place ? <><b>{place.name} · {place.years}</b>{place.what}</> : view === 'places' ? 'Drag to spin · point at a city' : 'Move through the scan'}
@@ -150,8 +151,14 @@ function Intro({ onWork }) {
   return (
     <section className="intro">
       <div className="intro-copy reveal">
-        <p className="intro-lead">{PROFILE.now}</p>
-        <p className="intro-punch">{PROFILE.next}</p>
+        {PROFILE.blurb.map((t, k) => (
+          <p key={k} className={k === 0 ? 'intro-lead' : undefined}><Rich text={t} /></p>
+        ))}
+        <p className="intro-links">
+          <a href={`mailto:${PROFILE.email}`}>Email</a>
+          <a href={PROFILE.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
+          <a href={PROFILE.github} target="_blank" rel="noreferrer">GitHub</a>
+        </p>
         <button type="button" className="pill ghost" onClick={onWork}><i className="dot" /> SEE MY WORK</button>
       </div>
     </section>
@@ -277,6 +284,11 @@ function Moment({ c, onZoom }) {
       </div></div>
     </li>
   )
+}
+
+/* **Bold** inside a sentence. */
+function Rich({ text }) {
+  return text.split('**').map((part, k) => (k % 2 ? <b key={k}>{part}</b> : part))
 }
 
 /* Facts: plain strings are bullets, { list } nests underneath the line before it. */
