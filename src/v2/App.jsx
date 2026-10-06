@@ -17,50 +17,29 @@ const ACTS = [
   {
     n: 'I', title: 'Roots', years: '2003 – 2015',
     text: 'I grew up in Madrid between two languages, in a family that stretches across Europe, Asia and the Americas. Two things arrived early: a gymnastics mat and a maths problem. One taught me discipline under pressure; the other, that a hard problem is the best kind of game.',
-    feature: 'Maths as a game',
     moments: ['Born between two cultures', 'Fifth in the world', 'Maths as a game'],
   },
   {
     n: 'II', title: 'Taking off', years: '2018 – 2022',
     text: 'I chose engineering because it was hard. Around the same time I found my first job, and pitched an idea nobody had asked for, from the most junior seat in the room. Then I spent a summer alone in Wisconsin, in charge of twelve girls and a lake.',
-    feature: 'From 0 to 1,000 on TikTok',
     moments: ['From 0 to 1,000 on TikTok', 'Top of the class', 'Engineering at ICAI', 'A summer at Lake Wapogasset'],
   },
   {
-    n: 'III', title: 'Paris', years: '2023 – 2025',
+    n: 'III', title: 'Double degree in Paris', years: '2023 – 2025',
     text: 'Selected as one of two ICAI students for the double degree with CentraleSupélec, I moved to Paris without the usual prépa and in a new language. There I found what drives me, using data to understand real systems, while running the finances of France’s largest student forum.',
-    feature: 'Paris, without a prépa',
     moments: ['Paris, without a prépa', 'Basketball, rowing and surf', 'Treasurer of France’s largest student forum', 'Altex Asset Management', 'A third degree, in economics'],
   },
   {
     n: 'IV', title: 'Building with AI', years: '2025',
     text: '2025 was the year models met people: language models that have to follow business rules, factories that learn together without sharing their data, an AI system that AWS teams use every day, and a hackathon won in 48 hours.',
-    feature: 'Amazon Web Services',
     moments: ['LLMs that follow rules', 'Learning without sharing data', 'Amazon Web Services', 'A double master’s in engineering and AI', 'First place in 48 hours'],
   },
   {
     n: 'V', title: 'AI where it counts', years: '2026',
     text: 'Now I train models where a wrong answer has a cost. A network that segments root canals in 3D so a dentist can plan the treatment. A network that reads 43 billion molecules looking for a safer anaesthetic. Same question in both: can you trust the model where it has never been tested?',
-    feature: 'IRIC, Université de Montréal',
     moments: ['Seeing inside a tooth', 'One of eight in Spain', 'IRIC, Université de Montréal', 'A kill switch for AI agents'],
   },
-].map((a) => ({ ...a, items: a.moments.map((t) => CHAPTERS.find((c) => c.title === t)).filter(Boolean), lead: CHAPTERS.find((c) => c.title === a.feature) }))
-
-// A chapter's picture: the photo of its feature moment, or else its headline number
-const METRICS = {
-  'IRIC, Université de Montréal': { metric: '1.04M', label: 'candidates from billions screened', tone: 'ink', art: 'dots' },
-  'Amazon Web Services': { metric: '75→85%', label: 'first-attempt accuracy', tone: 'cobalt', art: 'rings' },
-  'LLMs that follow rules': { metric: '46→91%', label: 'exact match', tone: 'paper', art: 'lines' },
-  'Learning without sharing data': { metric: '15', label: 'clients, zero data shared', tone: 'soft', art: 'orbit' },
-  'First place in 48 hours': { metric: '1st', label: 'Smart Industry Hackathon', tone: 'ink', art: 'rings' },
-  'Seeing inside a tooth': { metric: '<1%', label: 'positive voxels', tone: 'paper', art: 'dots' },
-  'Altex Asset Management': { metric: '15%', label: 'annualised returns', tone: 'cobalt', art: 'lines' },
-  'Treasurer of France’s largest student forum': { metric: '€1.4M', label: 'revenue, 3,500 students', tone: 'soft', art: 'rings' },
-  'From 0 to 1,000 on TikTok': { metric: '1,000', label: 'followers in month one', tone: 'ink', art: 'orbit' },
-  'A kill switch for AI agents': { metric: '36h', label: 'to stop a rogue agent', tone: 'soft', art: 'orbit' },
-  'One of eight in Spain': { metric: '8', label: 'Iberdrola scholars, out of thousands', tone: 'cobalt', art: 'rings' },
-  'Paris, without a prépa': { metric: '9.2/10', label: 'GPA, last two years', tone: 'paper', art: 'lines' },
-}
+].map((a) => ({ ...a, items: a.moments.map((t) => CHAPTERS.find((c) => c.title === t)).filter(Boolean) }))
 
 /* ── smooth scrolling ──────────────────────────────────────── */
 let lenis = null
@@ -267,12 +246,9 @@ function Story({ go }) {
             <p className="act-years reveal">{a.years}</p>
             <p className="act-text reveal">{a.text}</p>
           </header>
-          <div className="act-main">
-            {a.lead && <div className="act-feature reveal"><Visual c={a.lead} /></div>}
-            <ol className="act-list">
-              {a.items.map((c) => <Moment key={c.title} c={c} />)}
-            </ol>
-          </div>
+          <ol className="act-list">
+            {a.items.map((c) => <Moment key={c.title} c={c} />)}
+          </ol>
         </article>
       ))}
 
@@ -292,6 +268,7 @@ function Story({ go }) {
 function Moment({ c }) {
   const [open, setOpen] = useState(false)
   const id = useId()
+  const shots = [c.img, ...(c.photos || [])].filter(Boolean)
   return (
     <li className="moment reveal" data-open={open}>
       <button type="button" className="m-head" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}>
@@ -302,52 +279,31 @@ function Moment({ c }) {
       <div className="m-more" id={id}><div className="m-body">
         <p className="m-meta">{c.date} · {c.place}</p>
         <ul>{c.facts.map((f, k) => <li key={k}>{f}</li>)}</ul>
-        {c.photos?.length > 0 && (
-          <div className="m-shots">{c.photos.map((src) => <img key={src} src={src} alt="" loading="lazy" />)}</div>
+        {shots.length > 0 && (
+          <div className="m-shots">{shots.map((src) => <img key={src} src={src} alt="" loading="lazy" />)}</div>
         )}
-        <p className="m-took">“{c.took}”</p>
+        {c.video && <Demo id={c.video} poster={shots[0]} title={c.title} />}
         {c.link && <a className="src" href={c.link} target="_blank" rel="noreferrer">{c.linkLabel || 'Read the news (Spanish) ↗'}</a>}
       </div></div>
     </li>
   )
 }
 
-function Visual({ c }) {
-  const m = METRICS[c.title]
-  if (c.img) return <div className="visual art photo"><img src={c.img} alt={c.title} loading="lazy" /></div>
-  if (!m) return null
-  return (
-    <div className={`visual art ${m.tone}`}>
-      <Pattern kind={m.art} />
-      <span className="metric"><b>{m.metric}</b><small>{m.label}</small></span>
+/* A demo video. Nothing is requested from YouTube until the still is clicked. */
+function Demo({ id, poster, title }) {
+  const [playing, setPlaying] = useState(false)
+  if (playing) return (
+    <div className="m-video">
+      <iframe src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1`} title={`${title}: demo`}
+        allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen loading="lazy" />
     </div>
   )
-}
-
-function Pattern({ kind }) {
-  if (kind === 'rings') return (
-    <svg className="pattern" viewBox="0 0 400 250" aria-hidden="true">
-      {Array.from({ length: 9 }, (_, i) => <circle key={i} cx="320" cy="40" r={30 + i * 34} />)}
-    </svg>
-  )
-  if (kind === 'lines') return (
-    <svg className="pattern" viewBox="0 0 400 250" aria-hidden="true">
-      {Array.from({ length: 22 }, (_, i) => <path key={i} d={`M ${-60 + i * 24} 260 L ${80 + i * 24} -10`} />)}
-    </svg>
-  )
-  if (kind === 'orbit') return (
-    <svg className="pattern" viewBox="0 0 400 250" aria-hidden="true">
-      <circle cx="290" cy="125" r="70" />
-      {Array.from({ length: 15 }, (_, i) => {
-        const a = (i / 15) * Math.PI * 2
-        return <circle key={i} className="fill" cx={290 + Math.cos(a) * 70} cy={125 + Math.sin(a) * 70} r="6" />
-      })}
-    </svg>
-  )
   return (
-    <svg className="pattern" viewBox="0 0 400 250" aria-hidden="true">
-      {Array.from({ length: 12 * 8 }, (_, i) => <circle key={i} className="fill" cx={20 + (i % 12) * 33} cy={18 + Math.floor(i / 12) * 31} r={1.6 + ((i * 7) % 5) * 0.5} />)}
-    </svg>
+    <button type="button" className="m-video play" onClick={() => setPlaying(true)}>
+      {poster && <img src={poster} alt="" loading="lazy" />}
+      <span className="m-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg></span>
+      <span className="m-play-label">Watch the demo</span>
+    </button>
   )
 }
 

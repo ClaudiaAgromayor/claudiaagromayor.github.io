@@ -17,9 +17,9 @@ import { useHeroCamera, dotTexture } from './heroCamera'
 
 const PHOTO = '/img/portrait-scan.png'
 const CAM_POS = [0, -0.2, 6.1], CAM_TARGET = [0, -0.28, 0]
-const HEIGHT = 2.75, TOP_Y = 1.15           // the scan spans TOP_Y down to TOP_Y - HEIGHT
+const HEIGHT = 2.9, TOP_Y = 1.18           // the scan spans TOP_Y down to TOP_Y - HEIGHT
 const Y_LOW = TOP_Y - HEIGHT
-const ROW_STEP = 1.5, COL_STEP = 1.1          // in photo pixels
+const ROW_STEP = 2.6, COL_STEP = 1.8          // in photo pixels
 const LEVELS = 66, AROUND = 230             // only used for the avatar version
 
 /* ── her photo, read into rings of points ── */
@@ -71,7 +71,7 @@ function scanPhoto(image) {
     const v = (l + (l - base) * 1.35 - lo) / Math.max(0.01, hi - lo)
     // her face is evenly lit, so without an S-curve the eyes and mouth sit only a
     // little under the cheeks and vanish once this is only dots
-    const c = 0.46 + (v - 0.5) * 1.8
+    const c = 0.48 + (v - 0.5) * 1.35
     return Math.min(1, Math.max(0, c))
   }
 
@@ -162,8 +162,8 @@ const vertexShader = /* glsl */ `
     vL = mix(1., lit, uShade);
     vS = 1. - smoothstep(0., .05, abs(position.y - uScan));
     vSeed = aSeed; vLum = aLum; vTone = aTone;
-    vA = smoothstep(uLow, uLow + .3, position.y) * mix(1., .45 + .55 * smoothstep(-.4, .3, n.z), uShade);
-    gl_PointSize = mix(.7 + aSeed * .25 + aLum * 1.9, 1.3 + aSeed * .5 + aLum * .9, uShade) * (1. + vS * .5) * uPx * (6.1 / -mv.z);
+    vA = smoothstep(uLow, uLow + .55, position.y) * mix(1., .45 + .55 * smoothstep(-.4, .3, n.z), uShade);
+    gl_PointSize = mix(1.0 + aSeed * .3 + aLum * 1.5, 1.3 + aSeed * .5 + aLum * .9, uShade) * (1. + vS * .5) * uPx * (6.1 / -mv.z);
     gl_Position = projectionMatrix * mv;
   }`
 const fragmentShader = /* glsl */ `
@@ -177,7 +177,7 @@ const fragmentShader = /* glsl */ `
     // her own colours, pulled most of the way towards the cobalt and white of the site
     vec3 cool = mix(vec3(.17, .3, .95), vec3(.86, .91, 1.), clamp(vLum * 1.35, 0., 1.));
     vec3 c = mix(cool, vTone, .3) + vS * vec3(.2, .25, .35);
-    float bright = mix(.1 + vLum * 1.05, .12 + vLum * 1.25, uShade);
+    float bright = mix(.36 + vLum * .7, .12 + vLum * 1.25, uShade);
     gl_FragColor = vec4(c, a * vA * bright * (.55 + vL * .45 + vS * .3));
   }`
 

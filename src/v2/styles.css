@@ -57,37 +57,15 @@ img { max-width: 100%; display: block }
 .big { margin: 0; font-weight: 400; font-size: clamp(52px, 9.4vw, 150px); line-height: 1.04; letter-spacing: -.045em; text-wrap: balance; position: relative; z-index: 1 }
 .indent { padding-left: 14% }
 .intro { position: relative; padding: clamp(100px, 14vw, 220px) var(--gut) clamp(60px, 8vw, 120px) }
-.intro-photo { position: relative; z-index: 1; margin: clamp(40px, 5vw, 72px) 0 0; width: min(380px, 42%); }
+.intro-photo { position: relative; z-index: 1; margin: clamp(40px, 5vw, 72px) 0 0; width: 100% }
 .intro-photo img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius); filter: saturate(.75) contrast(1.05) brightness(.95) }
-.intro { display: grid; grid-template-columns: 1fr 1fr; align-items: start; column-gap: clamp(28px, 5vw, 80px) }
+.intro { display: grid; grid-template-columns: clamp(220px, 24vw, 330px) minmax(0, 560px); align-items: start; column-gap: clamp(24px, 3vw, 48px); justify-content: start }
 .intro .big { grid-column: 1 / -1 }
-.intro-copy { position: relative; z-index: 1; margin: clamp(40px, 5vw, 72px) 0 0 auto; width: min(560px, 100%); align-self: end; font-size: clamp(17px, 1.5vw, 21px); line-height: 1.42; letter-spacing: -.01em }
+.intro-copy { position: relative; z-index: 1; margin: clamp(40px, 5vw, 72px) 0 0; width: 100%; align-self: start; font-size: clamp(17px, 1.5vw, 21px); line-height: 1.42; letter-spacing: -.01em }
 .intro-copy p { margin: 0 0 28px }
 .intro-punch { font-size: 1.1em; letter-spacing: -.02em; color: var(--blue-soft) }
 .tube { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible }
 .tube.t1 { z-index: 0; top: 18%; height: 82% }
-
-/* ── pictures: photos and metric cards ── */
-.art { position: relative; aspect-ratio: 16 / 10; max-width: 100% }
-.art > * { transition: transform 1s var(--ease) }
-.act-feature:hover .art > * { transform: scale(1.04) }
-.art.ink { background: radial-gradient(120% 90% at 80% 10%, #1D2140 0%, #0C0D14 60%) }
-.art.cobalt { background: radial-gradient(120% 100% at 85% 0%, #5B72FF 0%, #2340D8 45%, #16248F 100%) }
-.art.soft { background: linear-gradient(160deg, #1B2550 0%, #0B0F22 100%) }
-.art.paper { background: linear-gradient(160deg, #15171F 0%, #0A0B11 100%); box-shadow: inset 0 0 0 1px var(--line) }
-.art.photo { background: #0D0F16 }
-.art.photo img { width: 100%; height: 100%; object-fit: cover; filter: saturate(.8) contrast(1.03) brightness(.94) }
-.pattern { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke-width: 1 }
-.ink .pattern, .cobalt .pattern { stroke: rgba(255, 255, 255, .22); fill: none }
-.ink .pattern .fill, .cobalt .pattern .fill { fill: rgba(140, 160, 255, .55); stroke: none }
-.paper .pattern, .soft .pattern { stroke: rgba(124, 150, 255, .3) }
-.paper .pattern .fill, .soft .pattern .fill { fill: rgba(124, 150, 255, .45); stroke: none }
-.metric { position: absolute; left: clamp(18px, 2.4vw, 34px); bottom: clamp(16px, 2.2vw, 30px); display: grid; gap: 4px }
-.metric b { font-size: clamp(48px, 7vw, 108px); font-weight: 400; letter-spacing: -.05em; line-height: .95 }
-.metric small { font-size: 13px; font-weight: 500; text-transform: uppercase; letter-spacing: .02em }
-.ink .metric, .cobalt .metric { color: #fff }
-.paper .metric, .soft .metric { color: #fff }
-.soft .metric b, .paper .metric b { color: #9FB3FF }
 
 /* ── finale: the dark part with her avatar ── */
 .finale { position: relative; height: 300vh; background: var(--night); color: #fff; margin-top: clamp(60px, 8vw, 120px) }
@@ -175,10 +153,7 @@ html.lenis, html.lenis body { height: auto }
 .act-side h2 { margin: 12px 0 8px; font-weight: 400; font-size: clamp(56px, 7.4vw, 124px); line-height: .92; letter-spacing: -.05em; text-wrap: balance }
 .act-years { margin: 0 0 26px; font-size: 15px; font-weight: 500; color: var(--mute); font-variant-numeric: tabular-nums }
 .act-text { margin: 0; max-width: 25em; font-size: clamp(18px, 1.5vw, 22px); line-height: 1.45; letter-spacing: -.01em; color: #C2C7D8 }
-.act-main { display: grid; gap: clamp(28px, 3vw, 44px); align-content: start; padding-top: 6px }
-.act-feature { border-radius: var(--radius); overflow: hidden }
-.act-feature .art { aspect-ratio: 16 / 8 }
-.act-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink) }
+.act-list { list-style: none; margin: 0; padding: 6px 0 0; border-top: 1px solid var(--ink) }
 .moment { border-bottom: 1px solid var(--line) }
 .m-head { width: 100%; display: grid; grid-template-columns: 64px minmax(0, 1fr) 30px; gap: 16px; align-items: start; padding: 22px 0; text-align: left }
 .m-year { padding-top: 7px; font-size: 13px; font-weight: 600; color: var(--blue); font-variant-numeric: tabular-nums }
@@ -196,9 +171,19 @@ html.lenis, html.lenis body { height: auto }
 .m-body > :last-child { margin-bottom: 26px }
 .m-meta { margin: 0 0 10px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .03em; color: var(--blue) }
 .m-body ul { margin: 0; padding-left: 18px; display: grid; gap: 8px; color: #C2C7D8 }
-.m-shots { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 12px }
-.m-shots img { flex: 1 1 200px; max-width: 320px }
-.m-shots img { aspect-ratio: 4 / 3; object-fit: cover; border-radius: 12px }
+.m-shots { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px }
+.m-shots img { width: 190px; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; filter: saturate(.85) brightness(.96); transition: transform .4s var(--ease) }
+.m-shots img:hover { transform: scale(1.03) }
+
+/* the demo video: a still with a play button until it is asked for */
+.m-video { position: relative; margin-top: 18px; width: min(460px, 100%); aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: #0C0E15; box-shadow: inset 0 0 0 1px var(--line); display: block }
+.m-video iframe { width: 100%; height: 100%; border: 0; display: block }
+.m-video.play { cursor: pointer; padding: 0 }
+.m-video img { width: 100%; height: 100%; object-fit: cover; opacity: .5; transition: opacity .4s, transform .6s var(--ease) }
+.m-video.play:hover img { opacity: .65; transform: scale(1.04) }
+.m-play { position: absolute; left: 50%; top: 50%; translate: -50% -50%; width: 56px; height: 56px; border-radius: 50%; background: #fff; display: grid; place-items: center }
+.m-play svg { width: 40%; fill: #0B0D14; margin-left: 3px }
+.m-play-label { position: absolute; left: 16px; bottom: 14px; font-size: 13px; font-weight: 600; color: #fff; text-shadow: 0 1px 10px #000 }
 .m-took { margin: 18px 0 0; font-size: clamp(17px, 1.35vw, 20px); line-height: 1.35; letter-spacing: -.02em; color: var(--blue) }
 
 /* where you are in the story */
