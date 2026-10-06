@@ -10,13 +10,15 @@ export function useHeroCamera(position, target, fov) {
   const { camera, size } = useThree()
   useLayoutEffect(() => {
     const { width: w, height: h } = size
-    const aspect = w / h, k = Math.max(1, 1 / (aspect * 1.35))
+    const aspect = w / h, wide = w > 760
+    // on a phone the piece sits in a band of its own, between the tabs and her name
+    const k = Math.max(1, 1 / (aspect * (wide ? 1.35 : 1.05)))
     const t = new THREE.Vector3(...target)
     camera.fov = fov
     camera.position.set(...position).sub(t).multiplyScalar(k).add(t)
     camera.lookAt(t)
-    if (w > 760) camera.setViewOffset(w, h, -w * 0.2, 0, w, h)
-    else camera.setViewOffset(w, h, 0, h * 0.14, w, h)
+    if (wide) camera.setViewOffset(w, h, -w * 0.2, 0, w, h)
+    else camera.setViewOffset(w, h, 0, h * 0.06, w, h)
     camera.updateProjectionMatrix()
     return () => { camera.clearViewOffset(); camera.updateProjectionMatrix() }
   }, [camera, size, position, target, fov])

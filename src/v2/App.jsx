@@ -22,27 +22,27 @@ const ACTS = [
   },
   {
     n: 'II', title: 'Taking off', years: '2018 – 2022',
-    text: 'I chose engineering because it was hard. Around the same time I found my first job — and pitched an idea nobody had asked for, from the most junior seat in the room. Then I spent a summer alone in Wisconsin, in charge of twelve girls and a lake.',
+    text: 'I chose engineering because it was hard. Around the same time I found my first job, and pitched an idea nobody had asked for, from the most junior seat in the room. Then I spent a summer alone in Wisconsin, in charge of twelve girls and a lake.',
     feature: 'From 0 to 1,000 on TikTok',
     moments: ['From 0 to 1,000 on TikTok', 'Top of the class', 'Engineering at ICAI', 'A summer at Lake Wapogasset'],
   },
   {
     n: 'III', title: 'Paris', years: '2023 – 2025',
-    text: 'Selected as one of two ICAI students for the double degree with CentraleSupélec, I moved to Paris without the usual prépa and in a new language. There I found what drives me — using data to understand real systems — while running the finances of France’s largest student forum.',
+    text: 'Selected as one of two ICAI students for the double degree with CentraleSupélec, I moved to Paris without the usual prépa and in a new language. There I found what drives me, using data to understand real systems, while running the finances of France’s largest student forum.',
     feature: 'Paris, without a prépa',
     moments: ['Paris, without a prépa', 'Basketball, rowing and surf', 'Treasurer of France’s largest student forum', 'Altex Asset Management', 'A third degree, in economics'],
   },
   {
     n: 'IV', title: 'Building with AI', years: '2025',
-    text: '2025 was the year models met people: language models that have to follow business rules, factories that learn together without sharing their data, an AI system that AWS teams use every day — and a hackathon won in 48 hours.',
+    text: '2025 was the year models met people: language models that have to follow business rules, factories that learn together without sharing their data, an AI system that AWS teams use every day, and a hackathon won in 48 hours.',
     feature: 'Amazon Web Services',
     moments: ['LLMs that follow rules', 'Learning without sharing data', 'Amazon Web Services', 'A double master’s in engineering and AI', 'First place in 48 hours'],
   },
   {
-    n: 'V', title: 'Science', years: '2025 – 2026',
-    text: 'Then biology caught me. Predicting how drugs act, segmenting root canals in 3D, screening billions of molecules in Montréal: different problems, one question — can you trust a model when getting it wrong really matters?',
+    n: 'V', title: 'AI where it counts', years: '2026',
+    text: 'Now I train models where a wrong answer has a cost. A network that segments root canals in 3D so a dentist can plan the treatment. A network that reads 43 billion molecules looking for a safer anaesthetic. Same question in both: can you trust the model where it has never been tested?',
     feature: 'IRIC, Université de Montréal',
-    moments: ['Predicting drug effects', 'Seeing inside a tooth', 'IRIC, Université de Montréal'],
+    moments: ['Seeing inside a tooth', 'IRIC, Université de Montréal'],
   },
 ].map((a) => ({ ...a, items: a.moments.map((t) => CHAPTERS.find((c) => c.title === t)).filter(Boolean), lead: CHAPTERS.find((c) => c.title === a.feature) }))
 
@@ -95,32 +95,6 @@ function useInView(ref, margin = '200px') {
     return () => io.disconnect()
   }, [ref, margin])
   return v
-}
-
-/* ── a thick 3D-looking tube that draws itself as you scroll ── */
-function Tube({ d, from, to, className }) {
-  const wrap = useRef(null), main = useRef(null), shine = useRef(null)
-  const id = useRef('t' + Math.random().toString(36).slice(2)).current
-  const draw = useCallback((el) => {
-    const p = reduced ? 1 : clamp01((passProgress(el) - 0.08) / 0.55)
-    for (const path of [main.current, shine.current]) {
-      const len = path.getTotalLength()
-      path.style.strokeDasharray = len
-      path.style.strokeDashoffset = len * (1 - p)
-    }
-  }, [])
-  useScrub(wrap, draw)
-  return (
-    <svg ref={wrap} className={`tube ${className || ''}`} viewBox="0 0 1440 900" preserveAspectRatio="none" aria-hidden="true">
-      <defs>
-        <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor={from} /><stop offset="1" stopColor={to} />
-        </linearGradient>
-      </defs>
-      <path ref={main} d={d} fill="none" stroke={`url(#${id})`} strokeWidth="38" strokeLinecap="round" />
-      <path ref={shine} d={d} fill="none" stroke="rgba(255,255,255,.35)" strokeWidth="8" strokeLinecap="round" transform="translate(-6 -8)" />
-    </svg>
-  )
 }
 
 /* ── page ──────────────────────────────────────────────────── */
@@ -183,7 +157,7 @@ export default function App() {
   )
 }
 
-/* The hero: her name beside a 3D piece — her portrait as a scan, or the places on a globe */
+/* The hero, full screen: her name beside a 3D piece, her portrait as a scan or the places on a globe */
 const VIEWS = [['portrait', 'Portrait'], ['places', 'Places']]
 function Hero() {
   const card = useRef(null), pointerIn = useRef(false)
@@ -192,7 +166,7 @@ function Hero() {
   const [place, setPlace] = useState(null)
   return (
     <section className="hero">
-      <div className={`card hero-card ${view}`} ref={card}
+      <div className={`hero-card ${view}`} ref={card}
         onPointerEnter={() => { pointerIn.current = true }} onPointerLeave={() => { pointerIn.current = false }}>
         <Canvas camera={{ position: [0, 0, 8], fov: 30 }} dpr={[1, 1.75]} frameloop={live ? 'always' : 'never'} gl={{ antialias: true }}>
           <color attach="background" args={['#07080D']} />
@@ -231,12 +205,16 @@ function Pluses({ label, n = 4 }) {
 function Intro({ onStory }) {
   return (
     <section className="intro">
-      <Tube className="t1" from="#4B63FF" to="#1B2FC8" d="M 520 -40 C 620 120 640 260 560 380 C 470 520 120 470 90 640 C 60 800 330 860 470 760 C 600 670 560 520 420 520" />
-      <h2 className="big reveal"><span className="indent">Curious by Nature,</span><br />Persistent by Choice</h2>
+      <h2 className="big reveal">{PROFILE.intro}<br /><span className="indent">{PROFILE.introEm}</span></h2>
       <div className="intro-copy reveal">
         <p>
-          I combine engineering, machine learning and economics to build systems that work outside the notebook —
-          from federated learning and LLM pipelines to drug discovery at the scale of billions.
+          I am an engineer who works on machine learning. I like the problems that sit between fields: a model
+          that has to follow rules written for people, factories that want to learn from each other without
+          handing over their data, a molecule library too large to look at by hand.
+        </p>
+        <p>
+          Three countries, three degrees and one habit: going to where the problem is, even when I have to learn
+          the subject from scratch.
         </p>
         <button type="button" className="pill ghost" onClick={onStory}><i className="dot" /> READ MY STORY</button>
       </div>
@@ -318,9 +296,11 @@ function Moment({ c }) {
       <div className="m-more" id={id}><div className="m-body">
         <p className="m-meta">{c.date} · {c.place}</p>
         <ul>{c.facts.map((f, k) => <li key={k}>{f}</li>)}</ul>
-        {c.img && <img className="m-img" src={c.img} alt="" loading="lazy" />}
+        {c.photos?.length > 0 && (
+          <div className="m-shots">{c.photos.map((src) => <img key={src} src={src} alt="" loading="lazy" />)}</div>
+        )}
         <p className="m-took">“{c.took}”</p>
-        {c.link && <a className="src" href={c.link} target="_blank" rel="noreferrer">Read the news (Spanish) ↗</a>}
+        {c.link && <a className="src" href={c.link} target="_blank" rel="noreferrer">{c.linkLabel || 'Read the news (Spanish) ↗'}</a>}
       </div></div>
     </li>
   )

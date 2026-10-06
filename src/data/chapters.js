@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-//  SITE CONTENT — edit here.
+//  SITE CONTENT: edit here.
 //  One object per chapter, in chronological order.
 //  Written from Claudia's CVs, cover letters, scholarship letters and
 //  interview notes. Every number comes from those documents.
@@ -13,7 +13,7 @@
 
 // The categories, in the order they are listed on the site.
 // shade: the three tones of the animated background while you read that chapter
-// (deep, mid, highlight) — all whites and beiges, each with a faint tint of its own.
+// (deep, mid, highlight): all whites and beiges, each with a faint tint of its own.
 // A chapter can override it with its own `shade: [...]`.
 export const AREAS = {
   sport: { name: 'Sport', shade: ['#D2D1C0', '#E7E5D6', '#FAF9F1'] },
@@ -33,9 +33,9 @@ const ALL = [
     line: 'Half French, half Spanish, raised in Madrid in a family that stretches across Europe, Asia and the Americas.',
     facts: [
       'Growing up between languages taught me that the best ideas appear where different perspectives meet.',
-      'Spanish, French and English (Cambridge C1 Advanced) — and a habit of asking how things work.',
+      'Spanish, French and English (Cambridge C1 Advanced), and a habit of asking how things work.',
     ],
-    took: 'Being born between cultures made me curious about how everything works — and how it could work differently.',
+    took: 'Being born between cultures made me curious about how everything works, and how it could work differently.',
   },
   {
     area: 'sport', year: 2013, date: 'May 2013', place: 'Barcelona',
@@ -53,7 +53,7 @@ const ALL = [
   {
     area: 'edu', year: 2015, date: 'April 2015', place: 'Boadilla del Monte',
     title: 'Maths as a game',
-    line: 'First prize at Boadilla’s 2nd Maths Gymkhana, among four hundred students — one of several maths and science competitions I entered from primary school on.',
+    line: 'First prize at Boadilla’s 2nd Maths Gymkhana, among four hundred students. One of several maths and science competitions I entered from primary school on.',
     facts: [
       'From sixth grade I entered maths and science competitions, and won a few of them (once, an iPad).',
       'The Gymkhana: a team competition between schools from Boadilla and nearby towns. First prize with my team.',
@@ -80,7 +80,7 @@ const ALL = [
     facts: [
       'Honourable Mention and Diploma of Excellence from the Community of Madrid.',
       'Named best student of my year at Casvi.',
-      'STEM programme at Universidad Carlos III — and winner of the school’s Christmas drawing contest.',
+      'STEM programme at Universidad Carlos III, and winner of the school’s Christmas drawing contest.',
     ],
     took: 'Science and drawing both start the same way: looking closely until you see the structure.',
   },
@@ -98,13 +98,15 @@ const ALL = [
   {
     area: 'adventure', year: 2022, date: 'Jun – Aug 2022', place: 'Wisconsin, USA',
     title: 'A summer at Lake Wapogasset',
-    line: 'Camp counsellor and lifeguard at a summer camp in Wisconsin — my first summer working on my own, far from home.',
+    line: 'Camp counsellor and lifeguard at a summer camp in Wisconsin. My first summer working on my own, far from home.',
     facts: [
-      'A new group of twelve girls aged 8 to 13 every week: games, arts and crafts, workshops — and more than one friendship to mend.',
+      'A new group of twelve girls aged 8 to 13 every week: games, arts and crafts, workshops, and more than one friendship to mend.',
       'American Red Cross lifeguard (CPR/AED, first aid, waterfront). More than ten water rescues in the lake.',
       'Received the camp’s “You Rock” award.',
     ],
     took: 'Leaving your comfort zone means making mistakes all the time. I take every one of them as something to learn from.',
+    img: '/img/camp_counselor.jpg',
+    photos: ['/img/camp_counselor2.jpg'],
   },
   {
     area: 'edu', year: 2023, date: 'Sep 2023 – Jun 2025', place: 'Paris',
@@ -112,7 +114,7 @@ const ALL = [
     line: 'One of two ICAI students selected for the double degree with CentraleSupélec, Université Paris-Saclay.',
     facts: [
       'Joined one of France’s most demanding engineering schools without the usual two years of prépa, and studied in a new language.',
-      'Found what really drives me: using data to understand real systems — forecasting electricity demand in a course built with EDF, optimising a wind farm with MPPT.',
+      'Found what really drives me: using data to understand real systems, forecasting electricity demand in a course built with EDF and optimising a wind farm with MPPT.',
       'Company projects with Safran (a tool modelling air flow through a helicopter engine) and BCG (market analysis), plus a coding week analysing Twitter data on the war in Ukraine.',
       'Top 10% of the cohort, 9.2/10 GPA over my last two years.',
     ],
@@ -124,11 +126,13 @@ const ALL = [
     line: 'Campus life at CentraleSupélec: university basketball, rowing, surf trips and the Spanish club.',
     facts: [
       'Basketball in the French university championship, the Intercentrales and inter-school tournaments in Paris.',
-      'Rowing — including HumaAviron, 24 hours on the water where every kilometre raised €1 for HumaCS.',
+      'Rowing, including HumaAviron: 24 hours on the water where every kilometre raised €1 for HumaCS.',
       'Surf Expedition CentraleSupélec: surf weekends in Normandy and Brittany.',
       'Spanish Club: sharing my culture on a campus with 77 nationalities.',
     ],
     took: 'Basketball, rowing and surfing have one thing in common: you read the environment constantly and decide fast.',
+    img: '/img/championnat_france_basket.jpg',
+    photos: ['/img/basket.jpg'],
   },
   {
     area: 'community', year: 2023, date: 'Nov 2023 – Jan 2025', place: 'Paris',
@@ -140,6 +144,8 @@ const ALL = [
       'Found a way around the venue’s 20% fee on catering: pre-orders and payments through Lydia.',
     ],
     took: 'Associations are not a line on a CV. They are a collective adventure that gives back far more than you put in.',
+    img: '/img/forum.jpg',
+    photos: ['/img/forum2.jpg'],
   },
   {
     area: 'industry', year: 2024, date: 'Jun – Aug 2024', place: 'Madrid',
@@ -148,14 +154,14 @@ const ALL = [
     facts: [
       'Developed and backtested asset-rotation strategies across commodities, stock indices and bonds, using momentum, growth and value factors.',
       '15% annualised returns with a 10% maximum drawdown in backtests.',
-      'Built ML pipelines with feature engineering and hyperparameter optimisation — in a field that was completely new to me.',
+      'Built ML pipelines with feature engineering and hyperparameter optimisation, in a field that was completely new to me.',
     ],
     took: 'A good backtest is not a promise: honest validation matters more than the number.',
   },
   {
     area: 'edu', year: 2024, date: 'Sep 2024 – Jun 2025', place: 'Paris',
     title: 'A third degree, in economics',
-    line: 'Applied Economics at Université Paris Dauphine–PSL, alongside engineering — a field I had never studied before.',
+    line: 'Applied Economics at Université Paris Dauphine–PSL, alongside engineering. A field I had never studied before.',
     facts: [
       'Macroeconomics, international economics and data analysis.',
       'Grande École track: decision-making under uncertainty and quantitative economics.',
@@ -190,16 +196,18 @@ const ALL = [
     line: 'GenAI engineering intern: an end-to-end generative-AI system for support tickets in the AWS Partner Network.',
     facts: [
       '5,000+ tickets a month; first-attempt accuracy from 75% to 85%.',
-      'Bedrock, Lambda and LangChain, retrieving from 30+ documents and 10K+ past tickets — with a person always in the loop.',
+      'Bedrock, Lambda and LangChain, retrieving from 30+ documents and 10K+ past tickets, with a person always in the loop.',
       'Handling time per ticket from about four minutes to thirty seconds; 15% lower inference latency.',
       'AWS Certified Cloud Practitioner and AI Practitioner.',
     ],
     took: 'Useful AI is the AI people choose to use every day.',
+    img: '/img/aws.jpg',
+    photos: ['/img/aws2.jpg'],
   },
   {
     area: 'edu', year: 2025, date: 'Sep 2025 – Jun 2027', place: 'Madrid',
     title: 'A double master’s in engineering and AI',
-    line: 'Master’s in Industrial Engineering and Master’s in Intelligent Industry at ICAI — machine learning, deep learning and AI for industrial data.',
+    line: 'Master’s in Industrial Engineering and Master’s in Intelligent Industry at ICAI: machine learning, deep learning and AI for industrial data.',
     facts: [
       'Machine learning, deep learning, statistics, optimisation, robotics and cloud computing.',
       'Learning to handle huge amounts of industrial data with AI to solve real problems.',
@@ -218,40 +226,37 @@ const ALL = [
     took: 'The most useful model won, not the most complex one.',
   },
   {
-    area: 'research', year: 2025, date: 'Dec 2025', place: 'DataHack 3.0',
-    title: 'Predicting drug effects',
-    line: 'Multimodal machine learning to predict how drugs act on biological targets — the moment biology caught me.',
-    facts: [
-      'Ensembles of random forests, gradient boosting and SVMs on chemical and biological data.',
-      'Feature engineering bridging both modalities; outperformed the competition baselines.',
-    ],
-    took: 'Optimising a portfolio is interesting. Optimising for human health is something else entirely.',
-  },
-  {
-    area: 'research', year: 2026, date: 'Jan 2026 – now', place: 'Madrid',
+    area: 'research', year: 2026, date: 'Jan 2026 – now', place: 'ICAI, Madrid',
     title: 'Seeing inside a tooth',
-    line: '3D segmentation of root canals in dental scans, with endodontics experts from Universidad Complutense de Madrid.',
+    line: 'My master’s thesis at ICAI: deep learning that segments root canals in 3D dental scans and measures their shape, so an endodontist can plan the treatment.',
     facts: [
-      'Data-validation pipeline for 800 patients’ 3D DICOM scans, focused on first molars.',
-      'Dice-based comparison of automatic (Pulpy3D) and expert annotations: mean Dice 0.70, with corrupted and misaligned volumes flagged.',
-      'Developing 3D U-Net and Attention U-Net models with Dice loss, where fewer than 1% of voxels are positive.',
+      'Full title: “Automatic segmentation and three-dimensional geometric characterisation of root canals in molars using deep learning to support endodontic planning”.',
+      'The shape of the root canals is one of the main things that decides whether a root canal treatment works. Measuring the diameter, curvature, length and cross-section tells the specialist which instruments and strategy to use.',
+      'Three stages on cone-beam CT scans (CBCT): find and crop the tooth, segment the canals in 3D, then rebuild the internal anatomy and compute its geometry.',
+      '3D U-Net and Attention U-Net with Dice loss, where fewer than 1% of the voxels are canal.',
+      'Data-validation pipeline for 800 patients’ 3D DICOM scans, focused on first molars, flagging corrupted and misaligned volumes. Mean Dice 0.70 between automatic and expert annotations.',
+      'Supervised by my director at ICAI, with endodontics experts from Universidad Complutense de Madrid.',
     ],
     took: 'With data this imbalanced, a comfortable metric can lie.',
   },
   {
     area: 'research', year: 2026, date: 'Jun – Aug 2026', place: 'Montréal, Canada',
     title: 'IRIC, Université de Montréal',
-    line: 'Machine learning research intern at the Institute for Research in Immunology and Cancer: virtual drug screening at the scale of billions.',
+    line: 'Machine-learning research intern at the Institute for Research in Immunology and Cancer, searching 43 billion molecules for safer anaesthetics. First author of the paper.',
     facts: [
-      'HPC pipeline on SLURM: a model trained on 47K experimental compounds, used to screen billions of make-on-demand molecules in ZINC22 — about 1.04M candidates.',
-      'Multi-task D-MPNNs trained on 370K molecules for 26 ADMET endpoints: median ROC-AUC 0.86 (hERG) and 0.78 (blood–brain barrier) on cluster splits.',
-      'Out-of-distribution evaluation and uncertainty with leave-one-cluster-out validation and 1,000-model ensembles.',
-      'First-author manuscript in preparation.',
+      '“Phenotypic billion-scale virtual screening for wider-margin anaesthetics with developability-aware Pareto selection”, with Khadija Gana, Matthew McCarroll and Olivier Mailhot. Manuscript in preparation.',
+      'The problem: anaesthetics in routine use have a narrow margin between a dose that works and a dose that stops you breathing, so they need an anaesthetist watching. A wider margin would matter most where no specialist is present.',
+      'A directed message-passing neural network trained on 47,348 compounds scored against zebrafish behaviour, then run over all 43.6 billion molecules of the ZINC22 lead-like library on SLURM. It returns 1,043,322 hits, two thirds of them chemically far from anything it was trained on.',
+      'An in-house multi-task model for 26 ADMET endpoints (370,450 molecules) filters for developability, with its reliability mapped against distance to its own training data instead of a single headline number.',
+      'A Pareto search on quality and novelty picks the final 1,000 compounds: mean desirability 0.65 against 0.12 for random library members, a 5.6x lift. About 100 are going forward for synthesis.',
+      'Median ROC-AUC 0.86 (hERG) and 0.78 (blood-brain barrier) under cluster splits, the strict analogue of the screen’s own extrapolation.',
     ],
-    took: 'Scaling up is a scientific problem, not just a compute problem.',
+    took: 'Scaling up is a scientific problem, not just a compute problem. A model is only as good as the honest account of where it stops working.',
+    link: 'https://github.com/ClaudiaAgromayor/zebrafish-anesthetic-chemprop',
+    linkLabel: 'The code on GitHub ↗',
   },
   {
-    // CHECK before showing: the acceptance letter is signed (16 June 2026) — confirm the award.
+    // CHECK before showing: the acceptance letter is signed (16 June 2026). Confirm the award.
     hidden: true,
     area: 'edu', year: 2026, date: '2026 – 2027', place: 'Madrid',
     title: 'Iberdrola Master’s Scholarship',
@@ -269,11 +274,11 @@ export const CHAPTERS = ALL.filter((c) => !c.hidden)
 export const PROFILE = {
   name: 'Claudia Agromayor',
   born: 2003,
-  role: '2nd-year double master’s student — Industrial Engineering & Computer Science',
+  role: '2nd-year double master’s student in Industrial Engineering & Computer Science',
   places: 'Madrid · Paris · Montréal',
-  intro: 'Curious by nature.',
-  introEm: 'Persistent by choice.',
-  sub: 'A life in chapters — from the gymnastics mat and a TikTok account to machine-learning research.',
+  intro: 'I go where',
+  introEm: 'the problem is.',
+  sub: 'A life in chapters, from the gymnastics mat and a TikTok account to machine-learning research.',
   next: 'Seeking an AI research internship from March 2027.',
   email: 'clauuagromayor@gmail.com',
   linkedin: 'https://linkedin.com/in/claudia-agromayor',
