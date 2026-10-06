@@ -1,13 +1,15 @@
-/* Writes content.html: everything written on the site, in one page you can read,
-   print or copy into a CV. Run it with `npm run content`. */
+/* Writes content.txt and content.html: everything written on the site, in one file you
+   can read, print or copy into a CV. Run it with `npm run content`. */
 import { writeFileSync } from 'node:fs'
 import { PROFILE } from '../src/data/chapters.js'
 import { ACTS } from '../src/data/acts.js'
 
 const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]))
-const out = []
+const rule = (c) => c.repeat(74)
+const html = []
+const txt = []
 
-out.push(`<!doctype html>
+html.push(`<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <title>${esc(PROFILE.name)} — everything on the site</title>
 <style>
@@ -24,30 +26,60 @@ out.push(`<!doctype html>
   a { color: #2340d8 }
   .links { font-size: .9rem; margin-top: .6rem }
   .links a { margin-right: 1rem }
-  @media print { body { padding: 0 } h2 { page-break-after: avoid } h3 { page-break-after: avoid } }
+  @media print { body { padding: 0 } h2, h3 { page-break-after: avoid } }
 </style></head><body>`)
 
-out.push(`<h1>${esc(PROFILE.name)}</h1>`)
-out.push(`<p class="meta">${esc(PROFILE.role)} · ${esc(PROFILE.places)}</p>`)
-out.push(`<p class="meta">${esc(PROFILE.email)} · <a href="${PROFILE.linkedin}">LinkedIn</a> · <a href="${PROFILE.github}">GitHub</a></p>`)
-out.push(`<p>${esc(PROFILE.next)}</p>`)
+html.push(`<h1>${esc(PROFILE.name)}</h1>`)
+html.push(`<p class="meta">${esc(PROFILE.role)} · ${esc(PROFILE.places)}</p>`)
+html.push(`<p class="meta">${esc(PROFILE.email)} · <a href="${PROFILE.linkedin}">LinkedIn</a> · <a href="${PROFILE.github}">GitHub</a></p>`)
+html.push(`<p>${esc(PROFILE.next)}</p>`)
+
+txt.push(PROFILE.name.toUpperCase(), rule('='), PROFILE.role, PROFILE.places, '',
+  PROFILE.email, PROFILE.linkedin, PROFILE.github, '', PROFILE.next)
 
 for (const a of ACTS) {
-  out.push(`<h2>Chapter ${esc(a.n)}. ${esc(a.title)}</h2>`)
-  out.push(`<p class="meta">${esc(a.years)}</p>`)
-  out.push(`<p>${esc(a.text)}</p>`)
+  html.push(`<h2>Chapter ${esc(a.n)}. ${esc(a.title)}</h2>`)
+  html.push(`<p class="meta">${esc(a.years)}</p>`)
+  html.push(`<p>${esc(a.text)}</p>`)
+
+  txt.push('', '', rule('='), `CHAPTER ${a.n}. ${a.title.toUpperCase()}   (${a.years})`, rule('='), '', a.text)
+
   for (const c of a.items) {
-    out.push(`<h3>${esc(c.title)}</h3>`)
-    out.push(`<p class="meta">${esc(c.date)} · ${esc(c.place)}</p>`)
-    out.push(`<p class="lead">${esc(c.line)}</p>`)
-    out.push(`<ul>${c.facts.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>`)
+    html.push(`<h3>${esc(c.title)}</h3>`)
+    html.push(`<p class="meta">${esc(c.date)} · ${esc(c.place)}</p>`)
+    html.push(`<p class="lead">${esc(c.line)}</p>`)
+    html.push(`<ul>${c.facts.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>`)
     if (c.links?.length) {
-      out.push(`<p class="links">${c.links.map((l) => `<a href="${l.href}">${esc(l.label)}</a>`).join('')}</p>`)
+      html.push(`<p class="links">${c.links.map((l) => `<a href="${l.href}">${esc(l.label)}</a>`).join('')}</p>`)
     }
+
+    txt.push('', rule('-'), c.title.toUpperCase(), `${c.date} · ${c.place}`, rule('-'), '', c.line, '')
+    for (const f of c.facts) txt.push(`  - ${f}`)
+    if (c.links?.length) for (const l of c.links) txt.push(`  ${l.label}: ${l.href}`)
   }
 }
-out.push('</body></html>')
+html.push('</body></html>')
 
-writeFileSync('content.html', out.join('\n'), 'utf8')
-const words = out.join(' ').replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length
-console.log(`content.html written: ${ACTS.length} chapters, ${ACTS.reduce((n, a) => n + a.items.length, 0)} moments, about ${words} words`)
+// wrap the text so it reads in Notepad, keeping the indent of a bullet on its later lines
+const WIDTH = 86
+function wrap(line) {
+  if (line.length <= WIDTH) return line
+  const prefix = (line.match(/^\s*(?:- )?/) || [''])[0]   // "  - " on a bullet, spaces otherwise
+  const hang = ' '.repeat(prefix.length)                  // later lines sit under the text
+  const out = []
+  let cur = prefix, first = true
+  for (const w of line.slice(prefix.length).split(' ')) {
+    const next = first ? cur + w : `${cur} ${w}`
+    if (next.length > WIDTH && !first) { out.push(cur); cur = hang + w } else cur = next
+    first = false
+  }
+  out.push(cur)
+  return out.join('\r\n')
+}
+
+writeFileSync('content.html', html.join('\n'), 'utf8')
+writeFileSync('content.txt', '﻿' + txt.map(wrap).join('\r\n') + '\r\n', 'utf8')
+
+const words = txt.join(' ').split(/\s+/).filter(Boolean).length
+const moments = ACTS.reduce((n, a) => n + a.items.length, 0)
+console.log(`content.txt and content.html written: ${ACTS.length} chapters, ${moments} moments, about ${words} words`)
