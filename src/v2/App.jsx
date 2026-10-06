@@ -80,6 +80,7 @@ function useInView(ref, margin = '200px') {
 /* ── page ──────────────────────────────────────────────────── */
 export default function App() {
   const [menu, setMenu] = useState(false)
+  const [zoom, setZoom] = useState(null)
 
   useEffect(() => {
     if (reduced) return
@@ -89,7 +90,7 @@ export default function App() {
     id = requestAnimationFrame(raf)
     return () => { cancelAnimationFrame(id); lenis.destroy(); lenis = null }
   }, [])
-  useEffect(() => { if (lenis) menu ? lenis.stop() : lenis.start() }, [menu])
+  useEffect(() => { if (lenis) (menu || zoom) ? lenis.stop() : lenis.start() }, [menu, zoom])
 
   // text and moments rise into place as they enter the screen
   useEffect(() => {
@@ -121,7 +122,7 @@ export default function App() {
       <main id="top">
         <Hero />
         <Intro onStory={() => go('story')} />
-        <Story go={go} />
+        <Story go={go} onZoom={(list, i) => setZoom({ list, i })} />
         <Finale />
       </main>
 
@@ -133,6 +134,7 @@ export default function App() {
       </footer>
 
       {menu && <Menu onClose={() => setMenu(false)} go={go} />}
+      {zoom && <Lightbox {...zoom} onClose={() => setZoom(null)} />}
     </>
   )
 }
@@ -185,7 +187,7 @@ function Pluses({ label, n = 4 }) {
 function Intro({ onStory }) {
   return (
     <section className="intro">
-      <h2 className="big reveal">{PROFILE.intro}<br /><span className="indent">{PROFILE.introEm}</span></h2>
+      <p className="eyebrow reveal">Who I am</p>
       <figure className="intro-photo reveal"><img src="/img/me.jpg" alt="Claudia Agromayor" loading="lazy" /></figure>
       <div className="intro-copy reveal">
         <p>
@@ -208,7 +210,7 @@ function Intro({ onStory }) {
 }
 
 /* The story: a contents page, then each chapter with its moments */
-function Story({ go }) {
+function Story({ go, onZoom }) {
   const wrap = useRef(null)
   const [cur, setCur] = useState(-1)
   const curRef = useRef(-1)
@@ -247,7 +249,7 @@ function Story({ go }) {
             <p className="act-text reveal">{a.text}</p>
           </header>
           <ol className="act-list">
-            {a.items.map((c) => <Moment key={c.title} c={c} />)}
+            {a.items.map((c) => <Moment key={c.title} c={c} onZoom={onZoom} />)}
           </ol>
         </article>
       ))}
@@ -265,7 +267,7 @@ function Story({ go }) {
 }
 
 // One line per moment; the details open underneath
-function Moment({ c }) {
+function Moment({ c, onZoom }) {
   const [open, setOpen] = useState(false)
   const id = useId()
   const shots = [c.img, ...(c.photos || [])].filter(Boolean)
@@ -280,10 +282,22 @@ function Moment({ c }) {
         <p className="m-meta">{c.date} · {c.place}</p>
         <ul>{c.facts.map((f, k) => <li key={k}>{f}</li>)}</ul>
         {shots.length > 0 && (
-          <div className="m-shots">{shots.map((src) => <img key={src} src={src} alt="" loading="lazy" />)}</div>
+          <div className="m-shots">
+            {shots.map((src, k) => (
+              <button type="button" key={src} onClick={() => onZoom(shots, k)} aria-label={`${c.title}: open picture ${k + 1}`}>
+                <img src={src} alt="" loading="lazy" />
+              </button>
+            ))}
+          </div>
         )}
         {c.video && <Demo id={c.video} poster={shots[0]} title={c.title} />}
-        {c.link && <a className="src" href={c.link} target="_blank" rel="noreferrer">{c.linkLabel || 'Read the news (Spanish) ↗'}</a>}
+        {c.links?.length > 0 && (
+          <p className="m-links">
+            {c.links.map((l) => (
+              <a key={l.href} className="src" href={l.href} target="_blank" rel="noreferrer">{l.label} ↗</a>
+            ))}
+          </p>
+        )}
       </div></div>
     </li>
   )
@@ -357,6 +371,36 @@ function Finale() {
         </div>
       </div>
     </section>
+  )
+}
+
+/* A picture, full size. Arrow keys and the edges of the screen move through the set. */
+function Lightbox({ list, i, onClose }) {
+  const [at, setAt] = useState(i)
+  const step = useCallback((d) => setAt((k) => (k + d + list.length) % list.length), [list.length])
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'ArrowRight') step(1)
+      if (e.key === 'ArrowLeft') step(-1)
+    }
+    addEventListener('keydown', onKey)
+    return () => removeEventListener('keydown', onKey)
+  }, [onClose, step])
+  return (
+    <div className="lightbox" role="dialog" aria-modal="true" aria-label="Picture" onClick={onClose} data-lenis-prevent>
+      <img src={list[at]} alt="" onClick={(e) => e.stopPropagation()} />
+      {list.length > 1 && (
+        <>
+          <button type="button" className="lb-nav prev" aria-label="Previous picture"
+            onClick={(e) => { e.stopPropagation(); step(-1) }}>‹</button>
+          <button type="button" className="lb-nav next" aria-label="Next picture"
+            onClick={(e) => { e.stopPropagation(); step(1) }}>›</button>
+          <span className="lb-count">{at + 1} / {list.length}</span>
+        </>
+      )}
+      <button type="button" className="pill light lb-close" onClick={onClose}>CLOSE</button>
+    </div>
   )
 }
 

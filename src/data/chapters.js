@@ -7,6 +7,7 @@
 //  · facts: what you did (short lines, with numbers)
 //  · img, photos: the pictures, shown as a row inside the chapter when you open it
 //  · video: a YouTube id, shown as a still that plays when clicked
+//  · links: [{ href, label }], shown at the end of the chapter
 //  · hidden: true keeps a chapter off the site (e.g. until it is confirmed)
 // ─────────────────────────────────────────────────────────────
 
@@ -44,7 +45,7 @@ const ALL = [
       'Training six days a week, before and after school, for ten years. You repeat a movement a thousand times so that on the day it happens without you.',
     ],
     img: '/img/gimnasia-2013.jpg',
-    link: 'https://www.ayuntamientoboadilladelmonte.org/boadilla-actualidad/noticias/el-equipo-infantil-de-gimnasia-estetica-de-boadilla-obtiene-el-quinto',
+    links: [{ href: 'https://www.ayuntamientoboadilladelmonte.org/boadilla-actualidad/noticias/el-equipo-infantil-de-gimnasia-estetica-de-boadilla-obtiene-el-quinto', label: 'Read the news (Spanish)' }],
   },
   {
     area: 'edu', year: 2015, date: 'April 2015', place: 'Boadilla del Monte',
@@ -55,7 +56,7 @@ const ALL = [
       'From sixth grade I entered every maths and science competition I could find. Nobody made me. That is the part that mattered later, when the problems got harder and there was no prize at the end.',
     ],
     img: '/img/gymkana-2015.jpg',
-    link: 'https://www.ayuntamientoboadilladelmonte.org/boadilla-actualidad/noticias/cuatrocientos-escolares-participan-en-la-ii-gymkana-matematica-de',
+    links: [{ href: 'https://www.ayuntamientoboadilladelmonte.org/boadilla-actualidad/noticias/cuatrocientos-escolares-participan-en-la-ii-gymkana-matematica-de', label: 'Read the news (Spanish)' }],
   },
   {
     area: 'edu', year: 2021, date: '2018 – 2021', place: 'Boadilla del Monte',
@@ -234,8 +235,7 @@ const ALL = [
       'I trained a message-passing neural network on 47,348 compounds scored by zebrafish behaviour, ran it over all 43.6 billion molecules of the ZINC22 library on a SLURM cluster, then filtered for developability and picked 1,000 compounds with a Pareto search on quality and novelty. About 100 are going forward for synthesis.',
       'I arrived with a background in neural networks and very little in biology, and had two months to learn the science, pose the problem and come out with molecules a lab could order. My supervisor asked me to present it at the PandemicStop-AI conference at Mila. It led to a PhD offer.',
     ],
-    link: 'https://github.com/ClaudiaAgromayor/zebrafish-anesthetic-chemprop',
-    linkLabel: 'The code on GitHub ↗',
+    links: [{ href: 'https://github.com/ClaudiaAgromayor/zebrafish-anesthetic-chemprop', label: 'The code on GitHub' }],
     img: '/img/olivier_lab.jpg',
     photos: ['/img/montreal_office.jpg'],
   },
@@ -249,8 +249,10 @@ const ALL = [
       'AngryRobot watches them in layers: deterministic safety checks, loop detection, an independent LLM judge, and our Agent Risk Index, which decides whether an agent continues, raises a warning, calls a human, or is shut down. During the simulations our rogue agents were making real phone calls.',
     ],
     video: 'eaWnMs7NiIE',
-    link: 'https://github.com/Hugongra/HackSpainTeam',
-    linkLabel: 'The code on GitHub ↗',
+    links: [
+      { href: 'https://github.com/Hugongra/HackSpainTeam', label: 'The code on GitHub' },
+      { href: 'https://youtu.be/eaWnMs7NiIE', label: 'The demo on YouTube' },
+    ],
     img: '/img/hacskapain.jpg',
     photos: ['/img/hackspain2.jpg'],
   },
@@ -263,8 +265,6 @@ export const PROFILE = {
   born: 2003,
   role: '2nd-year double master’s student in Industrial Engineering & Computer Science',
   places: 'Madrid · Paris · Montréal',
-  intro: 'I never optimise',
-  introEm: 'for the easy path.',
   sub: 'A life in chapters, from the gymnastics mat and a TikTok account to machine-learning research.',
   next: 'Seeking an AI research internship from March 2027.',
   email: 'clauuagromayor@gmail.com',
