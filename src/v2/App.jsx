@@ -185,7 +185,6 @@ function Story({ go, onZoom }) {
           <li key={sec.id}>
             <button type="button" onClick={() => go(sec.id)}>
               <span className="ct-t">{sec.title}</span>
-              <span className="ct-y">{sec.items.length}</span>
             </button>
           </li>
         ))}
