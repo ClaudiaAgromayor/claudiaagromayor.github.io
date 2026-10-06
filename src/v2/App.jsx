@@ -101,11 +101,11 @@ export default function App() {
 }
 
 /* The hero, full screen: her name beside a 3D piece, her portrait as a scan or the places on a globe */
-const VIEWS = [['portrait', 'Portrait'], ['places', 'Places']]
+const VIEWS = [['field', 'Field'], ['places', 'Places']]
 function Hero() {
   const card = useRef(null), pointerIn = useRef(false)
   const live = useInView(card)
-  const [view, setView] = useState('portrait')
+  const [view, setView] = useState('field')
   const [place, setPlace] = useState(null)
   return (
     <section className="hero">
@@ -114,7 +114,7 @@ function Hero() {
         <Canvas camera={{ position: [0, 0, 8], fov: 30 }} dpr={[1, 1.75]} frameloop={live ? 'always' : 'never'} gl={{ antialias: true }}>
           <color attach="background" args={['#07080D']} />
           <Suspense fallback={null}>
-            {view === 'portrait' ? <HeroScan reduced={reduced} pointerIn={pointerIn} /> : <HeroGlobe reduced={reduced} onPlace={setPlace} />}
+            {view === 'field' ? <HeroScan reduced={reduced} pointerIn={pointerIn} /> : <HeroGlobe reduced={reduced} onPlace={setPlace} />}
           </Suspense>
         </Canvas>
         <div className="hero-tabs" role="tablist" aria-label="Hero view">
@@ -129,7 +129,7 @@ function Hero() {
           <p className="hero-role">{PROFILE.places}</p>
         </div>
         <p className="hero-label" aria-live="polite">
-          {view === 'places' && place ? <><b>{place.name} · {place.years}</b>{place.what}</> : view === 'places' ? 'Drag to spin · point at a city' : 'Move through the scan'}
+          {view === 'places' && place ? <><b>{place.name} · {place.years}</b>{place.what}</> : view === 'places' ? 'Drag to spin · point at a city' : 'Move through the field'}
         </p>
       </div>
       <Pluses label="SCROLL TO EXPLORE" />
