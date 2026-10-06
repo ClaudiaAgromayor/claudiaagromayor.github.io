@@ -57,7 +57,11 @@ img { max-width: 100%; display: block }
 .big { margin: 0; font-weight: 400; font-size: clamp(52px, 9.4vw, 150px); line-height: 1.04; letter-spacing: -.045em; text-wrap: balance; position: relative; z-index: 1 }
 .indent { padding-left: 14% }
 .intro { position: relative; padding: clamp(100px, 14vw, 220px) var(--gut) clamp(60px, 8vw, 120px) }
-.intro-copy { position: relative; z-index: 1; margin: clamp(40px, 5vw, 72px) 0 0 auto; width: min(560px, 100%); font-size: clamp(17px, 1.5vw, 21px); line-height: 1.42; letter-spacing: -.01em }
+.intro-photo { position: relative; z-index: 1; margin: clamp(40px, 5vw, 72px) 0 0; width: min(380px, 42%); }
+.intro-photo img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius); filter: saturate(.75) contrast(1.05) brightness(.95) }
+.intro { display: grid; grid-template-columns: 1fr 1fr; align-items: start; column-gap: clamp(28px, 5vw, 80px) }
+.intro .big { grid-column: 1 / -1 }
+.intro-copy { position: relative; z-index: 1; margin: clamp(40px, 5vw, 72px) 0 0 auto; width: min(560px, 100%); align-self: end; font-size: clamp(17px, 1.5vw, 21px); line-height: 1.42; letter-spacing: -.01em }
 .intro-copy p { margin: 0 0 28px }
 .tube { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible }
 .tube.t1 { z-index: 0; top: 18%; height: 82% }
@@ -215,6 +219,8 @@ html.lenis, html.lenis body { height: auto }
   .contents li { border-bottom: 1px solid var(--line) }
   .act { grid-template-columns: 1fr }
   .act-side { position: static }
+  .intro { grid-template-columns: 1fr }
+  .intro-photo { width: min(320px, 70%) }
   .hero-copy { max-width: none; right: clamp(16px, 2.4vw, 36px) }
   .hero-label { top: clamp(22px, 2vw, 34px); bottom: auto; width: 46% }
 }

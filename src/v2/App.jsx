@@ -42,7 +42,7 @@ const ACTS = [
     n: 'V', title: 'AI where it counts', years: '2026',
     text: 'Now I train models where a wrong answer has a cost. A network that segments root canals in 3D so a dentist can plan the treatment. A network that reads 43 billion molecules looking for a safer anaesthetic. Same question in both: can you trust the model where it has never been tested?',
     feature: 'IRIC, Université de Montréal',
-    moments: ['Seeing inside a tooth', 'IRIC, Université de Montréal'],
+    moments: ['Seeing inside a tooth', 'IRIC, Université de Montréal', 'A kill switch for AI agents'],
   },
 ].map((a) => ({ ...a, items: a.moments.map((t) => CHAPTERS.find((c) => c.title === t)).filter(Boolean), lead: CHAPTERS.find((c) => c.title === a.feature) }))
 
@@ -57,7 +57,7 @@ const METRICS = {
   'Altex Asset Management': { metric: '15%', label: 'annualised returns', tone: 'cobalt', art: 'lines' },
   'Treasurer of France’s largest student forum': { metric: '€1.4M', label: 'revenue, 3,500 students', tone: 'soft', art: 'rings' },
   'From 0 to 1,000 on TikTok': { metric: '1,000', label: 'followers in month one', tone: 'ink', art: 'orbit' },
-  'Predicting drug effects': { metric: 'RF · GBM · SVM', label: 'multimodal ensembles', tone: 'soft', art: 'dots' },
+  'A kill switch for AI agents': { metric: '36h', label: 'to stop a rogue agent', tone: 'soft', art: 'orbit' },
   'Paris, without a prépa': { metric: '9.2/10', label: 'GPA, last two years', tone: 'paper', art: 'lines' },
 }
 
@@ -206,6 +206,7 @@ function Intro({ onStory }) {
   return (
     <section className="intro">
       <h2 className="big reveal">{PROFILE.intro}<br /><span className="indent">{PROFILE.introEm}</span></h2>
+      <figure className="intro-photo reveal"><img src="/img/me.jpg" alt="Claudia Agromayor" loading="lazy" /></figure>
       <div className="intro-copy reveal">
         <p>
           I am an engineer who works on machine learning. I like the problems that sit between fields: a model
