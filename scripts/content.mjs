@@ -1,7 +1,7 @@
 /* Writes content.txt and content.html: everything written on the site, in one file you
    can read, print or copy into a CV. Run it with `npm run content`. */
 import { writeFileSync } from 'node:fs'
-import { PROFILE, BEYOND, CURRENTLY } from '../src/data/entries.js'
+import { PROFILE, BEYOND, CONTACT } from '../src/data/entries.js'
 import { SECTIONS } from '../src/data/sections.js'
 
 const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]))
@@ -47,26 +47,31 @@ for (const sec of SECTIONS) {
   txt.push('', '', rule('='), sec.title.toUpperCase(), rule('='))
 
   for (const c of sec.items) {
-    html.push(`<h3>${esc(c.title)}</h3>`)
-    html.push(`<p class="meta">${esc(c.role)}<br>${esc(c.date)} · ${esc(c.place)}</p>`)
+    html.push(`<h3>${esc(c.title)} — ${esc(c.org)}</h3>`)
+    html.push(`<p class="meta">${esc(c.date)} · ${esc(c.place)}</p>`)
     html.push(`<p class="lead">${esc(c.line)}</p>`)
-    html.push(`<ul>${c.facts.flatMap(flat).map((f) => `<li>${esc(f)}</li>`).join('')}</ul>`)
+    if (c.stats?.length) html.push(`<p class="meta">${c.stats.map((st) => `<strong>${esc(st.v)}</strong> ${esc(st.k)}`).join(' · ')}</p>`)
+    if (c.facts.length) html.push(`<ul>${c.facts.flatMap(flat).map((f) => `<li>${esc(f)}</li>`).join('')}</ul>`)
+    if (c.tags?.length) html.push(`<p class="meta">${esc(c.tagsLabel)}: ${c.tags.map(esc).join(' · ')}</p>`)
     if (c.links?.length) {
       html.push(`<p class="links">${c.links.map((l) => `<a href="${l.href}">${esc(l.label)}</a>`).join('')}</p>`)
     }
 
-    txt.push('', rule('-'), c.title.toUpperCase(), c.role, `${c.date} · ${c.place}`, rule('-'), '', c.line, '')
+    txt.push('', rule('-'), `${c.title.toUpperCase()} — ${c.org}`, `${c.date} · ${c.place}`, rule('-'), '', c.line, '')
+    if (c.stats?.length) { txt.push(c.stats.map((st) => `${st.v} ${st.k}`).join('   ·   '), '') }
     for (const f of c.facts.flatMap(flat)) txt.push(`  - ${f}`)
+    if (c.tags?.length) txt.push(`  ${c.tagsLabel}: ${c.tags.join(' · ')}`)
     if (c.links?.length) for (const l of c.links) txt.push(`  ${l.label}: ${l.href}`)
   }
 }
 
-for (const block of [BEYOND, CURRENTLY]) {
-  html.push(`<h2>${esc(block.title)}</h2>`)
-  txt.push('', '', rule('='), block.title.toUpperCase(), rule('='), '')
-  if (block.tags) { html.push(`<p class="meta">${esc(block.tags)}</p>`); txt.push(block.tags, '') }
-  for (const t of block.paragraphs) { html.push(`<p>${esc(t)}</p>`); txt.push(t, '') }
-}
+html.push(`<h2>${esc(BEYOND.title)}</h2>`, `<p>${esc(BEYOND.text)}</p>`)
+txt.push('', '', rule('='), BEYOND.title.toUpperCase(), rule('='), '', BEYOND.text)
+
+html.push('<h2>Contact</h2>', `<p class="meta">${esc(CONTACT.tags)}</p>`, `<p>${esc(CONTACT.text)}</p>`)
+html.push(`<p class="meta">${esc(PROFILE.email)} · <a href="${PROFILE.linkedin}">LinkedIn</a> · <a href="${PROFILE.github}">GitHub</a></p>`)
+txt.push('', '', rule('='), 'CONTACT', rule('='), '', CONTACT.tags, '', CONTACT.text, '',
+  PROFILE.email, PROFILE.linkedin, PROFILE.github)
 
 html.push('</body></html>')
 

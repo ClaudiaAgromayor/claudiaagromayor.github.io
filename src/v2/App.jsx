@@ -3,9 +3,7 @@ import { Canvas } from '@react-three/fiber'
 import Lenis from 'lenis'
 import HeroScan from './HeroScan'
 import HeroGlobe from './HeroGlobe'
-import Avatar3D from './Avatar3D'
-import { AVATAR } from './avatar'
-import { PROFILE, BEYOND, CURRENTLY } from '../data/entries'
+import { PROFILE, BEYOND, CONTACT } from '../data/entries'
 import { SECTIONS } from '../data/sections'
 
 const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -21,14 +19,6 @@ function scrollToId(id) {
 }
 
 /* ── scroll-driven helpers ─────────────────────────────────── */
-function passProgress(el) {
-  const r = el.getBoundingClientRect(), vh = innerHeight
-  return clamp01((vh - r.top) / (r.height + vh))
-}
-function stickyProgress(el) {
-  const r = el.getBoundingClientRect()
-  return clamp01(-r.top / Math.max(1, r.height - innerHeight))
-}
 function useScrub(ref, fn) {
   useEffect(() => {
     let raf
@@ -91,11 +81,10 @@ export default function App() {
 
       <main id="top">
         <Hero />
-        <Intro onStory={() => go('story')} />
+        <Intro onWork={() => go('story')} />
         <Story go={go} onZoom={(list, i) => setZoom({ list, i })} />
         <Beyond onZoom={(list, i) => setZoom({ list, i })} />
-        <Currently />
-        <Finale />
+        <Contact />
       </main>
 
       <footer className="foot">
@@ -157,16 +146,14 @@ function Pluses({ label, n = 4 }) {
   )
 }
 
-function Intro({ onStory }) {
+function Intro({ onWork }) {
   return (
     <section className="intro">
-      <p className="eyebrow reveal">Who I am</p>
-      <figure className="intro-photo reveal"><img src="/img/me-cut.png" alt="Claudia Agromayor" loading="lazy" /></figure>
       <div className="intro-copy reveal">
-        <p>{PROFILE.intro}</p>
+        <p className="intro-lead">{PROFILE.intro}</p>
         <p>{PROFILE.now}</p>
         <p className="intro-punch">{PROFILE.next}</p>
-        <button type="button" className="pill ghost" onClick={onStory}><i className="dot" /> SEE MY WORK</button>
+        <button type="button" className="pill ghost" onClick={onWork}><i className="dot" /> SEE MY WORK</button>
       </div>
     </section>
   )
@@ -185,13 +172,8 @@ function Story({ go, onZoom }) {
     if (c !== curRef.current) { curRef.current = c; setCur(c) }
   }, [])
   useScrub(wrap, track)
-  const entries = SECTIONS.reduce((n, sec) => n + sec.items.length, 0)
   return (
     <section className="tale" id="story" ref={wrap}>
-      <div className="tale-head">
-        <h2 className="big reveal">Work &amp;<br />Research</h2>
-        <p className="caps reveal">{entries} entries. Open any one to read it in full.</p>
-      </div>
       <ol className="contents reveal">
         {SECTIONS.map((sec) => (
           <li key={sec.id}>
@@ -204,7 +186,7 @@ function Story({ go, onZoom }) {
       </ol>
 
       {SECTIONS.map((sec) => (
-        <article className="act" id={sec.id} key={sec.id}>
+        <article className={`act ${sec.weight}`} id={sec.id} key={sec.id}>
           <header className="act-side">
             <h2 className="reveal">{sec.title}</h2>
           </header>
@@ -226,13 +208,13 @@ function Story({ go, onZoom }) {
   )
 }
 
-/* The two closing sections: what she does outside the work, and what she is after */
+/* Beyond engineering: one short paragraph and two pictures */
 function Beyond({ onZoom }) {
   return (
     <section className="aside" id="beyond">
       <h2 className="aside-title reveal">{BEYOND.title}</h2>
       <div className="aside-copy reveal">
-        {BEYOND.paragraphs.map((t, k) => <p key={k}>{t}</p>)}
+        <p>{BEYOND.text}</p>
         <div className="m-shots">
           {BEYOND.photos.map((src, k) => (
             <button type="button" key={src} onClick={() => onZoom(BEYOND.photos, k)} aria-label={`Open picture ${k + 1}`}>
@@ -245,34 +227,37 @@ function Beyond({ onZoom }) {
   )
 }
 
-function Currently() {
-  return (
-    <section className="aside" id="currently">
-      <h2 className="aside-title reveal">{CURRENTLY.title}</h2>
-      <div className="aside-copy reveal">
-        <p className="caps aside-tags">{CURRENTLY.tags}</p>
-        {CURRENTLY.paragraphs.map((t, k) => <p key={k}>{t}</p>)}
-      </div>
-    </section>
-  )
-}
-
 // One line per moment; the details open underneath
 function Moment({ c, onZoom }) {
   const [open, setOpen] = useState(false)
   const id = useId()
   const shots = [c.img, ...(c.photos || [])].filter(Boolean)
   return (
-    <li className="moment reveal" data-open={open}>
+    <li className={`moment reveal${c.quiet ? ' quiet' : ''}`} data-open={open}>
       <button type="button" className="m-head" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}>
-        <span className="m-year">{c.year}</span>
-        <span className="m-title">{c.title}<small>{c.line}</small></span>
+        <span className="m-year">{c.date}</span>
+        <span className="m-title">
+          {c.title}
+          <b className="m-org">{c.org}</b>
+          <small>{c.line}</small>
+          {c.stats?.length > 0 && (
+            <span className="m-stats">
+              {c.stats.map((st) => (
+                <span key={st.v} className={`m-stat${st.big ? ' big' : ''}`}><b>{st.v}</b><i>{st.k}</i></span>
+              ))}
+            </span>
+          )}
+        </span>
         <span className="m-plus" aria-hidden="true" />
       </button>
       <div className="m-more" id={id}><div className="m-body">
-        <p className="m-role">{c.role}</p>
-        <p className="m-meta">{c.date} · {c.place}</p>
-        <Facts items={c.facts} />
+        {c.facts.length > 0 && <Facts items={c.facts} />}
+        {c.tags?.length > 0 && (
+          <div className="m-tags">
+            <p className="m-tags-label">{c.tagsLabel}</p>
+            <p className="m-tag-row">{c.tags.map((t) => <span key={t}>{t}</span>)}</p>
+          </div>
+        )}
         {shots.length > 0 && (
           <div className="m-shots">
             {shots.map((src, k) => (
@@ -329,52 +314,23 @@ function Demo({ id, poster, title }) {
 }
 
 /* The ending, on one dark screen: the next chapter, then her avatar, then how to reach her */
-function Finale() {
-  const wrap = useRef(null), text = useRef(null), halo = useRef(null), contact = useRef(null)
-  const progress = useRef(0)
-  const live = useInView(wrap, '0px')
+/* The ending: her portrait, what she is looking for, and how to reach her. */
+function Contact() {
   const [copied, setCopied] = useState(false)
   const copy = () => navigator.clipboard?.writeText(PROFILE.email).then(() => setCopied(true), () => {})
-  const scrub = useCallback((el) => {
-    const p = stickyProgress(el)
-    progress.current = p
-    if (AVATAR) {
-      // the text makes way for her
-      text.current.style.opacity = 1 - clamp01((p - 0.25) / 0.15)
-      text.current.style.transform = `translateY(${-clamp01((p - 0.25) / 0.3) * 60}px)`
-    } else {
-      // no avatar yet: the text stays and moves up to make room for the contact
-      text.current.style.transform = `translateY(${-clamp01((p - 0.45) / 0.3) * 14}vh)`
-    }
-    const c = clamp01((p - (AVATAR ? 0.68 : 0.5)) / 0.16)
-    contact.current.style.opacity = c
-    contact.current.style.transform = `translateY(${(1 - c) * 30}px)`
-    contact.current.style.visibility = c > 0.01 ? 'visible' : 'hidden'
-    halo.current.style.transform = `translate(-50%, -50%) scale(${0.85 + p * 0.3})`
-  }, [])
-  useScrub(wrap, scrub)
   return (
-    <section className={`finale${AVATAR ? '' : ' short'}`} ref={wrap}>
-      <span id="contact" className="contact-anchor" aria-hidden="true" />
+    <section className="contact" id="contact">
       <div className="dusk" aria-hidden="true" />
-      <div className="finale-stick">
-        <div className="halo" ref={halo} aria-hidden="true" />
-        {AVATAR && (
-          <div className="finale-canvas">
-            <Canvas camera={{ position: [0, 0, 6], fov: 35 }} dpr={[1, 1.75]} frameloop={live ? 'always' : 'never'} gl={{ antialias: true, alpha: true }}>
-              <Suspense fallback={null}><Avatar3D progress={progress} reduced={reduced} /></Suspense>
-            </Canvas>
-          </div>
-        )}
-        <h2 className="finale-text" ref={text}>The next chapter<br />is still<br />unwritten</h2>
-        <div className="finale-contact" ref={contact}>
-          <p className="caps">Got a hard problem worth solving? {PROFILE.next}</p>
-          <div className="contact-row">
-            <span className="mail">{PROFILE.email}</span>
-            <button type="button" className="pill light" onClick={copy}>{copied ? 'COPIED' : 'COPY EMAIL'}</button>
-            <a className="pill outline" href={PROFILE.linkedin} target="_blank" rel="noreferrer">LINKEDIN</a>
-            <a className="pill outline" href={PROFILE.github} target="_blank" rel="noreferrer">GITHUB</a>
-          </div>
+      <div className="halo" aria-hidden="true" />
+      <figure className="contact-photo reveal"><img src="/img/me-cut.png" alt="Claudia Agromayor" loading="lazy" /></figure>
+      <div className="contact-copy reveal">
+        <p className="caps contact-tags">{CONTACT.tags}</p>
+        <p className="contact-text">{CONTACT.text}</p>
+        <div className="contact-row">
+          <span className="mail">{PROFILE.email}</span>
+          <button type="button" className="pill light" onClick={copy}>{copied ? 'COPIED' : 'COPY EMAIL'}</button>
+          <a className="pill outline" href={PROFILE.linkedin} target="_blank" rel="noreferrer">LINKEDIN</a>
+          <a className="pill outline" href={PROFILE.github} target="_blank" rel="noreferrer">GITHUB</a>
         </div>
       </div>
     </section>
