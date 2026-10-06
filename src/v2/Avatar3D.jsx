@@ -66,16 +66,3 @@ export default function Avatar3D({ progress, reduced }) {
     </>
   )
 }
-
-/** A floating avatar for the tablet and the call to action. */
-export function Floating({ reduced }) {
-  const g = useRef()
-  useFrame(({ clock, pointer }) => {
-    const t = reduced ? 0 : clock.elapsedTime
-    g.current.position.y = Math.sin(t * 0.7) * 0.08
-    g.current.rotation.y = Math.sin(t * 0.3) * 0.3 + pointer.x * 0.35
-    g.current.rotation.x = 0.08 - pointer.y * 0.12
-    g.current.rotation.z = Math.sin(t * 0.5) * 0.05
-  })
-  return <group ref={g}><Figure /></group>
-}

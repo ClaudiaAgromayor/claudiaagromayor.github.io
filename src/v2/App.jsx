@@ -1,48 +1,52 @@
-import { Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import { Suspense, useCallback, useEffect, useId, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import Lenis from 'lenis'
-import Hero3D, { LABELS } from './Hero3D'
+import HeroScan from './HeroScan'
+import HeroGlobe from './HeroGlobe'
 import Avatar3D from './Avatar3D'
 import { AVATAR } from './avatar'
-import Device3D from './Device3D'
-import { AREAS, CHAPTERS, PROFILE } from '../data/chapters'
+import { CHAPTERS, PROFILE } from '../data/chapters'
 
 const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
 const clamp01 = (x) => Math.max(0, Math.min(1, x))
 
 /* ── the story, in five chapters ───────────────────────────────
-   Each chapter opens with a short paragraph, then its moments in order.
-   `moments` are chapter titles from src/data/chapters.js. */
+   Each chapter opens with a short paragraph and one picture (`feature`), then its moments
+   as a short list that opens on click. `moments` are chapter titles from src/data/chapters.js. */
 const ACTS = [
   {
     n: 'I', title: 'Roots', years: '2003 – 2015',
     text: 'I grew up in Madrid between two languages, in a family that stretches across Europe, Asia and the Americas. Two things arrived early: a gymnastics mat and a maths problem. One taught me discipline under pressure; the other, that a hard problem is the best kind of game.',
+    feature: 'Maths as a game',
     moments: ['Born between two cultures', 'Fifth in the world', 'Maths as a game'],
   },
   {
     n: 'II', title: 'Taking off', years: '2018 – 2022',
     text: 'I chose engineering because it was hard. Around the same time I found my first job — and pitched an idea nobody had asked for, from the most junior seat in the room. Then I spent a summer alone in Wisconsin, in charge of twelve girls and a lake.',
+    feature: 'From 0 to 1,000 on TikTok',
     moments: ['From 0 to 1,000 on TikTok', 'Top of the class', 'Engineering at ICAI', 'A summer at Lake Wapogasset'],
   },
   {
     n: 'III', title: 'Paris', years: '2023 – 2025',
     text: 'Selected as one of two ICAI students for the double degree with CentraleSupélec, I moved to Paris without the usual prépa and in a new language. There I found what drives me — using data to understand real systems — while running the finances of France’s largest student forum.',
+    feature: 'Paris, without a prépa',
     moments: ['Paris, without a prépa', 'Basketball, rowing and surf', 'Treasurer of France’s largest student forum', 'Altex Asset Management', 'A third degree, in economics'],
   },
   {
     n: 'IV', title: 'Building with AI', years: '2025',
     text: '2025 was the year models met people: language models that have to follow business rules, factories that learn together without sharing their data, an AI system that AWS teams use every day — and a hackathon won in 48 hours.',
+    feature: 'Amazon Web Services',
     moments: ['LLMs that follow rules', 'Learning without sharing data', 'Amazon Web Services', 'A double master’s in engineering and AI', 'First place in 48 hours'],
   },
   {
     n: 'V', title: 'Science', years: '2025 – 2026',
     text: 'Then biology caught me. Predicting how drugs act, segmenting root canals in 3D, screening billions of molecules in Montréal: different problems, one question — can you trust a model when getting it wrong really matters?',
+    feature: 'IRIC, Université de Montréal',
     moments: ['Predicting drug effects', 'Seeing inside a tooth', 'IRIC, Université de Montréal'],
   },
-].map((a) => ({ ...a, items: a.moments.map((t) => CHAPTERS.find((c) => c.title === t)).filter(Boolean) }))
-const MOMENTS = ACTS.reduce((n, a) => n + a.items.length, 0)
+].map((a) => ({ ...a, items: a.moments.map((t) => CHAPTERS.find((c) => c.title === t)).filter(Boolean), lead: CHAPTERS.find((c) => c.title === a.feature) }))
 
-// Moments with a headline number get it as their picture until there is a photo
+// A chapter's picture: the photo of its feature moment, or else its headline number
 const METRICS = {
   'IRIC, Université de Montréal': { metric: '1.04M', label: 'candidates from billions screened', tone: 'ink', art: 'dots' },
   'Amazon Web Services': { metric: '75→85%', label: 'first-attempt accuracy', tone: 'cobalt', art: 'rings' },
@@ -163,9 +167,7 @@ export default function App() {
       <main id="top">
         <Hero />
         <Intro onStory={() => go('story')} />
-        <StoryCard onStory={() => go('story')} />
         <Story go={go} />
-        <Statement />
         <Finale />
       </main>
 
@@ -181,25 +183,34 @@ export default function App() {
   )
 }
 
+/* The hero: her name beside a 3D piece — her portrait as a scan, or the places on a globe */
+const VIEWS = [['portrait', 'Portrait'], ['places', 'Places']]
 function Hero() {
-  const card = useRef(null), burst = useRef(0), pointerIn = useRef(false)
+  const card = useRef(null), pointerIn = useRef(false)
   const live = useInView(card)
-  const [hover, setHover] = useState(null)
-  const onHover = useCallback((k) => setHover(k), [])
-  const label = hover && LABELS[hover]
+  const [view, setView] = useState('portrait')
+  const [place, setPlace] = useState(null)
   return (
     <section className="hero">
-      <p className="lede">
-        Double master’s student in Industrial Engineering &amp; Computer Science, building machine-learning systems that hold up in the real world.
-      </p>
-      <div className={`card hero-card${hover ? ' pointing' : ''}`} ref={card} onPointerDown={() => { burst.current = 1 }}
-        onPointerEnter={() => { pointerIn.current = true }} onPointerLeave={() => { pointerIn.current = false; setHover(null) }}>
-        <Canvas camera={{ position: [0, 0, 10], fov: 35 }} dpr={[1, 1.75]} frameloop={live ? 'always' : 'never'} gl={{ antialias: true }}>
-          <color attach="background" args={['#101218']} />
-          <Suspense fallback={null}><Hero3D reduced={reduced} burst={burst} pointerIn={pointerIn} onHover={onHover} /></Suspense>
+      <div className={`card hero-card ${view}`} ref={card}
+        onPointerEnter={() => { pointerIn.current = true }} onPointerLeave={() => { pointerIn.current = false }}>
+        <Canvas camera={{ position: [0, 0, 8], fov: 30 }} dpr={[1, 1.75]} frameloop={live ? 'always' : 'never'} gl={{ antialias: true }}>
+          <color attach="background" args={['#07080D']} />
+          <Suspense fallback={null}>
+            {view === 'portrait' ? <HeroScan reduced={reduced} pointerIn={pointerIn} /> : <HeroGlobe reduced={reduced} onPlace={setPlace} />}
+          </Suspense>
         </Canvas>
+        <div className="hero-tabs" role="tablist" aria-label="Hero view">
+          {VIEWS.map(([k, l]) => (
+            <button key={k} type="button" role="tab" aria-selected={view === k} onClick={() => setView(k)}>{l}</button>
+          ))}
+        </div>
+        <div className="hero-copy">
+          <h1 className="hero-name">Claudia<br />Agromayor</h1>
+          <p className="hero-role">Double master’s student in Industrial Engineering &amp; Computer Science</p>
+        </div>
         <p className="hero-label" aria-live="polite">
-          {label ? <><b>{label[0]}</b>{label[1]}</> : <>Every object here is part of my story — <b className="soft">point at one</b></>}
+          {view === 'places' && place ? <><b>{place.name} · {place.years}</b>{place.what}</> : view === 'places' ? 'Drag to spin · point at a city' : 'Move through the scan'}
         </p>
       </div>
       <Pluses label="SCROLL TO EXPLORE" />
@@ -233,32 +244,6 @@ function Intro({ onStory }) {
   )
 }
 
-function StoryCard({ onStory }) {
-  const wrap = useRef(null), left = useRef(null), right = useRef(null), img = useRef(null)
-  const move = useCallback((el) => {
-    const p = reduced ? 1 : clamp01((passProgress(el) - 0.1) / 0.4)
-    const off = (1 - p) * 38
-    left.current.style.transform = `translateX(${-off}vw)`
-    right.current.style.transform = `translateX(${off}vw)`
-    img.current.style.transform = `scale(${1.25 - 0.2 * p})`
-  }, [])
-  useScrub(wrap, move)
-  return (
-    <section className="story" ref={wrap}>
-      <Pluses n={4} />
-      <button type="button" className="card story-card" onClick={onStory} aria-label="My story: start reading">
-        <img ref={img} src="/img/gimnasia-2013.jpg" alt="" />
-        <span className="story-words">
-          <span ref={left}>MY</span>
-          <span className="play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg></span>
-          <span ref={right}>STORY</span>
-        </span>
-      </button>
-      <Pluses n={4} />
-    </section>
-  )
-}
-
 /* The story: a contents page, then each chapter with its moments */
 function Story({ go }) {
   const wrap = useRef(null)
@@ -276,7 +261,7 @@ function Story({ go }) {
     <section className="tale" id="story" ref={wrap}>
       <div className="tale-head">
         <h2 className="big reveal">In Five<br />Chapters</h2>
-        <p className="caps reveal">{MOMENTS} moments, from {PROFILE.born} to today. Read it in order — or jump to any chapter.</p>
+        <p className="caps reveal">From {PROFILE.born} to today. Open any moment to read more.</p>
       </div>
       <ol className="contents reveal">
         {ACTS.map((a, i) => (
@@ -298,8 +283,11 @@ function Story({ go }) {
             <p className="act-years reveal">{a.years}</p>
             <p className="act-text reveal">{a.text}</p>
           </header>
-          <div className="act-moments">
-            {a.items.map((c) => <Moment key={c.title} c={c} />)}
+          <div className="act-main">
+            {a.lead && <div className="act-feature reveal"><Visual c={a.lead} /></div>}
+            <ol className="act-list">
+              {a.items.map((c) => <Moment key={c.title} c={c} />)}
+            </ol>
           </div>
         </article>
       ))}
@@ -316,34 +304,38 @@ function Story({ go }) {
   )
 }
 
+// One line per moment; the details open underneath
 function Moment({ c }) {
   const [open, setOpen] = useState(false)
+  const id = useId()
   return (
-    <div className="moment reveal" data-open={open}>
-      <Visual c={c} />
-      <p className="m-meta">{c.date} · {c.place} · {AREAS[c.area].name}</p>
-      <h3>{c.title}</h3>
-      <p className="m-line">{c.line}</p>
-      <p className="m-took">“{c.took}”</p>
-      <button type="button" className="m-toggle" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? 'Less' : 'What I did'}</button>
-      <div className="m-more"><div>
+    <li className="moment reveal" data-open={open}>
+      <button type="button" className="m-head" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}>
+        <span className="m-year">{c.year}</span>
+        <span className="m-title">{c.title}<small>{c.line}</small></span>
+        <span className="m-plus" aria-hidden="true" />
+      </button>
+      <div className="m-more" id={id}><div className="m-body">
+        <p className="m-meta">{c.date} · {c.place}</p>
         <ul>{c.facts.map((f, k) => <li key={k}>{f}</li>)}</ul>
+        {c.img && <img className="m-img" src={c.img} alt="" loading="lazy" />}
+        <p className="m-took">“{c.took}”</p>
         {c.link && <a className="src" href={c.link} target="_blank" rel="noreferrer">Read the news (Spanish) ↗</a>}
       </div></div>
-    </div>
+    </li>
   )
 }
 
 function Visual({ c }) {
   const m = METRICS[c.title]
-  if (c.img) return <div className="visual art photo"><img src={c.img} alt="" loading="lazy" /></div>
-  if (m) return (
+  if (c.img) return <div className="visual art photo"><img src={c.img} alt={c.title} loading="lazy" /></div>
+  if (!m) return null
+  return (
     <div className={`visual art ${m.tone}`}>
       <Pattern kind={m.art} />
       <span className="metric"><b>{m.metric}</b><small>{m.label}</small></span>
     </div>
   )
-  return <div className={`visual gen ${c.area}`}><b>{c.year}</b><small>{AREAS[c.area].name}</small></div>
 }
 
 function Pattern({ kind }) {
@@ -373,30 +365,6 @@ function Pattern({ kind }) {
   )
 }
 
-function Statement() {
-  const tablet = useRef(null)
-  const live = useInView(tablet)
-  return (
-    <section className="statement">
-      <Tube className="t2" from="#7FD8FF" to="#2E6BFF" d="M 1500 520 C 1200 420 1000 520 980 300 C 960 80 1180 -20 1260 120 C 1330 250 1180 460 820 470 C 520 480 380 380 330 220" />
-      <h2 className="big reveal">Where Curiosity<br />Becomes Research<br />That Matters</h2>
-      <div className="device-row">
-        <div className="tablet reveal" ref={tablet}>
-          <div className="screen">
-            <Canvas camera={{ position: [0, 0.2, 5.4], fov: 34 }} dpr={[1, 1.75]} frameloop={live ? 'always' : 'never'} gl={{ antialias: true }}>
-              <Suspense fallback={null}><Device3D reduced={reduced} /></Suspense>
-            </Canvas>
-          </div>
-        </div>
-        <div className="statement-copy reveal">
-          <p>Looking back, the thread is the same in every chapter: problems that sit between disciplines — a trading strategy that needs honest validation, factories that cannot share their data, a molecule library too large to screen by hand.</p>
-          <p>Gymnastics taught me that precision is trained. Engineering taught me to measure it. Research taught me to question the measurement.</p>
-        </div>
-      </div>
-    </section>
-  )
-}
-
 /* The ending, on one dark screen: the next chapter, then her avatar, then how to reach her */
 function Finale() {
   const wrap = useRef(null), text = useRef(null), halo = useRef(null), contact = useRef(null)
@@ -423,7 +391,7 @@ function Finale() {
   }, [])
   useScrub(wrap, scrub)
   return (
-    <section className="finale" ref={wrap}>
+    <section className={`finale${AVATAR ? '' : ' short'}`} ref={wrap}>
       <span id="contact" className="contact-anchor" aria-hidden="true" />
       <div className="dusk" aria-hidden="true" />
       <div className="finale-stick">
