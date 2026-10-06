@@ -77,6 +77,7 @@ const ALL = [
       'I also won the school’s Christmas drawing contest, which is on here because I like that the two things sit side by side.',
     ],
     took: 'Science and drawing both start the same way: looking closely until you see the structure.',
+    img: '/img/premio_bachillerato.jpg',
   },
   {
     area: 'industry', year: 2020, date: '2020 – 2023', place: 'Madrid',
@@ -87,8 +88,11 @@ const ALL = [
       'They said yes. I launched the account, ran it on my own, and it passed 1,000 followers in its first month.',
       'Day to day: Instagram, Facebook and TikTok, more than twenty articles and student testimonials for the blog, and working the ICES events where families decide whether to send their child abroad for a year.',
       'Three years there, alongside my last year of school and my first years of engineering.',
+      'The account is still running. It has passed 2,300 followers and 38,000 likes.',
     ],
     took: 'Being the most junior person in the room is no reason to leave a good idea in a drawer.',
+    img: '/img/cuenta_ices.jpg',
+    photos: ['/img/ices.jpg'],
   },
   {
     area: 'edu', year: 2021, date: 'Sep 2021', place: 'Madrid',
@@ -124,6 +128,7 @@ const ALL = [
       'French engineering schools select through prépa, two years of intensive preparation before you even start. I went straight in from Madrid and spent the first months catching up in a language I was still learning.',
       'It is where I found what actually drives me: using data to understand systems that already exist. Forecasting electricity demand in a course built with EDF, and optimising a wind farm with MPPT control.',
       'Company projects with Safran, building a tool that models air flow through a helicopter engine, and with BCG on market analysis. Plus a coding week analysing Twitter data about the war in Ukraine.',
+      'Volunteered with AREMACS, which works to cut the environmental footprint of large events.',
       'Finished in the top 10% of the cohort, with a 9.2/10 average over my last two years.',
     ],
     took: 'France gave me the freedom to find what I love: using data to understand how real systems behave.',
@@ -147,7 +152,9 @@ const ALL = [
     title: 'Treasurer of France’s largest student forum',
     line: 'Forum CentraleSupélec brings 200 companies and 3,500 students together every year. I ran its finances: a €600K budget inside €1.4M of revenue, two thirds of which funds more than 60 student projects.',
     facts: [
-      'Fourteen months on a €600K budget: planning, pricing strategy, a redesign of the ERP, and the financial audit at the end.',
+      'Fifteen months on a €600K budget, in a team of 30 students, working in French, my third language.',
+      'I led initiatives that grew revenue by 7% to €1.3M and improved the net result by 40%.',
+      'Planning, pricing strategy, a redesign of the ERP, and the financial audit at the end.',
       'I inherited an invoicing system that did not meet French legal requirements. I moved the whole thing to Zoho Billing connected to our CRM, and fixed the invoice numbering and the legal mentions before anyone had to explain them to an auditor.',
       'The venue charged a 20% fee on all catering. I found a legal way around it with pre-orders and payments through Lydia, which freed up budget that went straight back into student projects.',
       'None of this is glamorous. It is the work that decides whether 3,500 people have an event to come to.',
@@ -173,7 +180,8 @@ const ALL = [
     title: 'A third degree, in economics',
     line: 'Applied Economics at Université Paris Dauphine-PSL, at the same time as the engineering degree, in a subject I had never studied.',
     facts: [
-      'Grande École track: macroeconomics, international economics, quantitative economics and decision-making under uncertainty.',
+      'Selected for the Grande École track: 7 students out of 1,500 in my year.',
+      'Macroeconomics, international economics, quantitative economics and decision-making under uncertainty.',
       'Two degrees at once in two institutions, in my third language. The timetables did not always agree with each other.',
       'I took it because engineering kept answering “how” and I wanted somewhere that asked “whether”. That question turns out to matter a lot in machine learning too.',
     ],
@@ -270,7 +278,9 @@ const ALL = [
       'A second in-house model, multi-task over 26 ADMET endpoints and 370,450 molecules, filtered those for developability. Instead of reporting one accuracy number, I mapped its reliability against how far a molecule sits from its own training data, because that is the number that actually matters at this scale.',
       'A Pareto search balancing predicted quality against structural novelty picked the final 1,000 compounds: mean desirability 0.65 against 0.12 for random library members, a 5.6x lift. Around 100 are going forward for synthesis.',
       'Median ROC-AUC 0.86 for hERG and 0.78 for the blood-brain barrier under cluster splits, which is the strict test, not the flattering one.',
-      '“Phenotypic billion-scale virtual screening for wider-margin anaesthetics with developability-aware Pareto selection”, with Khadija Gana, Matthew McCarroll and Olivier Mailhot. Manuscript in preparation. I presented the work at the PandemicStop-AI conference at Mila.',
+      'I went to Canada on a visa for highly skilled researchers, with a background in neural networks but very little in biology. I had two months to learn the science, pose the problem, build the pipeline and come out the other end with molecules a lab could order.',
+      'After two months my supervisor asked me to present it at the PandemicStop-AI conference at Mila, in front of senior researchers and PhD students. It led to a PhD offer.',
+      '“Phenotypic billion-scale virtual screening for wider-margin anaesthetics with developability-aware Pareto selection”, with Khadija Gana, Matthew McCarroll and Olivier Mailhot. Manuscript in preparation.',
     ],
     took: 'Scaling up is a scientific problem, not just a compute problem. A model is only as good as the honest account of where it stops working.',
     link: 'https://github.com/ClaudiaAgromayor/zebrafish-anesthetic-chemprop',
@@ -283,7 +293,8 @@ const ALL = [
     title: 'A kill switch for AI agents',
     line: 'HackSpain 2026: 250 builders, 36 hours, and HappyRobot’s challenge on handling crises with AI agents. We built AngryRobot, which decides when an agent should be stopped.',
     facts: [
-      'The question behind it: what do you do when an AI agent goes wrong? Not in theory, but while it is running and taking actions on your behalf.',
+      'The brief was “how could agents help during a crisis?”. After reading Perplexity’s paper Escaping SPACE I turned it around: what if the agent escapes its environment and causes the crisis?',
+      'So the question became: what do you do when an AI agent goes wrong? Not in theory, but while it is running and taking actions on your behalf.',
       'We built an environment where agents fail on purpose. They misunderstand the objective, break their constraints, quietly expand their own scope, or lie about what they did.',
       'AngryRobot watches them in layers: deterministic safety checks, loop detection, an independent LLM judge, and our own Agent Risk Index that decides whether an agent should continue, raise a warning, call a human, or be shut down.',
       'During the simulations our rogue agents were making real phone calls, which is a very effective way to understand why this matters.',
@@ -296,16 +307,16 @@ const ALL = [
     photos: ['/img/hackspain2.jpg'],
   },
   {
-    // CHECK before showing: the acceptance letter is signed (16 June 2026). Confirm the award.
-    hidden: true,
-    area: 'edu', year: 2026, date: '2026 – 2027', place: 'Madrid',
-    title: 'Iberdrola Master’s Scholarship',
-    line: 'Selected for the Iberdrola España Master’s Scholarship for 2026–2027.',
+    area: 'edu', year: 2026, date: 'June 2026', place: 'Madrid',
+    title: 'One of eight in Spain',
+    line: 'The Iberdrola Master’s Scholarship, for 2026 and 2027. Thousands of people applied. Eight of us were chosen.',
     facts: [
+      'Iberdrola is Europe’s largest electric utility and the second largest in the world by market capitalisation. The scholarship is one of the most competitive in Spain.',
+      'The selection ran over months: CV and academic screening, mathematics and logic tests, an English assessment, a presentation, and interviews in front of twenty senior executives.',
+      'It did not only test marks. It tested how you think out loud, how you explain yourself, and how you hold up when someone keeps asking why.',
       'Recommended by professors from CentraleSupélec and ICAI.',
-      'Energy, data and AI: the sector where engineering has the most real-world weight.',
     ],
-    took: 'The energy transition is a data problem as much as an engineering one.',
+    took: 'Energy is a data problem as much as an engineering one, and that is exactly the seam I want to work in.',
   },
 ]
 

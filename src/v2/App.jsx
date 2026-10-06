@@ -42,7 +42,7 @@ const ACTS = [
     n: 'V', title: 'AI where it counts', years: '2026',
     text: 'Now I train models where a wrong answer has a cost. A network that segments root canals in 3D so a dentist can plan the treatment. A network that reads 43 billion molecules looking for a safer anaesthetic. Same question in both: can you trust the model where it has never been tested?',
     feature: 'IRIC, Université de Montréal',
-    moments: ['Seeing inside a tooth', 'IRIC, Université de Montréal', 'A kill switch for AI agents'],
+    moments: ['Seeing inside a tooth', 'One of eight in Spain', 'IRIC, Université de Montréal', 'A kill switch for AI agents'],
   },
 ].map((a) => ({ ...a, items: a.moments.map((t) => CHAPTERS.find((c) => c.title === t)).filter(Boolean), lead: CHAPTERS.find((c) => c.title === a.feature) }))
 
@@ -58,6 +58,7 @@ const METRICS = {
   'Treasurer of France’s largest student forum': { metric: '€1.4M', label: 'revenue, 3,500 students', tone: 'soft', art: 'rings' },
   'From 0 to 1,000 on TikTok': { metric: '1,000', label: 'followers in month one', tone: 'ink', art: 'orbit' },
   'A kill switch for AI agents': { metric: '36h', label: 'to stop a rogue agent', tone: 'soft', art: 'orbit' },
+  'One of eight in Spain': { metric: '8', label: 'Iberdrola scholars, out of thousands', tone: 'cobalt', art: 'rings' },
   'Paris, without a prépa': { metric: '9.2/10', label: 'GPA, last two years', tone: 'paper', art: 'lines' },
 }
 
@@ -209,13 +210,17 @@ function Intro({ onStory }) {
       <figure className="intro-photo reveal"><img src="/img/me.jpg" alt="Claudia Agromayor" loading="lazy" /></figure>
       <div className="intro-copy reveal">
         <p>
-          I am an engineer who works on machine learning. I like the problems that sit between fields: a model
-          that has to follow rules written for people, factories that want to learn from each other without
-          handing over their data, a molecule library too large to look at by hand.
+          Looking back, one thread connects almost every decision I have made: I have always been drawn to
+          challenges, to innovation, and to places that push me to raise my standards. I found that out early,
+          between a gymnastics floor and a maths competition, and I have been chasing the same feeling ever since.
         </p>
         <p>
-          Three countries, three degrees and one habit: going to where the problem is, even when I have to learn
-          the subject from scratch.
+          Three degrees in four years, three countries, and a long list of subjects I had to learn from scratch.
+          I have never optimised for the easy path. I optimise for where I can grow most, and I take the workload
+          that comes with it.
+        </p>
+        <p className="intro-punch">
+          I do not want to watch the AI revolution from the sidelines. I want to be at its frontier, building it.
         </p>
         <button type="button" className="pill ghost" onClick={onStory}><i className="dot" /> READ MY STORY</button>
       </div>
