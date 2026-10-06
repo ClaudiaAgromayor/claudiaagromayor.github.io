@@ -5,8 +5,8 @@ import HeroScan from './HeroScan'
 import HeroGlobe from './HeroGlobe'
 import Avatar3D from './Avatar3D'
 import { AVATAR } from './avatar'
-import { PROFILE } from '../data/chapters'
-import { ACTS } from '../data/acts'
+import { PROFILE, BEYOND, CURRENTLY } from '../data/entries'
+import { SECTIONS } from '../data/sections'
 
 const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
 const clamp01 = (x) => Math.max(0, Math.min(1, x))
@@ -93,6 +93,8 @@ export default function App() {
         <Hero />
         <Intro onStory={() => go('story')} />
         <Story go={go} onZoom={(list, i) => setZoom({ list, i })} />
+        <Beyond onZoom={(list, i) => setZoom({ list, i })} />
+        <Currently />
         <Finale />
       </main>
 
@@ -133,7 +135,8 @@ function Hero() {
         </div>
         <div className="hero-copy">
           <h1 className="hero-name">Claudia<br />Agromayor</h1>
-          <p className="hero-role">Double master’s student in Industrial Engineering &amp; Computer Science</p>
+          <p className="hero-title">{PROFILE.title}</p>
+          <p className="hero-role">{PROFILE.field} · {PROFILE.places}</p>
         </div>
         <p className="hero-label" aria-live="polite">
           {view === 'places' && place ? <><b>{place.name} · {place.years}</b>{place.what}</> : view === 'places' ? 'Drag to spin · point at a city' : 'Move through the scan'}
@@ -160,31 +163,21 @@ function Intro({ onStory }) {
       <p className="eyebrow reveal">Who I am</p>
       <figure className="intro-photo reveal"><img src="/img/me-cut.png" alt="Claudia Agromayor" loading="lazy" /></figure>
       <div className="intro-copy reveal">
-        <p>
-          Looking back, one thread connects almost every decision I have made: I have always been drawn to
-          challenges, to innovation, and to places that push me to raise my standards. I found that out early,
-          between a gymnastics floor and a maths competition, and I have been chasing the same feeling ever since.
-        </p>
-        <p>
-          Three degrees in four years, three countries, and a long list of subjects I had to learn from scratch.
-          I have never optimised for the easy path. I optimise for where I can grow most, and I take the workload
-          that comes with it.
-        </p>
-        <p className="intro-punch">
-          I do not want to watch the AI revolution from the sidelines. I want to be at its frontier, building it.
-        </p>
-        <button type="button" className="pill ghost" onClick={onStory}><i className="dot" /> READ MY STORY</button>
+        <p>{PROFILE.intro}</p>
+        <p>{PROFILE.now}</p>
+        <p className="intro-punch">{PROFILE.next}</p>
+        <button type="button" className="pill ghost" onClick={onStory}><i className="dot" /> SEE MY WORK</button>
       </div>
     </section>
   )
 }
 
-/* The story: a contents page, then each chapter with its moments */
+/* The work, in sections: a contents list, then each section with its entries */
 function Story({ go, onZoom }) {
   const wrap = useRef(null)
   const [cur, setCur] = useState(-1)
   const curRef = useRef(-1)
-  // which chapter is crossing the middle of the screen
+  // which section is crossing the middle of the screen
   const track = useCallback((el) => {
     const mid = innerHeight * 0.5
     let c = -1
@@ -192,46 +185,74 @@ function Story({ go, onZoom }) {
     if (c !== curRef.current) { curRef.current = c; setCur(c) }
   }, [])
   useScrub(wrap, track)
+  const entries = SECTIONS.reduce((n, sec) => n + sec.items.length, 0)
   return (
     <section className="tale" id="story" ref={wrap}>
       <div className="tale-head">
-        <h2 className="big reveal">In Five<br />Chapters</h2>
-        <p className="caps reveal">From {PROFILE.born} to today. Open any moment to read more.</p>
+        <h2 className="big reveal">Work &amp;<br />Research</h2>
+        <p className="caps reveal">{entries} entries. Open any one to read it in full.</p>
       </div>
       <ol className="contents reveal">
-        {ACTS.map((a, i) => (
-          <li key={a.n}>
-            <button type="button" onClick={() => go(`act-${i}`)}>
-              <span className="ct-n">Chapter {a.n}</span>
-              <span className="ct-t">{a.title}</span>
-              <span className="ct-y">{a.years}</span>
+        {SECTIONS.map((sec) => (
+          <li key={sec.id}>
+            <button type="button" onClick={() => go(sec.id)}>
+              <span className="ct-t">{sec.title}</span>
+              <span className="ct-y">{sec.items.length}</span>
             </button>
           </li>
         ))}
       </ol>
 
-      {ACTS.map((a, i) => (
-        <article className="act" id={`act-${i}`} key={a.n}>
+      {SECTIONS.map((sec) => (
+        <article className="act" id={sec.id} key={sec.id}>
           <header className="act-side">
-            <p className="act-n reveal">Chapter {a.n} <span>/ V</span></p>
-            <h2 className="reveal">{a.title}</h2>
-            <p className="act-years reveal">{a.years}</p>
-            <p className="act-text reveal">{a.text}</p>
+            <h2 className="reveal">{sec.title}</h2>
           </header>
           <ol className="act-list">
-            {a.items.map((c) => <Moment key={c.title} c={c} onZoom={onZoom} />)}
+            {sec.items.map((c) => <Moment key={c.key} c={c} onZoom={onZoom} />)}
           </ol>
         </article>
       ))}
 
-      <nav className={`chapter-nav${cur >= 0 ? '' : ' hide'}`} aria-label="Chapters">
-        <span className="cn-label">Chapter {ACTS[Math.max(cur, 0)].n} · {ACTS[Math.max(cur, 0)].title}</span>
+      <nav className={`chapter-nav${cur >= 0 ? '' : ' hide'}`} aria-label="Sections">
+        <span className="cn-label">{SECTIONS[Math.max(cur, 0)].title}</span>
         <span className="cn-dots">
-          {ACTS.map((a, i) => (
-            <button key={a.n} type="button" className={i === cur ? 'on' : ''} onClick={() => go(`act-${i}`)} aria-label={`Chapter ${a.n}: ${a.title}`} />
+          {SECTIONS.map((sec, i) => (
+            <button key={sec.id} type="button" className={i === cur ? 'on' : ''} onClick={() => go(sec.id)} aria-label={sec.title} />
           ))}
         </span>
       </nav>
+    </section>
+  )
+}
+
+/* The two closing sections: what she does outside the work, and what she is after */
+function Beyond({ onZoom }) {
+  return (
+    <section className="aside" id="beyond">
+      <h2 className="aside-title reveal">{BEYOND.title}</h2>
+      <div className="aside-copy reveal">
+        {BEYOND.paragraphs.map((t, k) => <p key={k}>{t}</p>)}
+        <div className="m-shots">
+          {BEYOND.photos.map((src, k) => (
+            <button type="button" key={src} onClick={() => onZoom(BEYOND.photos, k)} aria-label={`Open picture ${k + 1}`}>
+              <img src={src} alt="" loading="lazy" />
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function Currently() {
+  return (
+    <section className="aside" id="currently">
+      <h2 className="aside-title reveal">{CURRENTLY.title}</h2>
+      <div className="aside-copy reveal">
+        <p className="caps aside-tags">{CURRENTLY.tags}</p>
+        {CURRENTLY.paragraphs.map((t, k) => <p key={k}>{t}</p>)}
+      </div>
     </section>
   )
 }
@@ -249,8 +270,9 @@ function Moment({ c, onZoom }) {
         <span className="m-plus" aria-hidden="true" />
       </button>
       <div className="m-more" id={id}><div className="m-body">
+        <p className="m-role">{c.role}</p>
         <p className="m-meta">{c.date} · {c.place}</p>
-        <ul>{c.facts.map((f, k) => <li key={k}>{f}</li>)}</ul>
+        <Facts items={c.facts} />
         {shots.length > 0 && (
           <div className="m-shots">
             {shots.map((src, k) => (
@@ -270,6 +292,21 @@ function Moment({ c, onZoom }) {
         )}
       </div></div>
     </li>
+  )
+}
+
+/* Facts: plain strings are bullets, { list } nests underneath the line before it. */
+function Facts({ items }) {
+  return (
+    <ul>
+      {items.map((f, k) => (typeof f === 'string'
+        ? <li key={k}>{f}</li>
+        : <li key={k} className="m-nest">
+            {f.ordered
+              ? <ol>{f.list.map((t, j) => <li key={j}>{t}</li>)}</ol>
+              : <ul>{f.list.map((t, j) => <li key={j}>{t}</li>)}</ul>}
+          </li>))}
+    </ul>
   )
 }
 
@@ -380,12 +417,12 @@ function Menu({ onClose, go }) {
       <button type="button" className="pill menu-close" onClick={onClose}>CLOSE</button>
       <nav>
         <button type="button" onClick={() => go('top')}>Home</button>
-        <button type="button" onClick={() => go('story')}>My story</button>
+        <button type="button" onClick={() => go('story')}>My work</button>
         <button type="button" onClick={() => go('contact')}>Contact</button>
       </nav>
       <ol className="menu-acts">
-        {ACTS.map((a, i) => (
-          <li key={a.n}><button type="button" onClick={() => go(`act-${i}`)}><span>{a.n}</span>{a.title}</button></li>
+        {SECTIONS.map((sec) => (
+          <li key={sec.id}><button type="button" onClick={() => go(sec.id)}>{sec.title}</button></li>
         ))}
       </ol>
     </div>

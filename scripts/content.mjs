@@ -1,8 +1,8 @@
 /* Writes content.txt and content.html: everything written on the site, in one file you
    can read, print or copy into a CV. Run it with `npm run content`. */
 import { writeFileSync } from 'node:fs'
-import { PROFILE } from '../src/data/chapters.js'
-import { ACTS } from '../src/data/acts.js'
+import { PROFILE, BEYOND, CURRENTLY } from '../src/data/entries.js'
+import { SECTIONS } from '../src/data/sections.js'
 
 const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]))
 const rule = (c) => c.repeat(74)
@@ -30,34 +30,44 @@ html.push(`<!doctype html>
 </style></head><body>`)
 
 html.push(`<h1>${esc(PROFILE.name)}</h1>`)
-html.push(`<p class="meta">${esc(PROFILE.role)} · ${esc(PROFILE.places)}</p>`)
+html.push(`<p class="meta">${esc(PROFILE.title)}<br>${esc(PROFILE.field)}<br>${esc(PROFILE.places)}</p>`)
+html.push(`<p>${esc(PROFILE.intro)}</p>`)
+html.push(`<p>${esc(PROFILE.now)}</p>`)
+html.push(`<p><strong>${esc(PROFILE.next)}</strong></p>`)
 html.push(`<p class="meta">${esc(PROFILE.email)} · <a href="${PROFILE.linkedin}">LinkedIn</a> · <a href="${PROFILE.github}">GitHub</a></p>`)
-html.push(`<p>${esc(PROFILE.next)}</p>`)
 
-txt.push(PROFILE.name.toUpperCase(), rule('='), PROFILE.role, PROFILE.places, '',
-  PROFILE.email, PROFILE.linkedin, PROFILE.github, '', PROFILE.next)
+txt.push(PROFILE.name.toUpperCase(), rule('='), PROFILE.title, PROFILE.field, PROFILE.places, '',
+  PROFILE.intro, '', PROFILE.now, '', PROFILE.next, '',
+  PROFILE.email, PROFILE.linkedin, PROFILE.github)
 
-for (const a of ACTS) {
-  html.push(`<h2>Chapter ${esc(a.n)}. ${esc(a.title)}</h2>`)
-  html.push(`<p class="meta">${esc(a.years)}</p>`)
-  html.push(`<p>${esc(a.text)}</p>`)
+const flat = (f) => (typeof f === 'string' ? [f] : f.list.map((t, k) => `${f.ordered ? `${k + 1}. ` : ''}${t}`))
 
-  txt.push('', '', rule('='), `CHAPTER ${a.n}. ${a.title.toUpperCase()}   (${a.years})`, rule('='), '', a.text)
+for (const sec of SECTIONS) {
+  html.push(`<h2>${esc(sec.title)}</h2>`)
+  txt.push('', '', rule('='), sec.title.toUpperCase(), rule('='))
 
-  for (const c of a.items) {
+  for (const c of sec.items) {
     html.push(`<h3>${esc(c.title)}</h3>`)
-    html.push(`<p class="meta">${esc(c.date)} · ${esc(c.place)}</p>`)
+    html.push(`<p class="meta">${esc(c.role)}<br>${esc(c.date)} · ${esc(c.place)}</p>`)
     html.push(`<p class="lead">${esc(c.line)}</p>`)
-    html.push(`<ul>${c.facts.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>`)
+    html.push(`<ul>${c.facts.flatMap(flat).map((f) => `<li>${esc(f)}</li>`).join('')}</ul>`)
     if (c.links?.length) {
       html.push(`<p class="links">${c.links.map((l) => `<a href="${l.href}">${esc(l.label)}</a>`).join('')}</p>`)
     }
 
-    txt.push('', rule('-'), c.title.toUpperCase(), `${c.date} · ${c.place}`, rule('-'), '', c.line, '')
-    for (const f of c.facts) txt.push(`  - ${f}`)
+    txt.push('', rule('-'), c.title.toUpperCase(), c.role, `${c.date} · ${c.place}`, rule('-'), '', c.line, '')
+    for (const f of c.facts.flatMap(flat)) txt.push(`  - ${f}`)
     if (c.links?.length) for (const l of c.links) txt.push(`  ${l.label}: ${l.href}`)
   }
 }
+
+for (const block of [BEYOND, CURRENTLY]) {
+  html.push(`<h2>${esc(block.title)}</h2>`)
+  txt.push('', '', rule('='), block.title.toUpperCase(), rule('='), '')
+  if (block.tags) { html.push(`<p class="meta">${esc(block.tags)}</p>`); txt.push(block.tags, '') }
+  for (const t of block.paragraphs) { html.push(`<p>${esc(t)}</p>`); txt.push(t, '') }
+}
+
 html.push('</body></html>')
 
 // wrap the text so it reads in Notepad, keeping the indent of a bullet on its later lines
@@ -81,5 +91,5 @@ writeFileSync('content.html', html.join('\n'), 'utf8')
 writeFileSync('content.txt', '﻿' + txt.map(wrap).join('\r\n') + '\r\n', 'utf8')
 
 const words = txt.join(' ').split(/\s+/).filter(Boolean).length
-const moments = ACTS.reduce((n, a) => n + a.items.length, 0)
-console.log(`content.txt and content.html written: ${ACTS.length} chapters, ${moments} moments, about ${words} words`)
+const entries = SECTIONS.reduce((n, sec) => n + sec.items.length, 0)
+console.log(`content.txt and content.html written: ${SECTIONS.length} sections, ${entries} entries, about ${words} words`)

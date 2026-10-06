@@ -56,7 +56,8 @@ img { max-width: 100%; display: block }
 .hero-tabs button[aria-selected="true"] { background: #fff; color: #0B0D14 }
 .hero-copy { position: absolute; z-index: 2; left: var(--gut); bottom: clamp(72px, 9vh, 132px); max-width: min(620px, 48%); pointer-events: none }
 .hero-name { margin: 0 0 18px; font-weight: 400; font-size: var(--t-hero); line-height: .94; letter-spacing: -.05em }
-.hero-role { margin: 0; max-width: 24em; font-size: var(--t-small); line-height: 1.5; color: #B9BFD3 }
+.hero-title { margin: 0 0 8px; max-width: 24em; font-size: var(--t-small); font-weight: 600; letter-spacing: .01em; color: #fff }
+.hero-role { margin: 0; max-width: 28em; font-size: var(--t-ui); line-height: 1.5; color: #9AA0B6 }
 .place { display: block; transform: translate(10px, -50%); font-size: var(--t-label); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #fff; white-space: nowrap; text-shadow: 0 1px 10px #000; transition: opacity .25s }
 .place.left { transform: translate(calc(-100% - 10px), -50%) }
 .pluses { display: flex; justify-content: space-between; align-items: center; height: 44px; font-size: 22px; font-weight: 300; line-height: 1 }
@@ -78,6 +79,14 @@ img { max-width: 100%; display: block }
 .intro-punch { font-style: italic; color: var(--blue-soft) }
 .tube { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible }
 .tube.t1 { z-index: 0; top: 18%; height: 82% }
+
+/* ── the closing sections: beyond engineering, and what she is after ── */
+.aside { display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.2fr); gap: clamp(28px, 6vw, 110px);
+  padding: clamp(70px, 9vw, 130px) var(--gut) 0 }
+.aside-title { margin: 0; font-weight: 400; font-size: var(--t-display); line-height: .94; letter-spacing: -.05em; text-wrap: balance }
+.aside-copy { font-family: var(--serif); font-weight: 300; font-size: var(--t-body); line-height: 1.6; color: #C2C7D8; max-width: 38em; padding-top: 10px }
+.aside-copy p { margin: 0 0 20px }
+.aside-tags { font-family: var(--sans); color: var(--blue-soft); margin: 0 0 22px }
 
 /* ── finale: the dark part with her avatar ── */
 .finale { position: relative; height: 300vh; background: var(--night); color: #fff; margin-top: clamp(60px, 8vw, 120px) }
@@ -153,19 +162,19 @@ html.lenis, html.lenis body { height: auto }
 .tale { padding: clamp(100px, 13vw, 200px) var(--gut) clamp(40px, 6vw, 80px) }
 .tale-head { display: flex; justify-content: space-between; align-items: end; gap: 32px }
 .tale-head .caps { width: min(340px, 40%); margin: 0 0 12px }
-.contents { list-style: none; margin: clamp(36px, 5vw, 64px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid var(--ink) }
-.contents button { width: 100%; text-align: left; display: grid; gap: 6px; padding: 18px 16px 22px 0; transition: color .3s }
+.contents { list-style: none; margin: clamp(36px, 5vw, 64px) 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--ink) }
+.contents button { width: 100%; text-align: left; display: grid; gap: 6px; align-content: start; padding: 18px 16px 22px 0; transition: color .3s }
 .contents li + li button { padding-left: 16px; border-left: 1px solid var(--line) }
 .contents button:hover { color: var(--blue) }
 .ct-n { color: var(--blue) }
 .ct-t { font-size: var(--t-title); letter-spacing: -.03em; line-height: 1.1 }
-.ct-y { font-size: var(--t-ui); color: var(--mute) }
+.ct-y { font-size: var(--t-ui); color: var(--mute); font-variant-numeric: tabular-nums }
 
 .act { display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.2fr); gap: clamp(28px, 6vw, 110px); padding-block: clamp(80px, 10vw, 160px) clamp(20px, 3vw, 40px); scroll-margin-top: 40px }
 .act-side { position: sticky; top: 120px; align-self: start }
 .act-n { margin: 0; color: var(--blue) }
 .act-n span { color: var(--mute) }
-.act-side h2 { margin: 12px 0 8px; font-weight: 400; font-size: var(--t-display); line-height: .94; letter-spacing: -.05em; text-wrap: balance }
+.act-side h2 { margin: 0; font-weight: 400; font-size: var(--t-display); line-height: .94; letter-spacing: -.05em; text-wrap: balance }
 .act-years { margin: 0 0 26px; font-size: var(--t-small); font-weight: 500; color: var(--mute); font-variant-numeric: tabular-nums }
 .act-text { margin: 0; max-width: 32em; font-family: var(--serif); font-weight: 300; font-size: var(--t-lead); line-height: 1.5; color: #C2C7D8 }
 .act-list { list-style: none; margin: 0; padding: 6px 0 0; border-top: 1px solid var(--ink) }
@@ -184,8 +193,11 @@ html.lenis, html.lenis body { height: auto }
 .moment[data-open="true"] .m-more { grid-template-rows: 1fr }
 .m-body { padding: 0 46px 0 80px }
 .m-body > :last-child { margin-bottom: 26px }
-.m-meta { margin: 0 0 12px; color: var(--blue) }
-.m-body ul { margin: 0; padding-left: 20px; display: grid; gap: 10px; font-family: var(--serif); font-weight: 300; font-size: var(--t-body); line-height: 1.55; color: #C2C7D8 }
+.m-role { margin: 0 0 4px; font-family: var(--serif); font-weight: 400; font-size: var(--t-body); line-height: 1.45; color: #fff }
+.m-meta { margin: 0 0 14px; color: var(--blue) }
+.m-body ul, .m-body ol { margin: 0; padding-left: 20px; display: grid; gap: 10px; font-family: var(--serif); font-weight: 300; font-size: var(--t-body); line-height: 1.55; color: #C2C7D8 }
+.m-body .m-nest { list-style: none; margin-left: -20px }
+.m-body .m-nest > ul, .m-body .m-nest > ol { gap: 6px; padding-left: 40px; margin-top: -2px }
 .m-shots { margin-top: 20px; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px }
 .m-shots button { display: block; height: 170px; border-radius: 10px; overflow: hidden; cursor: zoom-in; background: #0C0E15 }
 .m-shots img { height: 100%; width: auto; max-width: 320px; object-fit: contain; filter: saturate(.85) brightness(.96); transition: transform .4s var(--ease) }
@@ -232,6 +244,7 @@ html.lenis, html.lenis body { height: auto }
   .contents li { border-bottom: 1px solid var(--line) }
   .act { grid-template-columns: 1fr }
   .act-side { position: static }
+  .aside { grid-template-columns: 1fr }
   .intro { grid-template-columns: 1fr }
   .intro-photo { width: min(320px, 70%) }
   .hero-copy { max-width: none; right: clamp(16px, 2.4vw, 36px) }
