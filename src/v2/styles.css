@@ -9,11 +9,11 @@
   /* one scale for the whole page: sans holds the structure, serif carries the reading */
   --t-label: 12px;                        /* eyebrows, dates, categories */
   --t-ui: 13px;                           /* buttons, tabs, links, captions */
-  --t-small: 15px;                        /* secondary lines */
-  --t-body: clamp(16px, 1.22vw, 19px);    /* every paragraph and list */
-  --t-lead: clamp(19px, 1.5vw, 23px);     /* the opening line of a section */
-  --t-title: clamp(22px, 2vw, 30px);      /* a moment, a chapter in the contents */
-  --t-display: clamp(52px, 7.4vw, 124px); /* chapter headings */
+  --t-small: 14px;                        /* secondary lines */
+  --t-body: clamp(15px, 1.1vw, 17.5px);    /* every paragraph and list */
+  --t-lead: clamp(18px, 1.4vw, 21px);     /* the opening line of a section */
+  --t-title: clamp(20px, 1.8vw, 27px);      /* a moment, a chapter in the contents */
+  --t-display: clamp(44px, 6.2vw, 102px); /* chapter headings */
   --t-hero: clamp(56px, 8.4vw, 150px);
   --gut: clamp(16px, 5vw, 72px);
   --radius: clamp(14px, 1.6vw, 22px);
@@ -186,11 +186,12 @@ html.lenis, html.lenis body { height: auto }
 .m-head { width: 100%; display: grid; grid-template-columns: 112px minmax(0, 1fr) 30px; gap: 20px; align-items: start; padding: 26px 0; text-align: left }
 .m-year { padding-top: 11px; font-size: var(--t-ui); font-weight: 600; color: var(--blue); font-variant-numeric: tabular-nums; line-height: 1.4 }
 .m-org { font-family: var(--sans); font-size: var(--t-small); font-weight: 500; letter-spacing: 0; color: #fff }
-.m-stats { display: flex; flex-wrap: wrap; gap: 10px 32px; margin-top: 14px }
+.m-stats { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px 30px; margin-top: 16px }
 .m-stat { display: grid; gap: 2px }
-.m-stat b { font-family: var(--sans); font-weight: 400; font-size: clamp(26px, 2.4vw, 38px); line-height: 1; letter-spacing: -.04em; color: #fff; font-variant-numeric: tabular-nums }
+.m-stat b { font-family: var(--sans); font-weight: 400; font-size: clamp(23px, 2.1vw, 33px); line-height: 1; letter-spacing: -.04em; color: #fff; font-variant-numeric: tabular-nums }
 .m-stat i { font-style: normal; font-family: var(--sans); font-size: var(--t-label); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--mute) }
-.m-stat.big b { font-size: clamp(42px, 4.6vw, 76px); letter-spacing: -.05em; color: var(--blue-soft) }
+.m-stat.big { flex: 0 0 100%; margin-bottom: 2px }
+.m-stat.big b { font-size: clamp(40px, 4.2vw, 68px); letter-spacing: -.05em; color: var(--blue-soft) }
 .m-stat.big i { color: #C2C7D8 }
 
 /* the areas and projects listed under a degree */
