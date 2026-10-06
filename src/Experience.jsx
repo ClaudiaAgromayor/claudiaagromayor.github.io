@@ -23,10 +23,8 @@ function ribbonPath(t, time, v = new THREE.Vector3()) {
   const r = 0.35 + 0.75 * Math.sin(Math.PI * Math.min(1, t * 1.15)) + 0.12 * Math.sin(t * 17 + time * 0.8)
   return v.set(Math.cos(a) * r, -1.0 + 2.5 * t + 0.08 * Math.sin(t * 11 + time), Math.sin(a) * r)
 }
-const silk = new THREE.MeshPhysicalMaterial({
-  color: '#A6C0F2', roughness: 0.3, metalness: 0.05, sheen: 1, sheenColor: '#FFFFFF', sheenRoughness: 0.35,
-  clearcoat: 0.4, clearcoatRoughness: 0.3, side: THREE.DoubleSide,
-})
+// one flat colour: no light, shade or sheen on the ribbon
+const silk = new THREE.MeshBasicMaterial({ color: '#A6C0F2', side: THREE.DoubleSide, toneMapped: false })
 
 function Ribbon({ reduced }) {
   // built once: the shape is static, the whole ribbon turns and floats gently
