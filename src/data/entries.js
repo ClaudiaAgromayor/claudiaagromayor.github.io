@@ -321,9 +321,8 @@ export const PROFILE = {
   title: 'AI & Machine Learning Engineer | Researcher',
   field: 'Industrial Engineering & Computer Science',
   places: 'Madrid · Paris · Montréal',
-  intro: 'I build and research AI systems for real-world problems, from large-scale computational drug discovery and generative AI in production to medical imaging and industrial machine learning.',
   now: 'Currently pursuing a double master’s degree in Industrial Engineering and Intelligent Industry at ICAI, with research and engineering experience across machine learning, generative AI and applied computational science.',
-  next: 'Seeking an AI research internship from March 2027.',
+  next: 'Seeking an AI research internship for summer or September 2027.',
   email: 'clauuagromayor@gmail.com',
   linkedin: 'https://linkedin.com/in/claudia-agromayor',
   github: 'https://github.com/ClaudiaAgromayor',
@@ -337,5 +336,5 @@ export const BEYOND = {
 
 export const CONTACT = {
   tags: 'AI research · Machine learning · Applied computational science',
-  text: 'Based between Madrid, Paris and Montréal. Seeking an AI research internship from March 2027.',
+  text: 'Based between Madrid, Paris and Montréal. Seeking an AI research internship for summer or September 2027.',
 }

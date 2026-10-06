@@ -150,8 +150,7 @@ function Intro({ onWork }) {
   return (
     <section className="intro">
       <div className="intro-copy reveal">
-        <p className="intro-lead">{PROFILE.intro}</p>
-        <p>{PROFILE.now}</p>
+        <p className="intro-lead">{PROFILE.now}</p>
         <p className="intro-punch">{PROFILE.next}</p>
         <button type="button" className="pill ghost" onClick={onWork}><i className="dot" /> SEE MY WORK</button>
       </div>

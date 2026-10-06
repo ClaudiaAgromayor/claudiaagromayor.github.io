@@ -31,13 +31,12 @@ html.push(`<!doctype html>
 
 html.push(`<h1>${esc(PROFILE.name)}</h1>`)
 html.push(`<p class="meta">${esc(PROFILE.title)}<br>${esc(PROFILE.field)}<br>${esc(PROFILE.places)}</p>`)
-html.push(`<p>${esc(PROFILE.intro)}</p>`)
 html.push(`<p>${esc(PROFILE.now)}</p>`)
 html.push(`<p><strong>${esc(PROFILE.next)}</strong></p>`)
 html.push(`<p class="meta">${esc(PROFILE.email)} · <a href="${PROFILE.linkedin}">LinkedIn</a> · <a href="${PROFILE.github}">GitHub</a></p>`)
 
 txt.push(PROFILE.name.toUpperCase(), rule('='), PROFILE.title, PROFILE.field, PROFILE.places, '',
-  PROFILE.intro, '', PROFILE.now, '', PROFILE.next, '',
+  PROFILE.now, '', PROFILE.next, '',
   PROFILE.email, PROFILE.linkedin, PROFILE.github)
 
 const flat = (f) => (typeof f === 'string' ? [f] : f.list.map((t, k) => `${f.ordered ? `${k + 1}. ` : ''}${t}`))
