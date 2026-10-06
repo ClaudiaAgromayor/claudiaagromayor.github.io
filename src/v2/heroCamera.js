@@ -18,7 +18,7 @@ export function useHeroCamera(position, target, fov) {
     camera.position.set(...position).sub(t).multiplyScalar(k).add(t)
     camera.lookAt(t)
     if (wide) camera.setViewOffset(w, h, -w * 0.2, 0, w, h)
-    else camera.setViewOffset(w, h, 0, h * 0.06, w, h)
+    else camera.setViewOffset(w, h, 0, h * 0.17, w, h)
     camera.updateProjectionMatrix()
     return () => { camera.clearViewOffset(); camera.updateProjectionMatrix() }
   }, [camera, size, position, target, fov])

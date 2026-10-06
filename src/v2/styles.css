@@ -5,6 +5,7 @@
   --bg: #07080D; --ink: #EDEFF7; --mute: #8A90A6; --line: rgba(237, 239, 247, .14);
   --card: #0D0F16; --blue: #5C7CFF; --blue-soft: #8097FF; --night: #04050A;
   --sans: "Geist", "Helvetica Neue", Arial, sans-serif;
+  --serif: "Newsreader", Georgia, "Times New Roman", serif;
   --gut: clamp(16px, 5vw, 72px);
   --radius: clamp(14px, 1.6vw, 22px);
   --ease: cubic-bezier(.7, 0, .2, 1);
@@ -27,7 +28,7 @@ img { max-width: 100%; display: block }
 .pill { display: inline-flex; align-items: center; gap: 12px; height: 44px; padding: 0 22px; border-radius: 99px; background: #171A24; box-shadow: inset 0 0 0 1px var(--line); font-size: 13px; font-weight: 600; letter-spacing: -.01em; transition: transform .35s var(--ease), background .3s }
 .pill:hover { transform: scale(1.04) }
 .pill.dark { background: #fff; color: #0B0D14; box-shadow: none }
-.pill.ghost { background: #fff; color: #0B0D14; box-shadow: none }
+.pill.ghost { background: #fff; color: #0B0D14; box-shadow: none; font-family: var(--sans) }
 .pill.light { background: #fff; color: var(--ink) }
 .pill.outline { background: transparent; color: #fff; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35) }
 .pill.center { display: flex; width: max-content; margin: clamp(48px, 7vw, 96px) auto 0 }
@@ -59,12 +60,12 @@ img { max-width: 100%; display: block }
 .intro { position: relative; padding: clamp(90px, 11vw, 170px) var(--gut) clamp(60px, 8vw, 120px) }
 .intro-photo { position: relative; z-index: 1; margin: 0; width: 100% }
 .intro-photo img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: var(--radius); filter: saturate(.75) contrast(1.05) brightness(.95) }
-.intro { display: grid; grid-template-columns: clamp(220px, 24vw, 330px) minmax(0, 560px); align-items: start; column-gap: clamp(24px, 3vw, 48px); justify-content: start }
+.intro { display: grid; grid-template-columns: clamp(200px, 22vw, 300px) minmax(0, 1fr); align-items: start; column-gap: clamp(28px, 4vw, 64px) }
 .intro .eyebrow { grid-column: 1 / -1; margin: 0 0 clamp(28px, 4vw, 52px); font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--blue-soft) }
-.intro-copy p:first-of-type { font-size: 1.22em; line-height: 1.34; letter-spacing: -.015em; color: var(--ink) }
-.intro-copy { position: relative; z-index: 1; margin: 0; width: 100%; align-self: start; font-size: clamp(17px, 1.5vw, 21px); line-height: 1.42; letter-spacing: -.01em }
-.intro-copy p { margin: 0 0 28px }
-.intro-punch { font-size: 1.1em; letter-spacing: -.02em; color: var(--blue-soft) }
+.intro-copy p:first-of-type { font-size: 1.34em; line-height: 1.44; color: var(--ink) }
+.intro-copy { position: relative; z-index: 1; margin: 0; width: 100%; align-self: start; font-family: var(--serif); font-weight: 300; font-size: clamp(16px, 1.22vw, 19px); line-height: 1.6; letter-spacing: 0 }
+.intro-copy p { margin: 0 0 24px }
+.intro-punch { font-size: 1.22em; font-style: italic; color: var(--blue-soft) }
 .tube { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible }
 .tube.t1 { z-index: 0; top: 18%; height: 82% }
 
