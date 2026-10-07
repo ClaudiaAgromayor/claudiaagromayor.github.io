@@ -6,7 +6,7 @@
 //  · stats: the figures that carry the page. The first can be marked big
 //  · facts: strings are bullets; { list } nests under the line before it
 //  · tags: a row of short labels (used by Education)
-//  · img, photos, video, links
+//  · img, photos, videos [{ id, label }], links
 // ─────────────────────────────────────────────────────────────
 
 export const ENTRIES = [
@@ -191,7 +191,10 @@ export const ENTRIES = [
       'Tested the system against deliberate failure modes including objective misinterpretation, constraint violations, scope expansion and false reporting.',
       'During testing, rogue agents made real phone calls, exposing how autonomous systems can behave outside their intended scope.',
     ],
-    video: 'eaWnMs7NiIE',
+    videos: [
+      { id: 'eaWnMs7NiIE', label: 'Watch the demo' },
+      { id: 'Zq2kMYtchQI', label: 'Watch how it works' },
+    ],
     links: [
       { href: 'https://github.com/Hugongra/HackSpainTeam', label: 'GitHub' },
       { href: 'https://youtu.be/eaWnMs7NiIE', label: 'Demo' },
@@ -235,11 +238,11 @@ export const ENTRIES = [
   },
   {
     key: 'centrale',
-    start: 2023.7,
-    year: 2023,
+    start: 2021.7,
+    year: 2021,
     title: 'Double Degree Engineering',
-    org: 'CentraleSupélec × ICAI',
-    date: 'Sep 2023 – Jun 2025',
+    org: 'ICAI × CentraleSupélec',
+    date: 'Sep 2021 – Aug 2025',
     place: 'Paris',
     line: 'One of two ICAI students selected for the double degree with CentraleSupélec.',
     stats: [
@@ -248,6 +251,7 @@ export const ENTRIES = [
       { v: '9.2/10', k: 'final two years' },
     ],
     facts: [
+      'Began at ICAI in Madrid in September 2021 and moved to Paris in September 2023 for the CentraleSupélec years.',
       'Completed the programme in French, entering directly from Madrid without the two years of French prépa that the route normally requires.',
       'Graduated in the top 10% of the cohort, with a 9.2/10 average over the final two years.',
     ],

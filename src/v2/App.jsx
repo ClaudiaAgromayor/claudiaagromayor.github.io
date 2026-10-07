@@ -268,7 +268,11 @@ function Moment({ c, onZoom }) {
             ))}
           </div>
         )}
-        {c.video && <Demo id={c.video} poster={shots[0]} title={c.title} />}
+        {c.videos?.length > 0 && (
+          <div className="m-videos">
+            {c.videos.map((v) => <Demo key={v.id} {...v} poster={shots[0]} title={c.title} />)}
+          </div>
+        )}
         {c.links?.length > 0 && (
           <p className="m-links">
             {c.links.map((l) => (
@@ -297,11 +301,11 @@ function Facts({ items }) {
 }
 
 /* A demo video. Nothing is requested from YouTube until the still is clicked. */
-function Demo({ id, poster, title }) {
+function Demo({ id, label, poster, title }) {
   const [playing, setPlaying] = useState(false)
   if (playing) return (
     <div className="m-video">
-      <iframe src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1`} title={`${title}: demo`}
+      <iframe src={`https://www.youtube-nocookie.com/embed/${id}?autoplay=1`} title={`${title}: ${label}`}
         allow="autoplay; encrypted-media; picture-in-picture" allowFullScreen loading="lazy" />
     </div>
   )
@@ -309,7 +313,7 @@ function Demo({ id, poster, title }) {
     <button type="button" className="m-video play" onClick={() => setPlaying(true)}>
       {poster && <img src={poster} alt="" loading="lazy" />}
       <span className="m-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg></span>
-      <span className="m-play-label">Watch the demo</span>
+      <span className="m-play-label">{label}</span>
     </button>
   )
 }
@@ -397,7 +401,6 @@ function Timeline({ onClose, go }) {
         <div>
           <p className="caps">Timeline</p>
           <h2>Everything in order</h2>
-          <p className="tl-note">The same work the page holds, on one line of time. Pick anything to jump to it.</p>
         </div>
         <button type="button" className="pill light" onClick={onClose}>CLOSE</button>
       </header>
