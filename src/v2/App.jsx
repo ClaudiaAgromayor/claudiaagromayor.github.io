@@ -90,7 +90,6 @@ export default function App() {
 
       <footer className="foot">
         <span>© {new Date().getFullYear()} Claudia Agromayor</span>
-        <a href="/">Version 1</a>
         <a href={PROFILE.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
         <a href={PROFILE.github} target="_blank" rel="noreferrer">GitHub</a>
       </footer>
