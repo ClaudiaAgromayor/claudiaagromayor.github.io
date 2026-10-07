@@ -4,9 +4,10 @@ import * as THREE from 'three'
 
 /* Shared by the two hero views (portrait scan and globe). */
 
-// Frames the piece beside her name: to the right on wide cards, above it on narrow ones.
-// On tall, narrow screens the camera steps back so the piece still fits the width.
-export function useHeroCamera(position, target, fov) {
+// Frames the piece in the card. With `shift`, it sits beside her name: to the right on
+// wide cards, above it on narrow ones. Without it, the piece is centred and her name
+// reads on top of it. On tall, narrow screens the camera steps back so it still fits.
+export function useHeroCamera(position, target, fov, shift = true) {
   const { camera, size } = useThree()
   useLayoutEffect(() => {
     const { width: w, height: h } = size
@@ -17,11 +18,12 @@ export function useHeroCamera(position, target, fov) {
     camera.fov = fov
     camera.position.set(...position).sub(t).multiplyScalar(k).add(t)
     camera.lookAt(t)
-    if (wide) camera.setViewOffset(w, h, -w * 0.2, 0, w, h)
+    if (!shift) camera.clearViewOffset()
+    else if (wide) camera.setViewOffset(w, h, -w * 0.2, 0, w, h)
     else camera.setViewOffset(w, h, 0, h * 0.17, w, h)
     camera.updateProjectionMatrix()
     return () => { camera.clearViewOffset(); camera.updateProjectionMatrix() }
-  }, [camera, size, position, target, fov])
+  }, [camera, size, position, target, fov, shift])
 }
 
 // A soft round dot for point clouds

@@ -122,6 +122,7 @@ function Hero() {
             <button key={k} type="button" role="tab" aria-selected={view === k} onClick={() => setView(k)}>{l}</button>
           ))}
         </div>
+        <div className="hero-scrim" aria-hidden="true" />
         <div className="hero-copy">
           <h1 className="hero-name">Claudia<br />Agromayor</h1>
           <p className="hero-title">{PROFILE.title}</p>

@@ -68,7 +68,7 @@ const fragmentShader = /* glsl */ `
   }`
 
 export default function HeroScan({ reduced, pointerIn }) {
-  useHeroCamera(CAM_POS, CAM_TARGET, 30)
+  useHeroCamera(CAM_POS, CAM_TARGET, 30, false)   // centred: her name reads on top of it
   const g = useRef()
 
   const { geo, mat, home, vel, seed, n } = useMemo(() => {
