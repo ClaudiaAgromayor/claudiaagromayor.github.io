@@ -83,7 +83,6 @@ export default function App() {
 
       <main id="top">
         <Hero />
-        <Intro onWork={() => go('story')} />
         <Story go={go} onTime={() => setTime(true)} onZoom={(list, i) => setZoom({ list, i })} />
         <Beyond onZoom={(list, i) => setZoom({ list, i })} />
         <Contact />
@@ -128,10 +127,8 @@ function Hero() {
         <div className="hero-scrim" aria-hidden="true" />
         <div className="hero-copy">
           <h1 className="hero-name">Claudia<br />Agromayor</h1>
-          <p className="hero-title">{PROFILE.title}</p>
-          <p className="hero-claim">{PROFILE.claim}</p>
-          <p className="hero-status">{PROFILE.status}</p>
-          <p className="hero-role">{PROFILE.places}</p>
+          <p className="hero-hi">{PROFILE.greeting}</p>
+          {PROFILE.blurb.map((t, k) => <p key={k} className="hero-line">{t}</p>)}
         </div>
         <p className="hero-label" aria-live="polite">
           {view === 'places' && place ? <><b>{place.name} · {place.years}</b>{place.what}</> : view === 'places' ? 'Drag to spin · point at a city' : 'Move through the landscape'}
@@ -149,23 +146,6 @@ function Pluses({ label, n = 4 }) {
         i === Math.floor(n / 2) && label ? <span key={i} className="plus-label">{label}</span> : <span key={i} className="plus">+</span>
       ))}
     </div>
-  )
-}
-
-function Intro({ onWork }) {
-  return (
-    <section className="intro">
-      <div className="intro-copy reveal">
-        {PROFILE.blurb.map((t, k) => (
-          <p key={k} className={k === 0 ? 'intro-lead' : undefined}><Rich text={t} /></p>
-        ))}
-        <p className="intro-links">
-          <a href={PROFILE.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
-          <a href={PROFILE.github} target="_blank" rel="noreferrer">GitHub</a>
-        </p>
-        <button type="button" className="pill ghost" onClick={onWork}><i className="dot" /> SEE MY WORK</button>
-      </div>
-    </section>
   )
 }
 
@@ -308,11 +288,6 @@ function Moment({ c, onZoom }) {
       </div></div>
     </li>
   )
-}
-
-/* **Bold** inside a sentence. */
-function Rich({ text }) {
-  return text.split('**').map((part, k) => (k % 2 ? <b key={k}>{part}</b> : part))
 }
 
 /* Facts: plain strings are bullets, { list } nests underneath the line before it. */

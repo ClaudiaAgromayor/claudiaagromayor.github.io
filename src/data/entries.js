@@ -358,16 +358,11 @@ export const ENTRIES = [
 
 export const PROFILE = {
   name: 'Claudia Agromayor',
-  title: 'AI & Machine Learning Engineer · Researcher',
-  field: 'Industrial Engineering & Computer Science',
-  places: 'Madrid · Paris · Montréal',
-  // the opening block. **like this** comes out bold
-  claim: 'I build AI systems where research meets real-world constraints.',
-  // the hero positions; the work below it is the evidence, so no figures up here
-  status: 'Final-year MII + MIINT student at ICAI, combining Industrial Engineering with Computer Science, graduating June 2027.',
+  // the whole opening: her name, then these, and nothing else
+  greeting: 'Hi, I’m Claudia.',
   blurb: [
-    'I deliberately seek steep learning curves. I have moved across countries, disciplines and environments, repeatedly starting from unfamiliar ground and learning fast enough to contribute. I am comfortable with difficult problems, high expectations and not having all the answers at the start.',
-    'Currently in the final year of a double master’s at ICAI, combining Industrial Engineering with Computer Science and AI, graduating June 2027.',
+    'I am pursuing a double Master’s in Engineering and Artificial Intelligence at CentraleSupélec and Universidad Pontificia Comillas ICAI, graduating in June 2027.',
+    'I work on machine learning, deep learning, and applied AI for complex problems, spanning scientific discovery, 3D medical imaging, cheminformatics, federated learning, and generative AI.',
   ],
   next: 'I am looking forward to the next chapter: learning from people who push me, taking on problems that stretch me, and giving everything I have to the work.',
   linkedin: 'https://linkedin.com/in/claudia-agromayor',

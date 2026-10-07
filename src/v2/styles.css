@@ -59,10 +59,9 @@ img { max-width: 100%; display: block }
   background: linear-gradient(100deg, #07080D 12%, rgba(7, 8, 13, .72) 38%, transparent 62%) }
 .hero-copy { position: absolute; z-index: 2; left: var(--gut); bottom: clamp(72px, 9vh, 132px); max-width: min(620px, 48%); pointer-events: none }
 .hero-name { margin: 0 0 18px; font-weight: 400; font-size: var(--t-hero); line-height: .94; letter-spacing: -.05em }
-.hero-title { margin: 0 0 12px; max-width: 24em; font-size: var(--t-hero-line); font-weight: 600; letter-spacing: -.01em; color: #fff }
-.hero-claim { margin: 0 0 14px; max-width: 30em; font-family: var(--serif); font-weight: 300; font-size: var(--t-hero-line); line-height: 1.45; color: #DDE2F2 }
-.hero-status { margin: 0 0 12px; max-width: 38em; font-size: var(--t-hero-line); line-height: 1.5; color: #B9BFD3 }
-.hero-role { margin: 0; max-width: 32em; font-size: var(--t-hero-line); line-height: 1.5; color: #9AA0B6 }
+.hero-hi { margin: 0 0 14px; font-size: var(--t-hero-line); font-weight: 600; letter-spacing: -.01em; color: #fff }
+.hero-line { margin: 0 0 12px; font-size: var(--t-hero-line); line-height: 1.5; color: #C2C8DC }
+.hero-line:last-child { margin-bottom: 0 }
 .place { display: block; transform: translate(10px, -50%); font-size: var(--t-label); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #fff; white-space: nowrap; text-shadow: 0 1px 10px #000; transition: opacity .25s }
 .place.left { transform: translate(calc(-100% - 10px), -50%) }
 .pluses { display: flex; justify-content: space-between; align-items: center; height: 44px; font-size: 22px; font-weight: 300; line-height: 1 }
@@ -72,14 +71,6 @@ img { max-width: 100%; display: block }
 /* ── big type sections ── */
 .big { margin: 0; font-weight: 400; font-size: var(--t-display); line-height: 1.04; letter-spacing: -.045em; text-wrap: balance; position: relative; z-index: 1 }
 .indent { padding-left: 14% }
-.intro { position: relative; padding: clamp(80px, 9vw, 140px) var(--gut) clamp(40px, 5vw, 80px) }
-.intro-lead { color: var(--ink) }
-.intro-copy { position: relative; z-index: 1; margin: 0; max-width: 48em; font-size: var(--t-body); line-height: 1.55; letter-spacing: -.01em }
-.intro-copy p { margin: 0 0 24px }
-.intro-copy b { font-weight: 600; color: #fff }
-.intro-links { display: flex; flex-wrap: wrap; gap: 10px 28px; margin: 0 0 30px }
-.intro-links a { font-size: var(--t-ui); font-weight: 600; border-bottom: 1px solid var(--line); transition: color .25s, border-color .25s }
-.intro-links a:hover { color: var(--blue-soft); border-color: var(--blue-soft) }
 .tube { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible }
 .tube.t1 { z-index: 0; top: 18%; height: 82% }
 
@@ -301,8 +292,6 @@ html.lenis, html.lenis body { height: auto }
   .act-side { position: static }
   .aside, .contact { grid-template-columns: 1fr }
   .contact-photo { width: min(220px, 60%); margin-bottom: 28px }
-  .intro { grid-template-columns: 1fr }
-  .intro-photo { width: min(320px, 70%) }
   .hero-copy { max-width: none; right: clamp(16px, 2.4vw, 36px) }
   .hero-label { top: clamp(22px, 2vw, 34px); bottom: auto; width: 46% }
 }
