@@ -20,13 +20,12 @@ export const ENTRIES = [
     place: 'Montréal',
     line: 'Built a machine learning pipeline to discover safer general anaesthetic candidates from large-scale chemical libraries.',
     stats: [
-      { v: '43.6B', k: 'molecules screened', big: true },
-      { v: '96B', k: 'inferences run' },
+      { v: '96B', k: 'molecules screened' },
       { v: '1,000', k: 'candidates selected' },
       { v: '~100', k: 'advancing to synthesis' },
     ],
     facts: [
-      'Trained a message-passing neural network on compounds scored using zebrafish behavioural data, then scaled it out on SLURM to 96 billion inferences across the 43.6 billion molecules of the ZINC22 library.',
+      'Trained a message-passing neural network on compounds scored using zebrafish behavioural data, then scaled it out on SLURM across 96 billion molecules from the ZINC22 library.',
       'Applied developability filters and Pareto optimisation to narrow the search to 1,000 candidates, with ~100 advancing to experimental synthesis.',
       'Led the resulting work as first author, presented the research at PandemicStop-AI at Mila, and received a PhD offer following the project.',
     ],

@@ -249,7 +249,7 @@ function Moment({ c, onZoom }) {
           {c.stats?.length > 0 && (
             <span className="m-stats">
               {c.stats.map((st) => (
-                <span key={st.v} className={`m-stat${st.big ? ' big' : ''}`}><b>{st.v}</b><i>{st.k}</i></span>
+                <span key={st.v} className="m-stat"><b>{st.v}</b><i>{st.k}</i></span>
               ))}
             </span>
           )}

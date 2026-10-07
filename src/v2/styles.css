@@ -195,9 +195,6 @@ html.lenis, html.lenis body { height: auto }
 .m-stat { display: grid; gap: 2px }
 .m-stat b { font-family: var(--sans); font-weight: 400; font-size: clamp(23px, 2.1vw, 33px); line-height: 1; letter-spacing: -.04em; color: #fff; font-variant-numeric: tabular-nums }
 .m-stat i { font-style: normal; font-family: var(--sans); font-size: var(--t-label); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--mute) }
-.m-stat.big { flex: 0 0 100%; margin-bottom: 2px }
-.m-stat.big b { font-size: clamp(40px, 4.2vw, 68px); letter-spacing: -.05em; color: var(--blue-soft) }
-.m-stat.big i { color: #C2C7D8 }
 
 /* the areas and projects listed under a degree */
 .m-tags { margin-top: 20px }

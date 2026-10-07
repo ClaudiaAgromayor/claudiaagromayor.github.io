@@ -232,7 +232,7 @@ const ALL = [
     line: 'Research intern at the Institute for Research in Immunology and Cancer, screening billions of molecules for a safer anaesthetic. First author of the paper that came out of it.',
     facts: [
       'General anaesthetics have a narrow margin: the dose that puts you under sits close to the dose that stops you breathing. That is why an anaesthetist watches you the whole time. A wider margin would matter most where no specialist is available.',
-      'I trained a message-passing neural network on compounds scored by zebrafish behaviour, ran it over all 43.6 billion molecules of the ZINC22 library on a SLURM cluster, then filtered for developability and picked 1,000 compounds with a Pareto search on quality and novelty. About 100 are going forward for synthesis.',
+      'I trained a message-passing neural network on compounds scored by zebrafish behaviour, ran it over 96 billion molecules of the ZINC22 library on a SLURM cluster, then filtered for developability and picked 1,000 compounds with a Pareto search on quality and novelty. About 100 are going forward for synthesis.',
       'I arrived with a background in neural networks and very little in biology, and had two months to learn the science, pose the problem and come out with molecules a lab could order. My supervisor asked me to present it at the PandemicStop-AI conference at Mila. It led to a PhD offer.',
     ],
     links: [{ href: 'https://github.com/ClaudiaAgromayor/zebrafish-anesthetic-chemprop', label: 'The code on GitHub' }],
