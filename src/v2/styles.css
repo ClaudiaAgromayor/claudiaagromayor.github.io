@@ -33,7 +33,13 @@ img { max-width: 100%; display: block }
 /* ── header ── */
 .bar { position: fixed; z-index: 20; top: calc(24px + env(safe-area-inset-top, 0px)); left: var(--gut); right: var(--gut); display: flex; justify-content: space-between; align-items: center; pointer-events: none; mix-blend-mode: normal }
 .bar > * { pointer-events: auto }
-.logo { position: fixed; z-index: 21; left: var(--gut); top: calc(24px + env(safe-area-inset-top, 0px)); height: 44px; display: flex; align-items: center; font-size: clamp(15px, 1.5vw, 22px); font-weight: 500; letter-spacing: .1em; line-height: 1; color: #fff; mix-blend-mode: difference }
+.logo { position: fixed; z-index: 21; left: var(--gut); top: calc(24px + env(safe-area-inset-top, 0px)); height: 44px; display: flex; align-items: center; color: #fff; mix-blend-mode: difference }
+/* CA in one line, drawn once as the page opens */
+.logo svg { height: clamp(24px, 2.1vw, 30px); aspect-ratio: 66 / 46; overflow: visible; fill: none; stroke: currentColor; stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round }
+.logo path { stroke-dasharray: 1 1.1; stroke-dashoffset: 1.05; animation: draw .9s var(--ease) .15s forwards }
+.logo path + path { animation-duration: .45s }
+.logo:hover svg { translate: 0 -1px; transition: translate .3s var(--ease) }
+@keyframes draw { to { stroke-dashoffset: 0 } }
 .actions { display: flex; gap: 12px }
 .pill { display: inline-flex; align-items: center; gap: 12px; height: 44px; padding: 0 22px; border-radius: 99px; background: #171A24; box-shadow: inset 0 0 0 1px var(--line); font-size: var(--t-ui); font-weight: 600; letter-spacing: -.01em; transition: transform .35s var(--ease), background .3s }
 .pill:hover { transform: scale(1.04) }
@@ -142,6 +148,7 @@ html.lenis, html.lenis body { height: auto }
 [data-lenis-prevent] { overscroll-behavior: contain }
 
 @media (prefers-reduced-motion: reduce) {
+  .logo path { animation: none; stroke-dashoffset: 0 }
   .reveal { opacity: 1; transform: none; transition: none }
   .m-more, .chapter-nav { transition: none }
 }

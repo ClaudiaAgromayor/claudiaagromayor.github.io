@@ -72,7 +72,12 @@ export default function App() {
 
   return (
     <>
-      <a className="logo" href="#top" onClick={(e) => { e.preventDefault(); go('top') }} aria-label="Claudia Agromayor, back to top">CLAUDIA AGROMAYOR</a>
+      <a className="logo" href="#top" onClick={(e) => { e.preventDefault(); go('top') }} aria-label="Claudia Agromayor, back to top">
+        <svg viewBox="1 1 66 46" aria-hidden="true">
+          <path d="M38.1 9.9A20 20 0 1 0 24 44H38L51 6 64 44" pathLength="1" />
+          <path d="M42.5 31H59.5" pathLength="1" style={{ animationDelay: '.75s' }} />
+        </svg>
+      </a>
       <header className="bar">
         <span />
         <div className="actions">
