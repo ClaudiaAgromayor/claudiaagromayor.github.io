@@ -14,7 +14,7 @@
   --t-lead: clamp(18px, 1.4vw, 21px);     /* the opening line of a section */
   --t-title: clamp(20px, 1.8vw, 27px);      /* a moment, a chapter in the contents */
   --t-display: clamp(44px, 6.2vw, 102px); /* chapter headings */
-  --t-hero: clamp(56px, 8.4vw, 150px);
+  --t-hero: clamp(46px, 6.8vw, 116px);
   --gut: clamp(16px, 5vw, 72px);
   --radius: clamp(14px, 1.6vw, 22px);
   --ease: cubic-bezier(.7, 0, .2, 1);
@@ -58,8 +58,8 @@ img { max-width: 100%; display: block }
   background: linear-gradient(100deg, #07080D 12%, rgba(7, 8, 13, .72) 38%, transparent 62%) }
 .hero-copy { position: absolute; z-index: 2; left: var(--gut); bottom: clamp(72px, 9vh, 132px); max-width: min(620px, 48%); pointer-events: none }
 .hero-name { margin: 0 0 18px; font-weight: 400; font-size: var(--t-hero); line-height: .94; letter-spacing: -.05em }
-.hero-title { margin: 0 0 8px; max-width: 24em; font-size: var(--t-small); font-weight: 600; letter-spacing: .01em; color: #fff }
-.hero-role { margin: 0; max-width: 28em; font-size: var(--t-ui); line-height: 1.5; color: #9AA0B6 }
+.hero-title { margin: 0 0 10px; max-width: 24em; font-size: clamp(17px, 1.5vw, 22px); font-weight: 500; letter-spacing: -.01em; color: #fff }
+.hero-role { margin: 0; max-width: 32em; font-size: var(--t-small); line-height: 1.55; color: #9AA0B6 }
 .place { display: block; transform: translate(10px, -50%); font-size: var(--t-label); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #fff; white-space: nowrap; text-shadow: 0 1px 10px #000; transition: opacity .25s }
 .place.left { transform: translate(calc(-100% - 10px), -50%) }
 .pluses { display: flex; justify-content: space-between; align-items: center; height: 44px; font-size: 22px; font-weight: 300; line-height: 1 }
@@ -127,7 +127,7 @@ img { max-width: 100%; display: block }
   .actions .pill.dark { display: none }
   .hero { padding-top: 0 }
   .hero-copy { bottom: clamp(96px, 16vh, 180px) }
-  .hero-name { font-size: clamp(46px, 13vw, 72px) }
+  .hero-name { font-size: clamp(40px, 11vw, 64px) }
   .indent { padding-left: 0 }
   .tale-head { flex-direction: column; align-items: start }
   .tale-head .caps { width: auto }

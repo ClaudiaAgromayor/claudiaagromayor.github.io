@@ -74,7 +74,7 @@ export default function App() {
       <header className="bar">
         <span />
         <div className="actions">
-          <button type="button" className="pill dark" onClick={() => go('contact')}>LET’S TALK <i className="dot" /></button>
+          <button type="button" className="pill dark" onClick={() => go('contact')}>GET IN TOUCH <i className="dot" /></button>
           <button type="button" className="pill" onClick={() => setMenu(true)} aria-expanded={menu}>MENU <i className="dots" /></button>
         </div>
       </header>
