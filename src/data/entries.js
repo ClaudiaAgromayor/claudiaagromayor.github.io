@@ -18,16 +18,16 @@ export const ENTRIES = [
     org: 'IRIC, Université de Montréal',
     date: 'Jun – Aug 2026',
     place: 'Montréal',
-    line: 'Developed a machine learning pipeline to identify promising candidates for safer general anaesthetics from large-scale chemical libraries.',
+    line: 'Built a machine learning pipeline to discover safer general anaesthetic candidates from large-scale chemical libraries.',
     stats: [
       { v: '43.6B', k: 'molecules screened', big: true },
       { v: '1,000', k: 'candidates selected' },
       { v: '~100', k: 'advancing to synthesis' },
     ],
     facts: [
-      'Trained a message-passing neural network on 47,348 compounds scored using zebrafish behavioural data, then screened 43.6 billion ZINC22 molecules on SLURM.',
-      'Applied developability filters and Pareto optimisation to identify 1,000 candidates, with ~100 advancing to synthesis.',
-      'First author of the resulting paper; invited to present the work at PandemicStop-AI at Mila. The project also led to a PhD offer.',
+      'Trained a message-passing neural network on 47,348 compounds scored using zebrafish behavioural data, then scaled inference to 43.6 billion ZINC22 molecules on SLURM.',
+      'Applied developability filters and Pareto optimisation to narrow the search to 1,000 candidates, with ~100 advancing to experimental synthesis.',
+      'Led the resulting work as first author, presented the research at PandemicStop-AI at Mila, and received a PhD offer following the project.',
     ],
     links: [{ href: 'https://github.com/ClaudiaAgromayor/zebrafish-anesthetic-chemprop', label: 'GitHub' }],
     img: '/img/olivier_lab.jpg',
@@ -40,16 +40,16 @@ export const ENTRIES = [
     org: 'Amazon Web Services',
     date: 'Jun – Aug 2025',
     place: 'Madrid',
-    line: 'Built and deployed an end-to-end generative AI system for AWS Partner Network support tickets, processing 5,000+ tickets per month.',
+    line: 'Built and deployed an end-to-end generative AI system for the AWS Partner Network, processing 5,000+ support tickets per month.',
     stats: [
       { v: '5,000+', k: 'tickets a month' },
       { v: '75 → 85%', k: 'accuracy' },
       { v: '4 min → 30 s', k: 'handling time' },
     ],
     facts: [
-      'Improved accuracy from 75% to 85% and reduced average handling time from ~4 minutes to 30 seconds using Amazon Bedrock, Lambda and LangChain.',
-      'Combined 30+ internal documents with 10,000+ historical tickets and implemented a human-in-the-loop validation step before responses reached partners.',
-      'The system remained in active use after the internship.',
+      'Combined 30+ internal documents with 10,000+ historical tickets using Amazon Bedrock, Lambda and LangChain.',
+      'Improved accuracy from 75% to 85% while reducing average handling time from ~4 minutes to 30 seconds.',
+      'Added a human-in-the-loop validation layer before responses reached partners; the system remained in active use after the internship.',
     ],
     img: '/img/aws.jpg',
     photos: ['/img/aws2.jpg'],
@@ -61,13 +61,14 @@ export const ENTRIES = [
     org: 'Altex Asset Management',
     date: 'Jun – Aug 2024',
     place: 'Madrid',
-    line: 'Developed machine learning and systematic investment strategies for financial time series, including asset rotation across commodities, indices and bonds using momentum, growth and value signals.',
+    line: 'Developed machine learning and systematic investment strategies for financial time series across commodities, indices and bonds.',
     stats: [
-      { v: '15%', k: 'annualised return' },
+      { v: '15%', k: 'annualised backtest return' },
       { v: '10%', k: 'maximum drawdown' },
     ],
     facts: [
-      'Backtests reached 15% annualised return with a 10% maximum drawdown, with a strong focus on robust backtesting and avoiding methodological artefacts.',
+      'Designed and evaluated asset-rotation strategies combining momentum, growth and value signals.',
+      'Built robust backtesting workflows, with the focus on avoiding methodological artefacts and overestimating what a strategy can do.',
     ],
   },
   {
@@ -77,7 +78,7 @@ export const ENTRIES = [
     org: 'Forum CentraleSupélec',
     date: 'Nov 2023 – Jan 2025',
     place: 'Paris',
-    line: 'Managed finances for France’s largest student forum, bringing together 200 companies and 3,500 students annually, as part of a 30-person team overseeing a €600K budget.',
+    line: 'Managed finances for France’s largest student forum as part of a 30-person team overseeing a €600K budget, 200 companies and 3,500 students annually.',
     stats: [
       { v: '€600K', k: 'budget managed' },
       { v: '+7% → €1.3M', k: 'revenue' },
@@ -98,11 +99,8 @@ export const ENTRIES = [
     org: 'ICES',
     date: '2020 – 2023',
     place: 'Madrid',
-    line: 'Joined at 17 as the organisation’s most junior member and proposed a TikTok strategy for Spanish students studying abroad directly to the directors.',
-    facts: [
-      'Launched and managed the account independently, reaching 1,000+ followers in the first month and growing it to 2,300+ followers and 38,000 likes.',
-      'Continued the role for three years alongside school and engineering studies.',
-    ],
+    line: 'Joined ICES at 17 and proposed a TikTok strategy directly to its directors. Launched and managed the account independently, reaching 1,000+ followers in the first month and 2,300+ followers with 38,000 likes.',
+    facts: [],
     img: '/img/cuenta_ices.jpg',
     photos: ['/img/ices.jpg'],
   },
@@ -115,31 +113,30 @@ export const ENTRIES = [
     org: 'Master’s Thesis, ICAI',
     date: 'Jan 2026 – Present',
     place: 'Madrid',
-    line: 'Developing a deep learning pipeline to identify and analyse root canals from 3D dental scans, supporting endodontic treatment planning.',
+    line: 'Building a deep learning pipeline to identify and analyse root canals from 3D dental scans, supporting endodontic treatment planning.',
     stats: [{ v: '<1%', k: 'of voxels are root canal' }],
     facts: [
-      'The pipeline combines three stages: tooth localisation and cropping from CBCT scans, 3D root-canal segmentation, and anatomical reconstruction and measurement of diameter, curvature, length and cross-section.',
-      'Implementing 3D U-Net and Attention U-Net architectures with Dice loss, in a highly imbalanced setting where root canals account for fewer than 1% of voxels.',
-      'Supervised at ICAI in collaboration with endodontics specialists from Universidad Complutense de Madrid.',
+      'Developing a three-stage pipeline: tooth localisation and cropping from CBCT scans, 3D root-canal segmentation, and anatomical reconstruction of diameter, curvature, length and cross-section.',
+      'Implementing 3D U-Net and Attention U-Net architectures with Dice loss in a highly imbalanced segmentation setting.',
+      'Working with endodontics specialists from Universidad Complutense de Madrid, under supervision at ICAI.',
     ],
   },
   {
     key: 'ibm',
     year: 2025,
-    title: 'LLM Evaluation Under Business Constraints',
+    title: 'LLM Evaluation for Business-Rule Compliance',
     org: 'IBM France Lab',
     date: 'Jan – Jun 2025',
     place: 'Paris',
-    line: 'Investigated LLM architectures for complex business-rule policy compliance across 200+ client cases.',
+    line: 'Evaluated LLM-based approaches for complex policy compliance across 200+ client cases.',
     stats: [
       { v: '46 → 91%', k: 'exact match' },
       { v: '0.89', k: 'F1 on domain QA' },
     ],
     facts: [
-      'Evaluated five approaches: batch processing, iterative reasoning, few-shot prompting, chain-of-thought and retrieval-augmented generation.',
-      'Improved exact-match accuracy from 46% to 91%, achieving 0.89 F1 on domain-specific question answering.',
-      'Combined dense embeddings with TF-IDF fallback and leakage-safe neighbour exclusion.',
-      'Found that increasing context did not necessarily improve performance; pipeline structure and retrieval strategy were more important.',
+      'Compared batch processing, iterative reasoning, few-shot prompting, chain-of-thought and retrieval-augmented generation.',
+      'Combined dense embeddings with a TF-IDF fallback and leakage-safe neighbour exclusion to improve retrieval reliability.',
+      'Found that increasing context did not necessarily improve performance; pipeline structure and retrieval strategy had a larger effect on accuracy.',
     ],
   },
   {
@@ -153,11 +150,12 @@ export const ENTRIES = [
     stats: [
       { v: '+9%', k: 'accuracy with SCAFFOLD' },
       { v: '40%', k: 'faster convergence' },
+      { v: '15', k: 'heterogeneous clients' },
     ],
     facts: [
       'Built a five-layer Python/FastAPI platform supporting 15 heterogeneous clients.',
-      'SCAFFOLD improved accuracy by 9% and reduced convergence time by 40% compared with alternative approaches.',
-      'Integrated differential privacy and analysed the distinction between model limitations and issues caused by heterogeneous data distributions.',
+      'Evaluated federated optimisation under non-IID data and found that SCAFFOLD improved accuracy by 9% and reduced convergence time by 40%.',
+      'Integrated differential privacy and separated the limitations caused by the learning algorithm from those caused by heterogeneous data distributions.',
     ],
   },
 
@@ -169,11 +167,11 @@ export const ENTRIES = [
     org: 'HackSpain 2026',
     date: 'Sep 2026',
     place: 'Madrid',
-    line: 'Led a team developing an AI safety system to detect when autonomous agents should stop during the HappyRobot crisis challenge.',
+    line: 'Led a team building a safety layer for autonomous AI agents during the HappyRobot crisis challenge.',
     facts: [
       'Designed deterministic safety checks, loop detection, an independent LLM judge and an Agent Risk Index to classify whether an agent should continue, warn, request human intervention or shut down.',
-      'Tested the system in an environment with deliberate failures including objective misinterpretation, constraint violations, scope expansion and false reporting.',
-      'During testing, rogue agents made real phone calls, providing a concrete test of the safety system under unexpected behaviour.',
+      'Tested the system against deliberate failure modes including objective misinterpretation, constraint violations, scope expansion and false reporting.',
+      'During testing, rogue agents made real phone calls, exposing how autonomous systems can behave outside their intended scope.',
     ],
     video: 'eaWnMs7NiIE',
     links: [
@@ -196,7 +194,7 @@ export const ENTRIES = [
       { v: '80%', k: 'top-3 accuracy' },
     ],
     facts: [
-      'Used BERT embeddings and logistic regression to achieve 80% top-3 accuracy and added voice input for technicians.',
+      'Combined BERT embeddings with logistic regression to classify faulty components, and added voice input for technicians.',
     ],
     img: '/img/hackathon_kearney.jpg',
     photos: ['/img/presentacion_hackathon.jpg', '/img/visita_caf.jpg'],
@@ -222,15 +220,13 @@ export const ENTRIES = [
     org: 'CentraleSupélec × ICAI',
     date: 'Sep 2023 – Jun 2025',
     place: 'Paris',
-    line: 'One of two ICAI students selected for the double degree.',
+    line: 'One of two ICAI students selected for the double degree, completed in French after entering from Madrid without a French prépa.',
     stats: [
       { v: '1 of 2', k: 'students selected' },
       { v: 'Top 10%', k: 'of the cohort' },
       { v: '9.2/10', k: 'final two years' },
     ],
-    facts: [
-      'Completed the programme in French after entering from Madrid without a French prépa.',
-    ],
+    facts: [],
     tagsLabel: 'Relevant projects',
     tags: ['EDF electricity demand forecasting', 'Wind farm MPPT optimisation', 'Safran helicopter airflow modelling', 'BCG projects'],
   },
@@ -258,7 +254,8 @@ export const ENTRIES = [
     org: 'Iberdrola',
     date: '2026 – 2027',
     place: 'Spain',
-    line: 'One of eight recipients selected in Spain through CV and academic screening, mathematics and logic assessments, English evaluation, presentation and interviews with senior executives.',
+    line: 'One of eight recipients selected in Spain, through academic screening, mathematical and logical assessments, an English evaluation, a presentation and interviews with senior executives.',
+    stats: [{ v: '8', k: 'recipients in Spain' }],
     facts: [],
   },
 
@@ -271,7 +268,7 @@ export const ENTRIES = [
     org: 'Camp Wapo, Wisconsin',
     date: 'Jun – Aug 2022',
     place: 'Wisconsin',
-    line: 'Worked as a camp counsellor and Red Cross lifeguard at 19, independently managing groups of 12 girls aged 8–13, 7,000 km from home. Completed 10+ rescues and received the “You Rock” award.',
+    line: 'Managed groups of 12 girls aged 8 to 13 independently, 7,000 km from home, and completed 10+ rescues as a Red Cross lifeguard.',
     facts: [],
     img: '/img/camp_counselor.jpg',
     photos: ['/img/camp_counselor2.jpg'],
@@ -296,7 +293,7 @@ export const ENTRIES = [
     org: 'Boadilla junior team',
     date: '2013',
     place: 'Barcelona',
-    line: '5th in the world with the Boadilla junior team. Trained six days per week for ten years.',
+    line: '5th in the world with the Boadilla junior team, after training six days a week for ten years.',
     facts: [],
     img: '/img/gimnasia-2013.jpg',
     links: [{ href: 'https://www.ayuntamientoboadilladelmonte.org/boadilla-actualidad/noticias/el-equipo-infantil-de-gimnasia-estetica-de-boadilla-obtiene-el-quinto', label: 'Read the news (Spanish)' }],
@@ -318,16 +315,21 @@ export const ENTRIES = [
 
 export const PROFILE = {
   name: 'Claudia Agromayor',
-  title: 'AI & Machine Learning Engineer | Researcher',
+  title: 'AI & Machine Learning Engineer · Researcher',
   field: 'Industrial Engineering & Computer Science',
   places: 'Madrid · Paris · Montréal',
   // the opening block. **like this** comes out bold
-  blurb: [
-    'Currently pursuing a double master’s degree in Industrial Engineering and Intelligent Industry at ICAI, I work on AI and machine learning for complex real-world problems.',
-    'My experience spans **large-scale drug discovery, generative AI at AWS, industrial machine learning and quantitative finance**, from screening **43.6 billion molecules** to deploying AI systems processing **5,000+ support tickets per month**.',
-    'I am particularly interested in **AI research beyond benchmarks**, especially scientific discovery, heterogeneous data and reliable systems deployed in the real world.',
+  claim: 'I build AI systems for complex scientific and real-world problems.',
+  // the two figures that go in the first screen, beside her name
+  proof: [
+    { v: '43.6B', k: 'molecules screened' },
+    { v: '5,000+', k: 'tickets a month' },
   ],
-  next: 'Seeking an AI research internship for summer or September 2027.',
+  blurb: [
+    'My work spans **large-scale drug discovery, generative AI, industrial machine learning and AI safety**, from screening **43.6 billion molecules** for safer anaesthetic candidates to deploying a system that processes **5,000+ support tickets per month**.',
+    'Currently pursuing a double master’s degree in Industrial Engineering and Intelligent Industry at ICAI, with a background in CentraleSupélec and Paris Dauphine-PSL.',
+  ],
+  next: 'Open to research collaborations, technical projects and opportunities from summer 2027 onward.',
   email: 'clauuagromayor@gmail.com',
   linkedin: 'https://linkedin.com/in/claudia-agromayor',
   github: 'https://github.com/ClaudiaAgromayor',
@@ -336,14 +338,14 @@ export const PROFILE = {
 export const BEYOND = {
   title: 'Beyond Engineering',
   paragraphs: [
-    'Outside engineering, I compete in sport and contribute to international student communities. At CentraleSupélec, I have been involved in basketball, rowing, surf expeditions and the Spanish Club within a campus representing 77 nationalities.',
-    'I have volunteered with Cáritas and Volant during school, and with AREMACS in Paris, reducing the environmental footprint of large events.',
-    'What I enjoy most about moving between countries is discovering a new culture and adapting to it quickly.',
+    'Outside engineering, I compete in sport and contribute to international student communities. At CentraleSupélec, I took part in basketball, rowing, surf expeditions and the Spanish Club on a campus representing 77 nationalities.',
+    'I have also volunteered with Cáritas, Volant and AREMACS, including work focused on reducing the environmental footprint of large events.',
+    'Sport, international environments and moving between countries have been a constant part of my education alongside engineering.',
   ],
   photos: ['/img/championnat_france_basket.jpg', '/img/basket.jpg'],
 }
 
 export const CONTACT = {
   tags: 'AI research · Machine learning · Applied computational science',
-  text: 'Based between Madrid, Paris and Montréal. Seeking an AI research internship for summer or September 2027.',
+  text: 'Based between Madrid, Paris and Montréal. Open to research collaborations, technical projects and opportunities from summer 2027 onward.',
 }

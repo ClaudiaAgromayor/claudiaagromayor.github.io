@@ -4,7 +4,7 @@ import Lenis from 'lenis'
 import HeroScan from './HeroScan'
 import HeroGlobe from './HeroGlobe'
 import { PROFILE, BEYOND, CONTACT } from '../data/entries'
-import { SECTIONS } from '../data/sections'
+import { SECTIONS, HIGHLIGHTS } from '../data/sections'
 
 const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
 const clamp01 = (x) => Math.max(0, Math.min(1, x))
@@ -82,6 +82,7 @@ export default function App() {
       <main id="top">
         <Hero />
         <Intro onWork={() => go('story')} />
+        <Highlights go={go} />
         <Story go={go} onZoom={(list, i) => setZoom({ list, i })} />
         <Beyond onZoom={(list, i) => setZoom({ list, i })} />
         <Contact />
@@ -126,7 +127,10 @@ function Hero() {
         <div className="hero-copy">
           <h1 className="hero-name">Claudia<br />Agromayor</h1>
           <p className="hero-title">{PROFILE.title}</p>
-          <p className="hero-role">{PROFILE.field}</p>
+          <p className="hero-claim">{PROFILE.claim}</p>
+          <p className="hero-proof">
+            {PROFILE.proof.map((st) => <span key={st.v}><b>{st.v}</b>{st.k}</span>)}
+          </p>
           <p className="hero-role">{PROFILE.places}</p>
         </div>
         <p className="hero-label" aria-live="polite">
@@ -162,6 +166,29 @@ function Intro({ onWork }) {
         </p>
         <button type="button" className="pill ghost" onClick={onWork}><i className="dot" /> SEE MY WORK</button>
       </div>
+    </section>
+  )
+}
+
+/* The four entries that carry the profile, before any of the detail */
+function Highlights({ go }) {
+  const where = { iric: 'experience', aws: 'experience', ibm: 'research', federated: 'research' }
+  return (
+    <section className="highlights" id="selected" aria-label="Selected work">
+      <p className="eyebrow reveal">Selected work</p>
+      <ol className="hl-grid">
+        {HIGHLIGHTS.map((c) => (
+          <li key={c.key} className="reveal">
+            <button type="button" className="hl" onClick={() => go(where[c.key])}>
+              <span className="hl-org">{c.org}</span>
+              <span className="hl-title">{c.title}</span>
+              <span className="hl-stats">
+                {c.stats.slice(0, 2).map((st) => <span key={st.v}><b>{st.v}</b>{st.k}</span>)}
+              </span>
+            </button>
+          </li>
+        ))}
+      </ol>
     </section>
   )
 }
