@@ -21,11 +21,12 @@ export const ENTRIES = [
     line: 'Built a machine learning pipeline to discover safer general anaesthetic candidates from large-scale chemical libraries.',
     stats: [
       { v: '43.6B', k: 'molecules screened', big: true },
+      { v: '96B', k: 'inferences run' },
       { v: '1,000', k: 'candidates selected' },
       { v: '~100', k: 'advancing to synthesis' },
     ],
     facts: [
-      'Trained a message-passing neural network on 47,348 compounds scored using zebrafish behavioural data, then scaled inference to 43.6 billion ZINC22 molecules on SLURM.',
+      'Trained a message-passing neural network on compounds scored using zebrafish behavioural data, then scaled it out on SLURM to 96 billion inferences across the 43.6 billion molecules of the ZINC22 library.',
       'Applied developability filters and Pareto optimisation to narrow the search to 1,000 candidates, with ~100 advancing to experimental synthesis.',
       'Led the resulting work as first author, presented the research at PandemicStop-AI at Mila, and received a PhD offer following the project.',
     ],
@@ -50,6 +51,7 @@ export const ENTRIES = [
       'Combined 30+ internal documents with 10,000+ historical tickets using Amazon Bedrock, Lambda and LangChain.',
       'Improved accuracy from 75% to 85% while reducing average handling time from ~4 minutes to 30 seconds.',
       'Added a human-in-the-loop validation layer before responses reached partners; the system remained in active use after the internship.',
+      'Certified as AWS Cloud Practitioner and AWS AI Practitioner.',
     ],
     img: '/img/aws.jpg',
     photos: ['/img/aws2.jpg'],
@@ -99,8 +101,15 @@ export const ENTRIES = [
     org: 'ICES',
     date: '2020 – 2023',
     place: 'Madrid',
-    line: 'Joined ICES at 17 and proposed a TikTok strategy directly to its directors. Launched and managed the account independently, reaching 1,000+ followers in the first month and 2,300+ followers with 38,000 likes.',
-    facts: [],
+    line: 'Joined ICES at 17 as its most junior team member and proposed a TikTok strategy for Spanish students studying abroad directly to the directors.',
+    stats: [
+      { v: '1,000+', k: 'followers in month one' },
+      { v: '38,000', k: 'likes' },
+    ],
+    facts: [
+      'Launched and managed the account independently, reaching 1,000+ followers in the first month and growing it to 2,300+ followers and 38,000 likes.',
+      'Continued the role for three years, alongside the end of school and the start of my engineering studies.',
+    ],
     img: '/img/cuenta_ices.jpg',
     photos: ['/img/ices.jpg'],
   },
@@ -220,13 +229,16 @@ export const ENTRIES = [
     org: 'CentraleSupélec × ICAI',
     date: 'Sep 2023 – Jun 2025',
     place: 'Paris',
-    line: 'One of two ICAI students selected for the double degree, completed in French after entering from Madrid without a French prépa.',
+    line: 'One of two ICAI students selected for the double degree with CentraleSupélec.',
     stats: [
       { v: '1 of 2', k: 'students selected' },
       { v: 'Top 10%', k: 'of the cohort' },
       { v: '9.2/10', k: 'final two years' },
     ],
-    facts: [],
+    facts: [
+      'Completed the programme in French, entering directly from Madrid without the two years of French prépa that the route normally requires.',
+      'Graduated in the top 10% of the cohort, with a 9.2/10 average over the final two years.',
+    ],
     tagsLabel: 'Relevant projects',
     tags: ['EDF electricity demand forecasting', 'Wind farm MPPT optimisation', 'Safran helicopter airflow modelling', 'BCG projects'],
   },
@@ -254,9 +266,11 @@ export const ENTRIES = [
     org: 'Iberdrola',
     date: '2026 – 2027',
     place: 'Spain',
-    line: 'One of eight recipients selected in Spain, through academic screening, mathematical and logical assessments, an English evaluation, a presentation and interviews with senior executives.',
+    line: 'One of eight recipients selected in Spain.',
     stats: [{ v: '8', k: 'recipients in Spain' }],
-    facts: [],
+    facts: [
+      'Selected through CV and academic screening, mathematics and logic assessments, an English evaluation, a presentation, and interviews with senior executives.',
+    ],
   },
 
   /* ── Earlier experience and early achievements ───────────── */
@@ -268,8 +282,11 @@ export const ENTRIES = [
     org: 'Camp Wapo, Wisconsin',
     date: 'Jun – Aug 2022',
     place: 'Wisconsin',
-    line: 'Managed groups of 12 girls aged 8 to 13 independently, 7,000 km from home, and completed 10+ rescues as a Red Cross lifeguard.',
-    facts: [],
+    line: 'Worked as a camp counsellor and Red Cross lifeguard at 19, 7,000 km from home.',
+    facts: [
+      'Managed a new group of twelve girls aged 8 to 13 every week: activities, workshops and the group dynamics that come with them.',
+      'Completed 10+ rescues in the lake over the summer and received the camp’s “You Rock” award.',
+    ],
     img: '/img/camp_counselor.jpg',
     photos: ['/img/camp_counselor2.jpg'],
   },
@@ -281,8 +298,11 @@ export const ENTRIES = [
     org: 'Eurocolegio Casvi',
     date: '2018 – 2021',
     place: 'Boadilla del Monte',
-    line: 'Top student in year in technological sciences. Honourable Mention and Diploma of Excellence from the Community of Madrid; STEM programme at UC3M.',
-    facts: [],
+    line: 'Top student of my year in the technological sciences track.',
+    facts: [
+      'Honourable Mention and Diploma of Excellence from the Community of Madrid.',
+      'Took part in a STEM programme at Universidad Carlos III alongside school.',
+    ],
     img: '/img/premio_bachillerato.jpg',
   },
   {
@@ -293,8 +313,11 @@ export const ENTRIES = [
     org: 'Boadilla junior team',
     date: '2013',
     place: 'Barcelona',
-    line: '5th in the world with the Boadilla junior team, after training six days a week for ten years.',
-    facts: [],
+    line: '5th in the world in Barcelona with the Boadilla junior team.',
+    stats: [{ v: '5th', k: 'in the world' }],
+    facts: [
+      'Trained six days a week for ten years, competing internationally from a young age.',
+    ],
     img: '/img/gimnasia-2013.jpg',
     links: [{ href: 'https://www.ayuntamientoboadilladelmonte.org/boadilla-actualidad/noticias/el-equipo-infantil-de-gimnasia-estetica-de-boadilla-obtiene-el-quinto', label: 'Read the news (Spanish)' }],
   },
@@ -306,8 +329,10 @@ export const ENTRIES = [
     org: 'Boadilla Maths Gymkhana',
     date: '2015',
     place: 'Boadilla del Monte',
-    line: 'First prize in the Boadilla Maths Gymkhana among 400 students. Participated regularly in mathematics and science competitions from 6th grade.',
-    facts: [],
+    line: 'First prize in the Boadilla Maths Gymkhana, among 400 students.',
+    facts: [
+      'Took part regularly in mathematics and science competitions from sixth grade onwards.',
+    ],
     img: '/img/gymkana-2015.jpg',
     links: [{ href: 'https://www.ayuntamientoboadilladelmonte.org/boadilla-actualidad/noticias/cuatrocientos-escolares-participan-en-la-ii-gymkana-matematica-de', label: 'Read the news (Spanish)' }],
   },
@@ -319,15 +344,16 @@ export const PROFILE = {
   field: 'Industrial Engineering & Computer Science',
   places: 'Madrid · Paris · Montréal',
   // the opening block. **like this** comes out bold
-  claim: 'I build AI systems for complex scientific and real-world problems.',
+  claim: 'I build machine learning systems for hard scientific and real-world problems, and I am just as interested in where they break.',
   // the two figures that go in the first screen, beside her name
   proof: [
     { v: '43.6B', k: 'molecules screened' },
-    { v: '5,000+', k: 'tickets a month' },
+    { v: '5,000+', k: 'support tickets a month' },
   ],
   blurb: [
-    'My work spans **large-scale drug discovery, generative AI, industrial machine learning and AI safety**, from screening **43.6 billion molecules** for safer anaesthetic candidates to deploying a system that processes **5,000+ support tickets per month**.',
-    'Currently pursuing a double master’s degree in Industrial Engineering and Intelligent Industry at ICAI, with a background in CentraleSupélec and Paris Dauphine-PSL.',
+    'Engineering came first: four years of electrical and industrial engineering at ICAI and CentraleSupélec before I specialised in AI. It is why I reach for problems where the model is only part of the answer and the data, the scale and the constraints are the rest.',
+    '**Final-year student of the double master’s in Industrial Engineering and Intelligent Industry at ICAI**, graduating in June 2027, after a double degree with CentraleSupélec and Applied Economics at Paris Dauphine-PSL.',
+    'The work runs from **drug discovery and medical imaging** to **generative AI in production, federated learning and agent safety**. What they have in common is messy data, awkward scale and a result someone has to be able to rely on.',
   ],
   next: 'Open to research collaborations, technical projects and opportunities from summer 2027 onward.',
   email: 'clauuagromayor@gmail.com',
@@ -340,7 +366,7 @@ export const BEYOND = {
   paragraphs: [
     'Outside engineering, I compete in sport and contribute to international student communities. At CentraleSupélec, I took part in basketball, rowing, surf expeditions and the Spanish Club on a campus representing 77 nationalities.',
     'I have also volunteered with Cáritas, Volant and AREMACS, including work focused on reducing the environmental footprint of large events.',
-    'Sport, international environments and moving between countries have been a constant part of my education alongside engineering.',
+    'I work in Spanish, English and French. Sport, international environments and moving between countries have been a constant part of my education alongside engineering.',
   ],
   photos: ['/img/championnat_france_basket.jpg', '/img/basket.jpg'],
 }

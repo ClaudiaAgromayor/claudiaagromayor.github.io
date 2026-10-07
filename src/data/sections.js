@@ -14,7 +14,5 @@ export const SECTIONS = [
   { id: 'projects', title: 'Projects', weight: 'major', keys: ['angryrobot', 'caffy'] },
   { id: 'education', title: 'Education', weight: 'major', keys: ['master', 'centrale', 'dauphine'] },
   { id: 'recognition', title: 'Recognition', weight: 'minor', keys: ['iberdrola'] },
-  // 'casvi' and 'maths' are still in entries.js, just not on the page: the degrees,
-  // the cohort rank and the scholarship already carry the academic evidence
-  { id: 'earlier', title: 'Earlier Experience', weight: 'minor', keys: ['ices', 'camp', 'gymnastics'] },
+  { id: 'earlier', title: 'Earlier Experience & Early Achievements', weight: 'minor', keys: ['ices', 'camp', 'casvi', 'gymnastics', 'maths'] },
 ].map((s) => ({ ...s, items: s.keys.map((k) => ENTRIES.find((e) => e.key === k)).filter(Boolean) }))
