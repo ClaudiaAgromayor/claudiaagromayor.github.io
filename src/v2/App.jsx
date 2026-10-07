@@ -171,12 +171,27 @@ function Story({ go, onZoom }) {
   const wrap = useRef(null)
   const [cur, setCur] = useState(-1)
   const curRef = useRef(-1)
-  // which section is crossing the middle of the screen
+  const litRef = useRef(null)
+  // which section is crossing the middle of the screen, and which entry the spine marks
   const track = useCallback((el) => {
     const mid = innerHeight * 0.5
     let c = -1
     el.querySelectorAll('.act').forEach((a, i) => { const r = a.getBoundingClientRect(); if (r.top < mid && r.bottom > mid) c = i })
     if (c !== curRef.current) { curRef.current = c; setCur(c) }
+    // the dot of whichever entry sits closest to the reading line lights up
+    const line = innerHeight * 0.42
+    let on = null, near = Infinity
+    el.querySelectorAll('.moment').forEach((m) => {
+      const r = m.getBoundingClientRect()
+      if (r.bottom < 70 || r.top > innerHeight - 70) return
+      const d = Math.abs(r.top + 30 - line)
+      if (d < near) { near = d; on = m }
+    })
+    if (on !== litRef.current) {
+      litRef.current?.removeAttribute('data-lit')
+      on?.setAttribute('data-lit', '')
+      litRef.current = on
+    }
   }, [])
   useScrub(wrap, track)
   return (
