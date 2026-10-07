@@ -15,6 +15,7 @@
   --t-title: clamp(20px, 1.8vw, 27px);      /* a moment, a chapter in the contents */
   --t-display: clamp(44px, 6.2vw, 102px); /* chapter headings */
   --t-hero: clamp(46px, 6.8vw, 116px);
+  --t-hero-line: clamp(16px, 1.35vw, 19px); /* every line under her name, one size */
   --gut: clamp(16px, 5vw, 72px);
   --radius: clamp(14px, 1.6vw, 22px);
   --ease: cubic-bezier(.7, 0, .2, 1);
@@ -58,10 +59,10 @@ img { max-width: 100%; display: block }
   background: linear-gradient(100deg, #07080D 12%, rgba(7, 8, 13, .72) 38%, transparent 62%) }
 .hero-copy { position: absolute; z-index: 2; left: var(--gut); bottom: clamp(72px, 9vh, 132px); max-width: min(620px, 48%); pointer-events: none }
 .hero-name { margin: 0 0 18px; font-weight: 400; font-size: var(--t-hero); line-height: .94; letter-spacing: -.05em }
-.hero-title { margin: 0 0 10px; max-width: 24em; font-size: clamp(17px, 1.5vw, 22px); font-weight: 500; letter-spacing: -.01em; color: #fff }
-.hero-claim { margin: 0 0 16px; max-width: 24em; font-family: var(--serif); font-weight: 300; font-size: clamp(19px, 1.7vw, 25px); line-height: 1.35; color: #DDE2F2 }
-.hero-status { margin: 0 0 14px; max-width: 34em; font-size: var(--t-small); line-height: 1.55; color: #B9BFD3 }
-.hero-role { margin: 0; max-width: 32em; font-size: var(--t-small); line-height: 1.55; color: #9AA0B6 }
+.hero-title { margin: 0 0 12px; max-width: 24em; font-size: var(--t-hero-line); font-weight: 600; letter-spacing: -.01em; color: #fff }
+.hero-claim { margin: 0 0 14px; max-width: 30em; font-family: var(--serif); font-weight: 300; font-size: var(--t-hero-line); line-height: 1.45; color: #DDE2F2 }
+.hero-status { margin: 0 0 12px; max-width: 38em; font-size: var(--t-hero-line); line-height: 1.5; color: #B9BFD3 }
+.hero-role { margin: 0; max-width: 32em; font-size: var(--t-hero-line); line-height: 1.5; color: #9AA0B6 }
 .place { display: block; transform: translate(10px, -50%); font-size: var(--t-label); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #fff; white-space: nowrap; text-shadow: 0 1px 10px #000; transition: opacity .25s }
 .place.left { transform: translate(calc(-100% - 10px), -50%) }
 .pluses { display: flex; justify-content: space-between; align-items: center; height: 44px; font-size: 22px; font-weight: 300; line-height: 1 }

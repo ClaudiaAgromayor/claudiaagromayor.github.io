@@ -348,10 +348,10 @@ export const PROFILE = {
   // the hero positions; the work below it is the evidence, so no figures up here
   status: 'Final-year MII + MIINT student at ICAI, combining Industrial Engineering with Computer Science, graduating June 2027.',
   blurb: [
-    'Engineering came first: four years of electrical and industrial engineering at ICAI and CentraleSupélec before I specialised in AI. It is why I reach for problems where the model is only part of the answer and the data, the scale and the constraints are the rest.',
-    'I am just as interested in where a system breaks as in where it works, which is usually what decides whether the result is any use.',
+    'I deliberately seek steep learning curves. I have moved across countries, disciplines and environments, repeatedly starting from unfamiliar ground and learning fast enough to contribute. I am comfortable with difficult problems, high expectations and not having all the answers at the start.',
+    'Currently in the final year of a double master’s at ICAI, combining Industrial Engineering with Computer Science and AI, graduating June 2027.',
   ],
-  next: 'Open to research collaborations, technical projects and opportunities from summer 2027 onward.',
+  next: 'I am looking forward to the next chapter: learning from people who push me, taking on problems that stretch me, and giving everything I have to the work.',
   email: 'clauuagromayor@gmail.com',
   linkedin: 'https://linkedin.com/in/claudia-agromayor',
   github: 'https://github.com/ClaudiaAgromayor',
@@ -369,5 +369,5 @@ export const BEYOND = {
 
 export const CONTACT = {
   tags: 'AI research · Machine learning · Applied computational science',
-  text: 'Based between Madrid, Paris and Montréal. Open to research collaborations, technical projects and opportunities from summer 2027 onward.',
+  text: 'I am looking forward to the next chapter: learning from people who push me, taking on problems that stretch me, and giving everything I have to the work.',
 }
