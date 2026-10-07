@@ -13,6 +13,7 @@ export const ENTRIES = [
   /* ── Experience ─────────────────────────────────────────── */
   {
     key: 'iric',
+    start: 2026.42,
     year: 2026,
     title: 'Research Intern',
     org: 'IRIC, Université de Montréal',
@@ -28,6 +29,7 @@ export const ENTRIES = [
       'Trained a message-passing neural network on compounds scored using zebrafish behavioural data, then scaled it out on SLURM across 96 billion molecules from the ZINC22 library.',
       'Applied developability filters and Pareto optimisation to narrow the search to 1,000 candidates, with ~100 advancing to experimental synthesis.',
       'Led the resulting work as first author, presented the research at PandemicStop-AI at Mila, and received a PhD offer following the project.',
+      'A paper on this work is going to be published. The code and a fuller account of the project will follow on GitHub.',
     ],
     links: [{ href: 'https://github.com/ClaudiaAgromayor/zebrafish-anesthetic-chemprop', label: 'GitHub' }],
     img: '/img/olivier_lab.jpg',
@@ -35,6 +37,7 @@ export const ENTRIES = [
   },
   {
     key: 'aws',
+    start: 2025.42,
     year: 2025,
     title: 'Generative AI Engineer',
     org: 'Amazon Web Services',
@@ -57,6 +60,7 @@ export const ENTRIES = [
   },
   {
     key: 'altex',
+    start: 2024.42,
     year: 2024,
     title: 'Quantitative Developer',
     org: 'Altex Asset Management',
@@ -74,6 +78,7 @@ export const ENTRIES = [
   },
   {
     key: 'forum',
+    start: 2023.85,
     year: 2023,
     title: 'Treasurer',
     org: 'Forum CentraleSupélec',
@@ -94,6 +99,7 @@ export const ENTRIES = [
   },
   {
     key: 'ices',
+    start: 2020.6,
     year: 2020,
     quiet: true,
     title: 'Social Media & Content Manager',
@@ -116,6 +122,7 @@ export const ENTRIES = [
   /* ── Selected research & technical work ──────────────────── */
   {
     key: 'tooth',
+    start: 2026.0,
     year: 2026,
     title: '3D Medical Imaging',
     org: 'Master’s Thesis, ICAI',
@@ -131,6 +138,7 @@ export const ENTRIES = [
   },
   {
     key: 'ibm',
+    start: 2025.0,
     year: 2025,
     title: 'LLM Evaluation for Business-Rule Compliance',
     org: 'IBM France Lab',
@@ -149,6 +157,7 @@ export const ENTRIES = [
   },
   {
     key: 'federated',
+    start: 2025.0,
     year: 2025,
     title: 'Federated Learning for Industrial Systems',
     org: 'Bachelor’s Thesis',
@@ -170,8 +179,9 @@ export const ENTRIES = [
   /* ── Selected projects ───────────────────────────────────── */
   {
     key: 'angryrobot',
+    start: 2026.7,
     year: 2026,
-    title: 'AngryRobot — AI Agent Safety',
+    title: 'AngryRobot: AI Agent Safety',
     org: 'HackSpain 2026',
     date: 'Sep 2026',
     place: 'Madrid',
@@ -191,8 +201,9 @@ export const ENTRIES = [
   },
   {
     key: 'caffy',
+    start: 2025.78,
     year: 2025,
-    title: 'CAFFY — AI for Railway Maintenance',
+    title: 'CAFFY: AI for Railway Maintenance',
     org: 'Kearney × CAF Smart Industry Hackathon',
     date: 'Oct 2025',
     place: 'Madrid',
@@ -211,6 +222,7 @@ export const ENTRIES = [
   /* ── Education ───────────────────────────────────────────── */
   {
     key: 'master',
+    start: 2025.7,
     year: 2025,
     title: 'Double Master’s Degree',
     org: 'ICAI',
@@ -223,6 +235,7 @@ export const ENTRIES = [
   },
   {
     key: 'centrale',
+    start: 2023.7,
     year: 2023,
     title: 'Double Degree Engineering',
     org: 'CentraleSupélec × ICAI',
@@ -243,6 +256,7 @@ export const ENTRIES = [
   },
   {
     key: 'dauphine',
+    start: 2024.7,
     year: 2024,
     title: 'Applied Economics',
     org: 'Paris Dauphine-PSL',
@@ -259,6 +273,7 @@ export const ENTRIES = [
   /* ── Recognition ─────────────────────────────────────────── */
   {
     key: 'iberdrola',
+    start: 2026.45,
     year: 2026,
     quiet: true,
     title: 'Iberdrola Master’s Scholarship',
@@ -275,6 +290,7 @@ export const ENTRIES = [
   /* ── Earlier experience and early achievements ───────────── */
   {
     key: 'camp',
+    start: 2022.42,
     year: 2022,
     quiet: true,
     title: 'Camp Counsellor & Lifeguard',
@@ -291,6 +307,7 @@ export const ENTRIES = [
   },
   {
     key: 'casvi',
+    start: 2018.7,
     year: 2021,
     quiet: true,
     title: 'Academic Excellence',
@@ -306,6 +323,7 @@ export const ENTRIES = [
   },
   {
     key: 'gymnastics',
+    start: 2013.3,
     year: 2013,
     quiet: true,
     title: 'International Aesthetic Gymnastics',
@@ -322,6 +340,7 @@ export const ENTRIES = [
   },
   {
     key: 'maths',
+    start: 2015.25,
     year: 2015,
     quiet: true,
     title: 'Mathematics Competitions',

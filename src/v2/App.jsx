@@ -4,7 +4,7 @@ import Lenis from 'lenis'
 import HeroScan from './HeroScan'
 import HeroGlobe from './HeroGlobe'
 import { PROFILE, BEYOND, CONTACT } from '../data/entries'
-import { SECTIONS } from '../data/sections'
+import { SECTIONS, CHRONO } from '../data/sections'
 
 const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
 const clamp01 = (x) => Math.max(0, Math.min(1, x))
@@ -40,6 +40,7 @@ function useInView(ref, margin = '200px') {
 /* ── page ──────────────────────────────────────────────────── */
 export default function App() {
   const [menu, setMenu] = useState(false)
+  const [time, setTime] = useState(false)
   const [zoom, setZoom] = useState(null)
 
   useEffect(() => {
@@ -50,7 +51,7 @@ export default function App() {
     id = requestAnimationFrame(raf)
     return () => { cancelAnimationFrame(id); lenis.destroy(); lenis = null }
   }, [])
-  useEffect(() => { if (lenis) (menu || zoom) ? lenis.stop() : lenis.start() }, [menu, zoom])
+  useEffect(() => { if (lenis) (menu || zoom || time) ? lenis.stop() : lenis.start() }, [menu, zoom, time])
 
   // text and moments rise into place as they enter the screen
   useEffect(() => {
@@ -62,11 +63,12 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') setMenu(false) }
+    const onKey = (e) => { if (e.key === 'Escape') { setMenu(false); setTime(false) } }
     addEventListener('keydown', onKey)
     return () => removeEventListener('keydown', onKey)
   }, [])
-  const go = (id) => { setMenu(false); scrollToId(id) }
+  // the overlays park the smooth scroll; let it go again before we ask it to move
+  const go = (id) => { setMenu(false); setTime(false); lenis?.start(); scrollToId(id) }
 
   return (
     <>
@@ -82,7 +84,7 @@ export default function App() {
       <main id="top">
         <Hero />
         <Intro onWork={() => go('story')} />
-        <Story go={go} onZoom={(list, i) => setZoom({ list, i })} />
+        <Story go={go} onTime={() => setTime(true)} onZoom={(list, i) => setZoom({ list, i })} />
         <Beyond onZoom={(list, i) => setZoom({ list, i })} />
         <Contact />
       </main>
@@ -94,7 +96,8 @@ export default function App() {
         <a href={PROFILE.github} target="_blank" rel="noreferrer">GitHub</a>
       </footer>
 
-      {menu && <Menu onClose={() => setMenu(false)} go={go} />}
+      {menu && <Menu onClose={() => setMenu(false)} go={go} onTime={() => { setMenu(false); setTime(true) }} />}
+      {time && <Timeline onClose={() => setTime(false)} go={go} />}
       {zoom && <Lightbox {...zoom} onClose={() => setZoom(null)} />}
     </>
   )
@@ -167,7 +170,7 @@ function Intro({ onWork }) {
 }
 
 /* The work, in sections: a contents list, then each section with its entries */
-function Story({ go, onZoom }) {
+function Story({ go, onTime, onZoom }) {
   const wrap = useRef(null)
   const [cur, setCur] = useState(-1)
   const curRef = useRef(-1)
@@ -204,6 +207,12 @@ function Story({ go, onZoom }) {
             </button>
           </li>
         ))}
+        <li className="ct-time">
+          <button type="button" onClick={onTime}>
+            <span className="ct-t">See timeline <i aria-hidden="true">→</i></span>
+            <span className="ct-sub">{CHRONO.length} entries, 2013 to 2027</span>
+          </button>
+        </li>
       </ol>
 
       {SECTIONS.map((sec) => (
@@ -389,13 +398,68 @@ function Lightbox({ list, i, onClose }) {
   )
 }
 
-function Menu({ onClose, go }) {
+/* Every entry on one rail of time, newest first. It opens over the page and
+   sends you to the section an entry lives in. */
+function Timeline({ onClose, go }) {
+  const scroller = useRef(null)
+  const litRef = useRef(null)
+  useEffect(() => {
+    const el = scroller.current
+    if (!el) return
+    // the dot nearest the reading line fills in, the same way the page does it
+    const mark = () => {
+      const line = el.getBoundingClientRect().top + el.clientHeight * 0.4
+      let on = null, near = Infinity
+      el.querySelectorAll('.tl-row').forEach((r) => {
+        const b = r.getBoundingClientRect()
+        const d = Math.abs(b.top + b.height / 2 - line)
+        if (d < near) { near = d; on = r }
+      })
+      if (on !== litRef.current) {
+        litRef.current?.removeAttribute('data-lit')
+        on?.setAttribute('data-lit', '')
+        litRef.current = on
+      }
+    }
+    mark()
+    el.addEventListener('scroll', mark, { passive: true })
+    return () => el.removeEventListener('scroll', mark)
+  }, [])
+  return (
+    <div className="tl" role="dialog" aria-modal="true" aria-label="Timeline">
+      <header className="tl-head">
+        <div>
+          <p className="caps">Timeline</p>
+          <h2>Everything in order</h2>
+          <p className="tl-note">The same work the page holds, on one line of time. Pick anything to jump to it.</p>
+        </div>
+        <button type="button" className="pill light" onClick={onClose}>CLOSE</button>
+      </header>
+      <div className="tl-scroll" ref={scroller} data-lenis-prevent>
+        <ol className="tl-list">
+          {CHRONO.map((c) => (
+            <li className="tl-row" key={c.key}>
+              <button type="button" onClick={() => go(c.section)}>
+                <span className="tl-y">{Math.floor(c.start)}</span>
+                <span className="tl-t">{c.title}</span>
+                <span className="tl-o">{c.org}</span>
+              </button>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  )
+}
+
+function Menu({ onClose, go, onTime }) {
   return (
     <div className="menu" role="dialog" aria-modal="true" aria-label="Menu" data-lenis-prevent>
       <button type="button" className="pill menu-close" onClick={onClose}>CLOSE</button>
       <nav>
         <button type="button" onClick={() => go('top')}>Home</button>
         <button type="button" onClick={() => go('story')}>My work</button>
+        <button type="button" onClick={onTime}>Timeline</button>
         <button type="button" onClick={() => go('contact')}>Contact</button>
       </nav>
       <ol className="menu-acts">

@@ -10,3 +10,10 @@ export const SECTIONS = [
   { id: 'recognition', title: 'Recognition', weight: 'minor', keys: ['iberdrola'] },
   { id: 'earlier', title: 'Earlier Experience & Early Achievements', weight: 'minor', keys: ['ices', 'camp', 'casvi', 'gymnastics', 'maths'] },
 ].map((s) => ({ ...s, items: s.keys.map((k) => ENTRIES.find((e) => e.key === k)).filter(Boolean) }))
+
+/* The same entries on one line of time, newest first, each remembering the
+   section it lives in so the timeline can send you there. */
+export const CHRONO = [...ENTRIES]
+  .filter((e) => e.start)
+  .sort((a, b) => b.start - a.start)
+  .map((e) => ({ ...e, section: SECTIONS.find((s) => s.keys.includes(e.key))?.id }))
