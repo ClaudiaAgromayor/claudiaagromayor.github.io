@@ -126,26 +126,17 @@ function Hero() {
         </div>
         <div className="hero-scrim" aria-hidden="true" />
         <div className="hero-copy">
-          <h1 className="hero-name">Claudia<br />Agromayor</h1>
-          <p className="hero-hi">{PROFILE.greeting}</p>
+          <h1 className="hero-name">Hi, I’m<br />Claudia Agromayor</h1>
           {PROFILE.blurb.map((t, k) => <p key={k} className="hero-line">{t}</p>)}
         </div>
-        <p className="hero-label" aria-live="polite">
-          {view === 'places' && place ? <><b>{place.name} · {place.years}</b>{place.what}</> : view === 'places' ? 'Drag to spin · point at a city' : 'Move through the landscape'}
-        </p>
+        {view === 'places' && (
+          <p className="hero-label" aria-live="polite">
+            {place ? <><b>{place.name} · {place.years}</b>{place.what}</> : 'Drag to spin · point at a city'}
+          </p>
+        )}
       </div>
-      <Pluses label="SCROLL TO EXPLORE" />
+      <p className="hero-scroll">SCROLL TO EXPLORE</p>
     </section>
-  )
-}
-
-function Pluses({ label, n = 4 }) {
-  return (
-    <div className="pluses" aria-hidden={!label}>
-      {Array.from({ length: n + 1 }, (_, i) => (
-        i === Math.floor(n / 2) && label ? <span key={i} className="plus-label">{label}</span> : <span key={i} className="plus">+</span>
-      ))}
-    </div>
   )
 }
 

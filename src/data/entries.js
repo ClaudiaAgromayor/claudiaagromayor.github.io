@@ -358,8 +358,7 @@ export const ENTRIES = [
 
 export const PROFILE = {
   name: 'Claudia Agromayor',
-  // the whole opening: her name, then these, and nothing else
-  greeting: 'Hi, I’m Claudia.',
+  // the whole opening: the headline below, then these, and nothing else
   blurb: [
     'I am pursuing a double Master’s in Engineering and Artificial Intelligence at CentraleSupélec and Universidad Pontificia Comillas ICAI, graduating in June 2027.',
     'I work on machine learning, deep learning, and applied AI for complex problems, spanning scientific discovery, 3D medical imaging, cheminformatics, federated learning, and generative AI.',
