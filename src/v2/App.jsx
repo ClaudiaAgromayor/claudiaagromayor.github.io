@@ -101,7 +101,7 @@ export default function App() {
 }
 
 /* The hero, full screen: her name beside a 3D piece, her portrait as a scan or the places on a globe */
-const VIEWS = [['field', 'Field'], ['places', 'Places']]
+const VIEWS = [['field', 'Landscape'], ['places', 'Places']]
 function Hero() {
   const card = useRef(null), pointerIn = useRef(false)
   const live = useInView(card)
@@ -130,7 +130,7 @@ function Hero() {
           <p className="hero-role">{PROFILE.places}</p>
         </div>
         <p className="hero-label" aria-live="polite">
-          {view === 'places' && place ? <><b>{place.name} · {place.years}</b>{place.what}</> : view === 'places' ? 'Drag to spin · point at a city' : 'Move through the field'}
+          {view === 'places' && place ? <><b>{place.name} · {place.years}</b>{place.what}</> : view === 'places' ? 'Drag to spin · point at a city' : 'Move through the landscape'}
         </p>
       </div>
       <Pluses label="SCROLL TO EXPLORE" />
