@@ -220,7 +220,7 @@ function Beyond({ onZoom }) {
     <section className="aside" id="beyond">
       <h2 className="aside-title reveal">{BEYOND.title}</h2>
       <div className="aside-copy reveal">
-        <p>{BEYOND.text}</p>
+        {BEYOND.paragraphs.map((t, k) => <p key={k}>{t}</p>)}
         <div className="m-shots">
           {BEYOND.photos.map((src, k) => (
             <button type="button" key={src} onClick={() => onZoom(BEYOND.photos, k)} aria-label={`Open picture ${k + 1}`}>

@@ -64,8 +64,9 @@ for (const sec of SECTIONS) {
   }
 }
 
-html.push(`<h2>${esc(BEYOND.title)}</h2>`, `<p>${esc(BEYOND.text)}</p>`)
-txt.push('', '', rule('='), BEYOND.title.toUpperCase(), rule('='), '', BEYOND.text)
+html.push(`<h2>${esc(BEYOND.title)}</h2>`)
+txt.push('', '', rule('='), BEYOND.title.toUpperCase(), rule('='), '')
+for (const t of BEYOND.paragraphs) { html.push(`<p>${esc(t)}</p>`); txt.push(t, '') }
 
 html.push('<h2>Contact</h2>', `<p class="meta">${esc(CONTACT.tags)}</p>`, `<p>${esc(CONTACT.text)}</p>`)
 html.push(`<p class="meta">${esc(PROFILE.email)} · <a href="${PROFILE.linkedin}">LinkedIn</a> · <a href="${PROFILE.github}">GitHub</a></p>`)

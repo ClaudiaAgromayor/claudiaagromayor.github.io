@@ -335,7 +335,11 @@ export const PROFILE = {
 
 export const BEYOND = {
   title: 'Beyond Engineering',
-  text: 'Outside engineering, I compete in sport and contribute to international student communities. At CentraleSupélec, I have been involved in basketball, rowing, surf expeditions and the Spanish Club within a campus representing 77 nationalities.',
+  paragraphs: [
+    'Outside engineering, I compete in sport and contribute to international student communities. At CentraleSupélec, I have been involved in basketball, rowing, surf expeditions and the Spanish Club within a campus representing 77 nationalities.',
+    'I have volunteered with Cáritas and Volant during school, and with AREMACS in Paris, reducing the environmental footprint of large events.',
+    'What I enjoy most about moving between countries is discovering a new culture and adapting to it quickly.',
+  ],
   photos: ['/img/championnat_france_basket.jpg', '/img/basket.jpg'],
 }
 

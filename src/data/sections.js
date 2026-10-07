@@ -3,10 +3,10 @@
 import { ENTRIES } from './entries.js'
 
 export const SECTIONS = [
-  { id: 'experience', title: 'Experience', weight: 'major', keys: ['iric', 'aws', 'altex', 'forum', 'ices'] },
+  { id: 'experience', title: 'Experience', weight: 'major', keys: ['iric', 'aws', 'altex', 'forum'] },
   { id: 'research', title: 'Selected Research & Technical Work', weight: 'major', keys: ['tooth', 'ibm', 'federated'] },
   { id: 'projects', title: 'Selected Projects', weight: 'major', keys: ['angryrobot', 'caffy'] },
   { id: 'education', title: 'Education', weight: 'major', keys: ['master', 'centrale', 'dauphine'] },
   { id: 'recognition', title: 'Recognition', weight: 'minor', keys: ['iberdrola'] },
-  { id: 'earlier', title: 'Earlier Experience & Early Achievements', weight: 'minor', keys: ['camp', 'casvi', 'gymnastics', 'maths'] },
+  { id: 'earlier', title: 'Earlier Experience & Early Achievements', weight: 'minor', keys: ['ices', 'camp', 'casvi', 'gymnastics', 'maths'] },
 ].map((s) => ({ ...s, items: s.keys.map((k) => ENTRIES.find((e) => e.key === k)).filter(Boolean) }))
