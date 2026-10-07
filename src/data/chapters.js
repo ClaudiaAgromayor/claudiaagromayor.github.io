@@ -267,7 +267,6 @@ export const PROFILE = {
   places: 'Madrid · Paris · Montréal',
   sub: 'A life in chapters, from the gymnastics mat and a TikTok account to machine-learning research.',
   next: 'Seeking an AI research internship from March 2027.',
-  email: 'clauuagromayor@gmail.com',
   linkedin: 'https://linkedin.com/in/claudia-agromayor',
   github: 'https://github.com/ClaudiaAgromayor',
 }

@@ -352,7 +352,6 @@ export const PROFILE = {
     'Currently in the final year of a double master’s at ICAI, combining Industrial Engineering with Computer Science and AI, graduating June 2027.',
   ],
   next: 'I am looking forward to the next chapter: learning from people who push me, taking on problems that stretch me, and giving everything I have to the work.',
-  email: 'clauuagromayor@gmail.com',
   linkedin: 'https://linkedin.com/in/claudia-agromayor',
   github: 'https://github.com/ClaudiaAgromayor',
 }

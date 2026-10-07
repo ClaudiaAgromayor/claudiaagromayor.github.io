@@ -33,11 +33,11 @@ html.push(`<h1>${esc(PROFILE.name)}</h1>`)
 html.push(`<p class="meta">${esc(PROFILE.title)}<br>${esc(PROFILE.field)}<br>${esc(PROFILE.places)}</p>`)
 for (const t of PROFILE.blurb) html.push(`<p>${esc(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')}</p>`)
 html.push(`<p><strong>${esc(PROFILE.next)}</strong></p>`)
-html.push(`<p class="meta">${esc(PROFILE.email)} · <a href="${PROFILE.linkedin}">LinkedIn</a> · <a href="${PROFILE.github}">GitHub</a></p>`)
+html.push(`<p class="meta"><a href="${PROFILE.linkedin}">LinkedIn</a> · <a href="${PROFILE.github}">GitHub</a></p>`)
 
 txt.push(PROFILE.name.toUpperCase(), rule('='), PROFILE.title, PROFILE.field, PROFILE.places, '',
   ...PROFILE.blurb.flatMap((t) => [t.replace(/\*\*/g, ''), '']), PROFILE.next, '',
-  PROFILE.email, PROFILE.linkedin, PROFILE.github)
+  PROFILE.linkedin, PROFILE.github)
 
 const flat = (f) => (typeof f === 'string' ? [f] : f.list.map((t, k) => `${f.ordered ? `${k + 1}. ` : ''}${t}`))
 
@@ -69,9 +69,9 @@ txt.push('', '', rule('='), BEYOND.title.toUpperCase(), rule('='), '')
 for (const t of BEYOND.paragraphs) { html.push(`<p>${esc(t)}</p>`); txt.push(t, '') }
 
 html.push('<h2>Contact</h2>', `<p class="meta">${esc(CONTACT.tags)}</p>`, `<p>${esc(CONTACT.text)}</p>`)
-html.push(`<p class="meta">${esc(PROFILE.email)} · <a href="${PROFILE.linkedin}">LinkedIn</a> · <a href="${PROFILE.github}">GitHub</a></p>`)
+html.push(`<p class="meta"><a href="${PROFILE.linkedin}">LinkedIn</a> · <a href="${PROFILE.github}">GitHub</a></p>`)
 txt.push('', '', rule('='), 'CONTACT', rule('='), '', CONTACT.tags, '', CONTACT.text, '',
-  PROFILE.email, PROFILE.linkedin, PROFILE.github)
+  PROFILE.linkedin, PROFILE.github)
 
 html.push('</body></html>')
 

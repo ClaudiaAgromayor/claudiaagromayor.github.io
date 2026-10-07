@@ -9,8 +9,8 @@ export const HIGHLIGHTS = ['iric', 'aws', 'ibm', 'federated']
   .filter(Boolean)
 
 export const SECTIONS = [
-  { id: 'research', title: 'Research', weight: 'major', keys: ['tooth', 'ibm', 'federated'] },
   { id: 'experience', title: 'Experience', weight: 'major', keys: ['iric', 'aws', 'altex', 'forum'] },
+  { id: 'research', title: 'Research', weight: 'major', keys: ['tooth', 'ibm', 'federated'] },
   { id: 'projects', title: 'Projects', weight: 'major', keys: ['angryrobot', 'caffy'] },
   { id: 'education', title: 'Education', weight: 'major', keys: ['master', 'centrale', 'dauphine'] },
   { id: 'recognition', title: 'Recognition', weight: 'minor', keys: ['iberdrola'] },

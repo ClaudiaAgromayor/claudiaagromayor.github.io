@@ -158,7 +158,6 @@ function Intro({ onWork }) {
           <p key={k} className={k === 0 ? 'intro-lead' : undefined}><Rich text={t} /></p>
         ))}
         <p className="intro-links">
-          <a href={`mailto:${PROFILE.email}`}>Email</a>
           <a href={PROFILE.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
           <a href={PROFILE.github} target="_blank" rel="noreferrer">GitHub</a>
         </p>
@@ -352,8 +351,6 @@ function Demo({ id, poster, title }) {
 /* The ending, on one dark screen: the next chapter, then her avatar, then how to reach her */
 /* The ending: her portrait, what she is looking for, and how to reach her. */
 function Contact() {
-  const [copied, setCopied] = useState(false)
-  const copy = () => navigator.clipboard?.writeText(PROFILE.email).then(() => setCopied(true), () => {})
   return (
     <section className="contact" id="contact">
       <div className="dusk" aria-hidden="true" />
@@ -363,9 +360,7 @@ function Contact() {
         <p className="caps contact-tags">{CONTACT.tags}</p>
         <p className="contact-text">{CONTACT.text}</p>
         <div className="contact-row">
-          <span className="mail">{PROFILE.email}</span>
-          <button type="button" className="pill light" onClick={copy}>{copied ? 'COPIED' : 'COPY EMAIL'}</button>
-          <a className="pill outline" href={PROFILE.linkedin} target="_blank" rel="noreferrer">LINKEDIN</a>
+          <a className="pill light" href={PROFILE.linkedin} target="_blank" rel="noreferrer">LINKEDIN</a>
           <a className="pill outline" href={PROFILE.github} target="_blank" rel="noreferrer">GITHUB</a>
         </div>
       </div>

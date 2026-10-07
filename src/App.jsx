@@ -46,7 +46,6 @@ export default function App() {
     return () => removeEventListener('keydown', onKey)
   }, [active, list, goTo, openStory])
 
-  const copy = () => navigator.clipboard?.writeText(PROFILE.email).then(() => setCopied(true), () => {})
   const ch = active >= 0 && active < N ? CHAPTERS[active] : null
   const [first, ...rest] = PROFILE.name.split(' ')
 
@@ -113,8 +112,6 @@ export default function App() {
         <h2>The next chapter is still unwritten.</h2>
         <p className="lead">{PROFILE.next}</p>
         <div className="contact">
-          <span className="mail">{PROFILE.email}</span>
-          <button type="button" onClick={copy}>{copied ? 'Copied' : 'Copy'}</button>
           <a href={PROFILE.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
           <a href={PROFILE.github} target="_blank" rel="noreferrer">GitHub</a>
         </div>
