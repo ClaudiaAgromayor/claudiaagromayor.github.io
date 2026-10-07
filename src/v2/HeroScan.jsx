@@ -15,7 +15,9 @@ const CAM_POS = [0, -0.2, 6.6], CAM_TARGET = [0, -0.28, 0]
 const K = 4.6, OY = 0.21, Y0 = -0.45, SPAN = 0.665, LEVELS = 92, AROUND = 300
 const GAIN = 4.6 / 3.2          // the form is larger than the original, so the dots grow with it
 const Y_LOW = Y0 * K + OY
-const CYCLE = 14                // seconds for form → drift → form
+const CYCLE = 26                // seconds for form → drift → form
+const MAX_SPEED = 0.58          // world units a second: slow enough to follow one point
+const TURN = 1.5                // how sharply a point turns towards where it is heading
 
 /* The profile of the form: a smooth curve with no meaning in it, widest across the
    middle and tapering at both ends, so the rings read as one body rather than a tube. */
@@ -92,15 +94,14 @@ export default function HeroScan({ reduced, pointerIn }) {
 
   useFrame(({ clock, pointer, camera, size, gl }, delta) => {
     const t = clock.elapsedTime, inside = pointerIn.current
-    g.current.rotation.y = reduced ? 0 : t * 0.1
-    mat.uniforms.uScan.value = reduced ? -9 : Y_LOW + ((t * 0.22) % 1.4) * (SPAN * K)
+    g.current.rotation.y = reduced ? 0 : t * 0.04
+    mat.uniforms.uScan.value = reduced ? -9 : Y_LOW + ((t * 0.09) % 1.5) * (SPAN * K)
     mat.uniforms.uPx.value = gl.getPixelRatio() * size.height / 900
 
-    // the form holds for most of the cycle and only lets go for a few seconds, and even
-    // then not completely: a hero that is pure dust when someone lands on it says nothing
+    // the form holds for most of the cycle and only lets go for a while, and even then
+    // not completely: a hero that is pure dust when someone lands on it says nothing
     const wave = Math.sin((t % CYCLE) / CYCLE * Math.PI * 2 - Math.PI / 2) * 0.5 + 0.5
-    const c = reduced ? 1 : THREE.MathUtils.smootherstep(wave, 0.1, 0.58)
-    const loose = (1 - c) * 0.72
+    const c = reduced ? 1 : THREE.MathUtils.smootherstep(wave, 0.12, 0.62)
 
     let active = false
     if (inside) {
@@ -110,33 +111,51 @@ export default function HeroScan({ reduced, pointerIn }) {
       }
     }
 
-    const cur = geo.attributes.position.array, k = Math.min(delta, 1 / 30), R = 0.42
+    /* Each point flies rather than springs: it has a heading, it turns towards where it
+       wants to go, and its speed is capped. That is what makes a flock read as a flock
+       instead of a swarm of insects. Where it wants to go is the current while the form
+       is loose, and its own place on the ring as the form gathers. */
+    const cur = geo.attributes.position.array, k = Math.min(delta, 1 / 30), R = 0.5
     const { x: hx, y: hy } = tools.hit
-    const flow = t * 0.35
+    const flow = t * 0.07
+    const steerToHome = Math.max(c, 0.24)        // never quite lets go, so the flock stays together
+    const cruise = MAX_SPEED                     // one speed throughout, the way a bird flies
     for (let i = 0; i < n; i++) {
       const j = i * 3
       const x = cur[j], y = cur[j + 1], z = cur[j + 2]
-      // back to its ring: hard while the form holds, barely at all once it lets go
-      const pull = 3 + 24 * c * c
-      let ax = (home[j] - x) * pull, ay = (home[j + 1] - y) * pull, az = (home[j + 2] - z) * pull
-      if (loose > 0.002) {
-        // the current: three sines crossed, so the drift curls instead of sliding one way
-        const s = seed[i] * 6.283
-        const fx = Math.sin(y * 1.1 + flow + s) + Math.cos(z * 0.9 - flow * 0.7)
-        const fy = Math.sin(z * 1.3 - flow * 0.8) + Math.cos(x + flow * 0.6 + s)
-        const fz = Math.sin(x * 1.2 + flow * 0.9) + Math.cos(y * 0.8 - flow + s)
-        const w = loose * 7.5
-        ax += fx * w; ay += fy * w * 0.6; az += fz * w
-        // and a weak hold on the whole cloud, so nothing drifts off for good
-        ax -= x * loose * 4.2; ay -= (y - OY) * loose * 2.2; az -= z * loose * 4.2
-      }
+
+      // where its ring is, and how far off it has drifted
+      const dx = home[j] - x, dy = home[j + 1] - y, dz = home[j + 2] - z
+      const dist = Math.hypot(dx, dy, dz) || 1e-5
+
+      // the current: three slow sines crossed, so the drift curls instead of sliding one way
+      const s = seed[i] * 6.283
+      const fx = Math.sin(y * 0.42 + flow + s) + Math.cos(z * 0.36 - flow * 0.7)
+      const fy = (Math.sin(z * 0.5 - flow * 0.8) + Math.cos(x * 0.38 + flow * 0.6 + s)) * 0.5
+      const fz = Math.sin(x * 0.46 + flow * 0.9) + Math.cos(y * 0.32 - flow + s)
+      const fl = Math.hypot(fx, fy, fz) || 1e-5
+
+      // heading: the current and the ring, mixed by how coherent the form is
+      let tx = (fx / fl) * (1 - steerToHome) + (dx / dist) * steerToHome
+      let ty = (fy / fl) * (1 - steerToHome) + (dy / dist) * steerToHome
+      let tz = (fz / fl) * (1 - steerToHome) + (dz / dist) * steerToHome
+      const tl = Math.hypot(tx, ty, tz) || 1e-5
+
+      // ease off on arrival so the points settle onto the ring instead of overshooting it,
+      // but only while the form is gathering: otherwise they could never leave it again
+      const arrive = (1 - c) + c * Math.min(1, dist / 0.3)
+      const speed = cruise * arrive
+      let wx = (tx / tl) * speed, wy = (ty / tl) * speed, wz = (tz / tl) * speed
+
       if (active) {
-        const dx = x - hx, dy = y - hy, d = Math.hypot(dx, dy)
-        if (d < R && d > 1e-4) { const f = (1 - d / R) ** 2 * 60 / d; ax += dx * f; ay += dy * f }
+        const px = x - hx, py = y - hy, d = Math.hypot(px, py)
+        if (d < R && d > 1e-4) { const f = (1 - d / R) ** 2 * 2.2 / d; wx += px * f; wy += py * f }
       }
-      vel[j] = (vel[j] + ax * k) * 0.9
-      vel[j + 1] = (vel[j + 1] + ay * k) * 0.9
-      vel[j + 2] = (vel[j + 2] + az * k) * 0.9
+
+      // turn towards the heading rather than snapping to it
+      vel[j] += (wx - vel[j]) * TURN * k
+      vel[j + 1] += (wy - vel[j + 1]) * TURN * k
+      vel[j + 2] += (wz - vel[j + 2]) * TURN * k
       cur[j] += vel[j] * k; cur[j + 1] += vel[j + 1] * k; cur[j + 2] += vel[j + 2] * k
     }
     geo.attributes.position.needsUpdate = true
