@@ -59,10 +59,8 @@ img { max-width: 100%; display: block }
 .hero-copy { position: absolute; z-index: 2; left: var(--gut); bottom: clamp(72px, 9vh, 132px); max-width: min(620px, 48%); pointer-events: none }
 .hero-name { margin: 0 0 18px; font-weight: 400; font-size: var(--t-hero); line-height: .94; letter-spacing: -.05em }
 .hero-title { margin: 0 0 10px; max-width: 24em; font-size: clamp(17px, 1.5vw, 22px); font-weight: 500; letter-spacing: -.01em; color: #fff }
-.hero-claim { margin: 0 0 20px; max-width: 24em; font-family: var(--serif); font-weight: 300; font-size: clamp(19px, 1.7vw, 25px); line-height: 1.35; color: #DDE2F2 }
-.hero-proof { margin: 0 0 18px; display: flex; flex-wrap: wrap; gap: 8px 28px }
-.hero-proof span { display: grid; gap: 1px; font-size: var(--t-label); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--mute) }
-.hero-proof b { font-weight: 400; font-size: clamp(26px, 2.4vw, 38px); line-height: 1; letter-spacing: -.04em; color: var(--blue-soft); font-variant-numeric: tabular-nums }
+.hero-claim { margin: 0 0 16px; max-width: 24em; font-family: var(--serif); font-weight: 300; font-size: clamp(19px, 1.7vw, 25px); line-height: 1.35; color: #DDE2F2 }
+.hero-status { margin: 0 0 14px; max-width: 34em; font-size: var(--t-small); line-height: 1.55; color: #B9BFD3 }
 .hero-role { margin: 0; max-width: 32em; font-size: var(--t-small); line-height: 1.55; color: #9AA0B6 }
 .place { display: block; transform: translate(10px, -50%); font-size: var(--t-label); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #fff; white-space: nowrap; text-shadow: 0 1px 10px #000; transition: opacity .25s }
 .place.left { transform: translate(calc(-100% - 10px), -50%) }

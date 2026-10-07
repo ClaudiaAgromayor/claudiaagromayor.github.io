@@ -344,16 +344,12 @@ export const PROFILE = {
   field: 'Industrial Engineering & Computer Science',
   places: 'Madrid · Paris · Montréal',
   // the opening block. **like this** comes out bold
-  claim: 'I build machine learning systems for hard scientific and real-world problems, and I am just as interested in where they break.',
-  // the two figures that go in the first screen, beside her name
-  proof: [
-    { v: '43.6B', k: 'molecules screened' },
-    { v: '5,000+', k: 'support tickets a month' },
-  ],
+  claim: 'I build AI systems where research meets real-world constraints.',
+  // the hero positions; the work below it is the evidence, so no figures up here
+  status: 'Final-year MII + MIINT student at ICAI, combining Industrial Engineering with Computer Science, graduating June 2027.',
   blurb: [
     'Engineering came first: four years of electrical and industrial engineering at ICAI and CentraleSupélec before I specialised in AI. It is why I reach for problems where the model is only part of the answer and the data, the scale and the constraints are the rest.',
-    '**Final-year student of the double master’s in Industrial Engineering and Intelligent Industry at ICAI**, graduating in June 2027, after a double degree with CentraleSupélec and Applied Economics at Paris Dauphine-PSL.',
-    'The work runs from **drug discovery and medical imaging** to **generative AI in production, federated learning and agent safety**. What they have in common is messy data, awkward scale and a result someone has to be able to rely on.',
+    'I am just as interested in where a system breaks as in where it works, which is usually what decides whether the result is any use.',
   ],
   next: 'Open to research collaborations, technical projects and opportunities from summer 2027 onward.',
   email: 'clauuagromayor@gmail.com',

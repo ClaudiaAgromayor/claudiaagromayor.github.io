@@ -128,9 +128,7 @@ function Hero() {
           <h1 className="hero-name">Claudia<br />Agromayor</h1>
           <p className="hero-title">{PROFILE.title}</p>
           <p className="hero-claim">{PROFILE.claim}</p>
-          <p className="hero-proof">
-            {PROFILE.proof.map((st) => <span key={st.v}><b>{st.v}</b>{st.k}</span>)}
-          </p>
+          <p className="hero-status">{PROFILE.status}</p>
           <p className="hero-role">{PROFILE.places}</p>
         </div>
         <p className="hero-label" aria-live="polite">
