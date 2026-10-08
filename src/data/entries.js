@@ -134,6 +134,7 @@ export const ENTRIES = [
       'Implementing 3D U-Net and Attention U-Net architectures with Dice loss in a highly imbalanced segmentation setting.',
       'Working with endodontics specialists from Universidad Complutense de Madrid, under supervision at ICAI.',
     ],
+    links: [{ href: 'https://github.com/ClaudiaAgromayor/tfm_dl_root_canal', label: 'GitHub' }],
   },
   {
     key: 'ibm',
@@ -153,6 +154,7 @@ export const ENTRIES = [
       'Combined dense embeddings with a TF-IDF fallback and leakage-safe neighbour exclusion to improve retrieval reliability.',
       'Found that increasing context did not necessarily improve performance; pipeline structure and retrieval strategy had a larger effect on accuracy.',
     ],
+    links: [{ href: 'https://github.com/ClaudiaAgromayor/llm-compliance-bench', label: 'GitHub' }],
   },
   {
     key: 'federated',
