@@ -31,9 +31,8 @@ export const ENTRIES = [
       'Led the resulting work as first author, presented the research at PandemicStop-AI at Mila, and received a PhD offer following the project.',
       'A paper on this work is going to be published. The code and a fuller account of the project will follow on GitHub.',
     ],
-    links: [{ href: 'https://github.com/ClaudiaAgromayor/zebrafish-anesthetic-chemprop', label: 'GitHub' }],
-    img: '/img/olivier_lab.jpg',
-    photos: ['/img/montreal_office.jpg'],
+    img: '/img/iric_poster.jpg',
+    photos: ['/img/olivier_lab.jpg', '/img/montreal_office.jpg'],
   },
   {
     key: 'aws',
