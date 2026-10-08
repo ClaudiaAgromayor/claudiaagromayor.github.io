@@ -55,7 +55,7 @@ export const ENTRIES = [
       'Certified as AWS Cloud Practitioner and AWS AI Practitioner.',
     ],
     img: '/img/aws.jpg',
-    photos: ['/img/aws2.jpg'],
+    photos: ['/img/aws2.jpg', '/img/aws_prime_day.jpg'],
   },
   {
     key: 'altex',
