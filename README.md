@@ -1,17 +1,3 @@
-# Claudia Agromayor — web personal
+# Claudia Agromayor
 
-A cobalt rhythmic-gymnastics ribbon floats in white light; the camera circles it and the photos of each chapter float around, in the spirit of The Year of Greta. Site in English.
-React + Vite + React Three Fiber + drei. Se publica sola en https://claudiaagromayor.github.io con cada `git push` a `main`.
-
-## Editar el contenido
-- Capítulos, textos, contacto: `src/data/chapters.js`
-- Fotos: `public/img/` (y en el capítulo `img: '/img/nombre.jpg'`)
-- Avatar: copia el `.glb` a `public/avatar.glb` y pon `AVATAR_URL = '/avatar.glb'` en `src/data/chapters.js`
-
-## Ver en local
-```
-npm install
-npm run dev
-```
-
-`data/` (CVs y cartas) está en `.gitignore`: nunca se sube.
+My personal website: [claudiaagromayor.github.io](https://claudiaagromayor.github.io)
