@@ -193,9 +193,9 @@ export const ENTRIES = [
       { v: '25 → 13%', k: 'population model error' },
     ],
     facts: [
-      'First prize, awarded by Universidad Carlos III de Madrid and the Comunidad de Madrid.',
-      'Ranks 179 municipalities on 24 official criteria, using only open data.',
-      'A ridge regression predicts who will live in neighbourhoods not yet built: 13% error, against 25% for the usual rule.',
+      'Turned public data scattered across the regional open-data portal, planning and land registry maps, the census and the transport network into one clear picture of every neighbourhood.',
+      'Shows what each neighbourhood will lack before it is even built (school places, health centres, day centres) and where the new ones should go.',
+      'Our population model halves the error of the standard estimate: 13% against 25%.',
     ],
     links: [
       { href: 'https://github.com/ClaudiaAgromayor/cuna-y-canas', label: 'GitHub' },
