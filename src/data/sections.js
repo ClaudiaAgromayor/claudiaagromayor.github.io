@@ -5,7 +5,7 @@ import { ENTRIES } from './entries.js'
 export const SECTIONS = [
   { id: 'experience', title: 'Experience', weight: 'major', keys: ['iric', 'aws', 'altex', 'forum'] },
   { id: 'research', title: 'Research & Engineering', weight: 'major', keys: ['tooth', 'ibm', 'federated'] },
-  { id: 'projects', title: 'Projects', weight: 'major', keys: ['angryrobot', 'caffy'] },
+  { id: 'projects', title: 'Projects', weight: 'major', keys: ['cunaycanas', 'angryrobot', 'caffy'] },
   { id: 'education', title: 'Education', weight: 'major', keys: ['master', 'centrale', 'dauphine'] },
   { id: 'recognition', title: 'Recognition', weight: 'minor', keys: ['iberdrola'] },
   { id: 'earlier', title: 'Earlier Experience & Early Achievements', weight: 'minor', keys: ['ices', 'camp', 'casvi', 'gymnastics', 'maths'] },

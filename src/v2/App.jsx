@@ -1,6 +1,5 @@
 import { Suspense, useCallback, useEffect, useId, useRef, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
-import Lenis from 'lenis'
 import HeroScan from './HeroScan'
 import HeroGlobe from './HeroGlobe'
 import { PROFILE, BEYOND, CONTACT } from '../data/entries'
@@ -9,22 +8,31 @@ import { SECTIONS, CHRONO } from '../data/sections'
 const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches
 const clamp01 = (x) => Math.max(0, Math.min(1, x))
 
-/* ── smooth scrolling ──────────────────────────────────────── */
-let lenis = null
+/* ── scrolling: the browser's own, so the page answers the wheel at once ── */
 function scrollToId(id) {
   const el = document.getElementById(id)
   if (!el) return
-  if (lenis) lenis.scrollTo(el, { duration: 1.6, offset: -20 })
-  else el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' })
+  scrollTo({ top: el.getBoundingClientRect().top + scrollY - 20, behavior: reduced ? 'auto' : 'smooth' })
 }
+// overlays hold the page still underneath them
+const holdPage = (on) => { document.documentElement.style.overflow = on ? 'hidden' : '' }
 
 /* ── scroll-driven helpers ─────────────────────────────────── */
+// runs fn once per frame, but only on frames where the page moved or changed size
 function useScrub(ref, fn) {
   useEffect(() => {
-    let raf
-    const tick = () => { if (ref.current) fn(ref.current); raf = requestAnimationFrame(tick) }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
+    let raf = 0
+    const run = () => { raf = 0; if (ref.current) fn(ref.current) }
+    const ask = () => { if (!raf) raf = requestAnimationFrame(run) }
+    const ro = new ResizeObserver(ask)
+    if (ref.current) ro.observe(ref.current)
+    addEventListener('scroll', ask, { passive: true })
+    addEventListener('resize', ask)
+    ask()
+    return () => {
+      cancelAnimationFrame(raf); ro.disconnect()
+      removeEventListener('scroll', ask); removeEventListener('resize', ask)
+    }
   }, [ref, fn])
 }
 function useInView(ref, margin = '200px') {
@@ -43,15 +51,7 @@ export default function App() {
   const [time, setTime] = useState(false)
   const [zoom, setZoom] = useState(null)
 
-  useEffect(() => {
-    if (reduced) return
-    lenis = new Lenis({ lerp: 0.085, wheelMultiplier: 0.9 })
-    let id
-    const raf = (t) => { lenis.raf(t); id = requestAnimationFrame(raf) }
-    id = requestAnimationFrame(raf)
-    return () => { cancelAnimationFrame(id); lenis.destroy(); lenis = null }
-  }, [])
-  useEffect(() => { if (lenis) (menu || zoom || time) ? lenis.stop() : lenis.start() }, [menu, zoom, time])
+  useEffect(() => { holdPage(menu || zoom || time) }, [menu, zoom, time])
 
   // text and moments rise into place as they enter the screen
   useEffect(() => {
@@ -67,8 +67,8 @@ export default function App() {
     addEventListener('keydown', onKey)
     return () => removeEventListener('keydown', onKey)
   }, [])
-  // the overlays park the smooth scroll; let it go again before we ask it to move
-  const go = (id) => { setMenu(false); setTime(false); lenis?.start(); scrollToId(id) }
+  // the overlays hold the page still; let it go again before we ask it to move
+  const go = (id) => { setMenu(false); setTime(false); holdPage(false); scrollToId(id) }
 
   return (
     <>

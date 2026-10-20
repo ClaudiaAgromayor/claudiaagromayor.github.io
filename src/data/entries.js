@@ -179,6 +179,33 @@ export const ENTRIES = [
 
   /* ── Selected projects ───────────────────────────────────── */
   {
+    key: 'cunaycanas',
+    start: 2026.8,
+    year: 2026,
+    title: 'Cuna y Canas: Open Data for Urban Planning',
+    org: 'MAD Open Data Challenge 2026',
+    date: 'Oct 2026',
+    place: 'Madrid',
+    line: 'Built with Lucía Cordero an open-data tool that shows what Madrid’s neighbourhoods will lack tomorrow (schools, health centres, day centres) and where to put them.',
+    stats: [
+      { v: '1st', k: 'place' },
+      { v: '179', k: 'municipalities ranked' },
+      { v: '25 → 13%', k: 'population model error' },
+    ],
+    facts: [
+      'First prize at the MAD Open Data Challenge 2026, organised by Universidad Carlos III de Madrid and the Comunidad de Madrid around the region’s demographic challenge.',
+      'Built only on open data: the Comunidad de Madrid portal and spatial data infrastructure, INE census tracts and the Regional Transport Consortium.',
+      'Ranks the 179 municipalities for each household (a baby, school-age children, older parents, commuting to Madrid) on 24 official criteria, each with its source in view.',
+      'Trained a ridge regression on 28 inhabited neighbourhoods to predict how many people will live in neighbourhoods not yet built: 13.1% mean error, against 25.1% for the usual rule.',
+      'Estimated about 222,700 dwellings still to be built outside Madrid city, enough for 0.47 to 0.67 million people, and placed new centres on vacant land within walking distance of the demand.',
+    ],
+    links: [
+      { href: 'https://github.com/ClaudiaAgromayor/cuna-y-canas', label: 'GitHub' },
+      { href: 'https://objectstorage.eu-madrid-1.oraclecloud.com/n/axo19lrq7chl/b/cuna-y-canas/o/index.html', label: 'Live prototype' },
+    ],
+    img: '/img/mad_open_data.jpg',
+  },
+  {
     key: 'angryrobot',
     start: 2026.7,
     year: 2026,
