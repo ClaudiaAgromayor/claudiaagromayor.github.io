@@ -189,6 +189,7 @@ export const ENTRIES = [
     line: 'Built with Lucía Cordero an open-data tool that shows what Madrid’s neighbourhoods will lack tomorrow (schools, health centres, day centres) and where to put them.',
     stats: [
       { v: '1st', k: 'place' },
+      { v: '2,000 €', k: 'prize' },
       { v: '179', k: 'municipalities ranked' },
       { v: '25 → 13%', k: 'population model error' },
     ],
