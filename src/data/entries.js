@@ -193,9 +193,8 @@ export const ENTRIES = [
       { v: '25 → 13%', k: 'population model error' },
     ],
     facts: [
-      'Turned public data scattered across the regional open-data portal, planning and land registry maps, the census and the transport network into one clear picture of every neighbourhood.',
-      'Shows what each neighbourhood will lack before it is even built (school places, health centres, day centres) and where the new ones should go.',
-      'Our population model halves the error of the standard estimate: 13% against 25%.',
+      'Predicting the future of neighbourhoods: Integrated fragmented public data to forecast population growth with 13% error, nearly half the standard estimate (25%), anticipating how communities will evolve before new developments are built.',
+      'Optimizing public infrastructure: Built an optimization model to determine where schools, healthcare centres and elderly care facilities should be located to meet future demand and prevent critical service shortages.',
     ],
     links: [
       { href: 'https://github.com/ClaudiaAgromayor/cuna-y-canas', label: 'GitHub' },
